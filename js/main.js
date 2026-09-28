@@ -154,3 +154,4 @@
   audio.addEventListener('error', () => reportMusicError(audio.error));
   musicState('Off');
 })();
+

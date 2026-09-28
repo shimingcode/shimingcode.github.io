@@ -16,10 +16,11 @@ window.SITE_CONFIG = {
     { name: 'YouTube', icon: 'youtube', username: '@mingshi-k1r', url: 'https://youtube.com/@mingshi-k1r?si=5YlRghc-mL6YyMxZ' },
     { name: 'Facebook', icon: 'facebook', username: 'Facebook 个人主页', url: 'https://www.facebook.com/profile.php?id=61593617921184' },
     { name: 'Bilibili', icon: 'bilibili', username: '哔哩哔哩 · Bilibili', url: 'https://b23.tv/ehpyF4v' },
-    { name: '抖音', icon: 'douyin', username: '抖音 · Douyin', url: 'https://v.douyin.com/4bRzpEcVeEg/' },
+    { name: '抖音', icon: 'douyin', username: '爱钓狐的无名人', url: 'https://v.douyin.com/4bRzpEcVeEg/' },
     { name: 'QQ', icon: 'qq', action: 'copy', field: 'qq1' },
     { name: 'QQ', icon: 'qq', action: 'copy', field: 'qq2' },
     { name: 'Email', icon: 'email', action: 'copy', field: 'email', mailto: true }
   ]
 };
+
 
