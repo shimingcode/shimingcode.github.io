@@ -63,6 +63,7 @@
   const audio = $('bgm');
   const musicButtons = [$('music-toggle'), $('music-status')];
   let pending = false;
+  let waitingForGesture = false;
   let failed = false;
   let wantsMusic = false;
   let reachedLoopBoundary = false;
@@ -96,7 +97,8 @@
     });
     toast('音乐加载失败，请检查音频路径、网络和文件格式；点击可重试。');
   }
-  async function toggleMusic() {
+  async function toggleMusic({ automatic = false } = {}) {
+    if (!automatic) waitingForGesture = false;
     if (config.music.enabled !== true) {
       toast('音乐尚未启用 ♡');
       return;
@@ -123,7 +125,12 @@
       if (!audio.paused) musicState('On');
     } catch (error) {
       if (error.name === 'AbortError' && audio.paused) musicState('Off');
-      else reportMusicError(error);
+      else if (automatic && error.name === 'NotAllowedError') {
+        wantsMusic = false;
+        waitingForGesture = true;
+        musicState('Off');
+        toast('轻触页面即可开启音乐 ♫');
+      } else reportMusicError(error);
     } finally {
       pending = false;
       musicButtons.forEach(button => button.setAttribute('aria-busy', 'false'));
@@ -153,5 +160,14 @@
   });
   audio.addEventListener('error', () => reportMusicError(audio.error));
   musicState('Off');
+  // Browsers allowing audible autoplay start immediately. Otherwise use a real gesture.
+  function unlockMusic(event) {
+    if (!waitingForGesture || pending || event.target.closest?.('#music-toggle, #music-status')) return;
+    if (event.type === 'keydown' && !['Enter', ' '].includes(event.key)) return;
+    waitingForGesture = false;
+    toggleMusic();
+  }
+  document.addEventListener('click', unlockMusic);
+  document.addEventListener('keydown', unlockMusic);
+  if (config.music.enabled === true) toggleMusic({ automatic: true });
 })();
-
