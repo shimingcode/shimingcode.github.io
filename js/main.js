@@ -63,6 +63,7 @@
   const musicButtons = [$('music-toggle'), $('music-status')];
   let pending = false;
   let failed = false;
+  let wantsMusic = false;
   audio.loop = true;
   audio.volume = Math.min(1, Math.max(0, Number(config.music.volume) || 0.30));
   audio.preload = 'metadata';
@@ -79,6 +80,7 @@
   }
   function reportMusicError(error) {
     failed = true;
+    wantsMusic = false;
     pending = false;
     musicState('Error');
     console.error('BGM playback failed:', {
@@ -99,6 +101,7 @@
     }
     // A second click can cancel playback even while the first play promise is pending.
     if (!audio.paused) {
+      wantsMusic = false;
       pending = false;
       audio.pause();
       musicState('Off');
@@ -109,6 +112,7 @@
       failed = false;
       audio.load();
     }
+    wantsMusic = true;
     pending = true;
     musicState('Off');
     try {
@@ -126,7 +130,13 @@
   musicButtons.forEach(button => button.addEventListener('click', toggleMusic));
   audio.addEventListener('playing', () => { failed = false; musicState('On'); });
   audio.addEventListener('pause', () => musicState(failed ? 'Error' : 'Off'));
-  audio.addEventListener('ended', () => musicState('Off'));
+  audio.addEventListener('ended', () => {
+    // Some WebKit media backends stop at the loop boundary despite loop=true.
+    if (wantsMusic && audio.loop) {
+      audio.currentTime = 0;
+      audio.play().catch(reportMusicError);
+    } else musicState('Off');
+  });
   audio.addEventListener('error', () => reportMusicError(audio.error));
   musicState('Off');
 })();
