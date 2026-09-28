@@ -3,6 +3,7 @@
   const config = window.SITE_CONFIG;
   const $ = (id) => document.getElementById(id);
   const icons = {
+    works: '<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="m21 15-5-5L5 19"/>',
     douyin: '<path d="M16 2h-4v13.5a2.5 2.5 0 1 1-2-2.45V9a6.5 6.5 0 1 0 6 6.5V8.1A9 9 0 0 0 22 10V6a6 6 0 0 1-6-4Z"/>',
     facebook: '<path d="M24 12a12 12 0 1 0-13.875 11.854V15.47H7.078V12h3.047V9.356c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953h-1.513c-1.491 0-1.956.925-1.956 1.874V12h3.328l-.532 3.47h-2.796v8.384A12.003 12.003 0 0 0 24 12Z"/>',
     bilibili: '<g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="15" rx="4"/><path d="m7 2 4 4m6-4-4 4M7 11v3m10-3v3m-8 3 3 1 3-1"/></g>',
@@ -52,7 +53,22 @@
     if (item.mailto) { const mail = document.createElement('a'); mail.className = 'mail-link'; mail.href = `mailto:${value}`; mail.setAttribute('aria-label', `发送邮件至 ${value}`); mail.innerHTML = '<span aria-hidden="true">↗</span><span>发邮件</span>'; row.append(mail); }
     $('social-links').append(row);
   });
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  (config.pages || []).filter(page => page.enabled).forEach((page, index) => {
+    const link = document.createElement('a');
+    link.className = 'page-card'; link.href = page.url;
+    link.style.setProperty('--index', index);
+    link.setAttribute('aria-label', `${page.number} ${page.title} · ${page.subtitle}`);
+    const symbol = document.createElement('span'); symbol.className = 'page-card-icon'; symbol.setAttribute('aria-hidden', 'true');
+    symbol.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${icons[page.icon] || icons.link}</svg>`;
+    const copy = document.createElement('span'); copy.className = 'page-card-copy';
+    const eyebrow = document.createElement('span'); eyebrow.className = 'page-card-number'; eyebrow.textContent = page.number;
+    const title = document.createElement('span'); title.className = 'page-card-title'; title.textContent = page.title;
+    const subtitle = document.createElement('span'); subtitle.className = 'page-card-subtitle'; subtitle.textContent = page.subtitle;
+    copy.append(eyebrow, title, subtitle);
+    const arrow = document.createElement('span'); arrow.className = 'page-card-arrow'; arrow.setAttribute('aria-hidden', 'true'); arrow.textContent = '↗';
+    link.append(symbol, copy, arrow); $('page-navigation').append(link);
+  });
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const mobile = matchMedia('(max-width: 600px)');
   function petals() {
     $('sakura').replaceChildren(); if (reduced.matches) return;
