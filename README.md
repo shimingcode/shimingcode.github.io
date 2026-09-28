@@ -1,6 +1,6 @@
 # Shiming · Social Links
 
-一个原生 HTML / CSS / JavaScript 静态主页，无构建步骤、无跟踪脚本、无外部字体依赖。当前图片为本地制作的简单占位图，不包含音乐文件。
+一个原生 HTML / CSS / JavaScript 静态主页，无构建步骤、无跟踪脚本、无外部字体依赖。头像和背景已设置。作品集目前没有照片素材；页面会显示空状态，添加照片后即可展示。
 
 ## Windows 本地启动
 
@@ -18,10 +18,16 @@ python -m http.server 4173 --bind 127.0.0.1
 index.html                 首页和 SEO
 404.html                   找不到页面时显示
 css/style.css              主题、毛玻璃、响应式和动画
-js/config.js               个人资料、账号、音乐、樱花配置
+css/works.css              作品页照片网格与 Lightbox 样式
+works.html                 独立作品展示页面
+js/config.js               个人资料、账号、目录、音乐、樱花配置
+js/works-data.js           摄影作品元数据列表
+js/works.js                分类筛选、图库和 Lightbox
 js/main.js                 渲染与交互
-assets/images/avatar.png   头像占位图，直接替换
-assets/images/background.jpg 背景占位图，直接替换
+assets/images/avatar.png.jpg   头像占位图，直接替换
+assets/images/background.jpg.jpg 背景图，直接替换
+assets/images/works/      作品原图目录
+assets/images/works/thumbs/ 缩略图目录（可选）
 assets/audio/              放入自己的 bgm.mp3
 assets/icons/              图标说明，SVG 内置于 main.js
 favicon.svg                粉色狐狸 favicon
@@ -38,7 +44,7 @@ scripts/placeholders.ps1   初始占位图生成脚本，无需重复运行
 | 昵称 | `name` |
 | 简介 | `bio` |
 | 欢迎状态 | `status` |
-| QQ 号 | `qq`，卡片自动同步 |
+| QQ 号 | `qq1`、`qq2`，卡片自动同步 |
 | Email | `email`，复制和发邮件入口自动同步 |
 | X / Twitter | `socialLinks` 中对应项的 `url` 和 `username` |
 | GitHub | `socialLinks` 中对应项的 `url` 和 `username` |
@@ -60,19 +66,50 @@ scripts/placeholders.ps1   初始占位图生成脚本，无需重复运行
 
 ## 更换图片
 
-- 头像：替换 `assets/images/avatar.png`，建议正方形 PNG，至少 320 × 320。
-- 背景：替换 `assets/images/background.jpg`，建议横向 JPG，至少 1920 × 1080。以 cover 居中裁切，手机会裁掉左右两侧。
+- 头像：替换 `assets/images/avatar.png.jpg`，建议正方形 PNG，至少 320 × 320。
+- 背景：替换 `assets/images/background.jpg.jpg`，建议横向 JPG，至少 1920 × 1080。以 cover 居中裁切，手机会裁掉左右两侧。
 - 文件名、大小写不变时无需改代码。换成其他格式时，在 config.js 更新路径；不要仅修改扩展名假装转换格式。
 - 更新后浏览器按 Ctrl+F5 强制刷新。不要再次执行占位图脚本，以免覆盖你的图片。
 
+## 新增目录页和作品展示
+
+首页目录由 `js/config.js` 中的 `pages` 数组驱动。当前作品展示入口已经启用。新增实际页面后，按需添加类似配置：
+
+```js
+{ number: '02', title: '关于我', subtitle: 'About Me', icon: 'link', url: './about.html', enabled: true }
+```
+
+`enabled: false` 会隐藏入口；删除对应对象即可移除入口。每个入口对应独立的 HTML 文件。新增平台图标可在 `js/main.js` 的 `icons` 中添加 SVG。
+
+### 添加摄影作品
+
+1. 将照片放入 `assets/images/works/`，例如 `photo-001.jpg`。建议先缩小超高分辨率原图；画廊卡片使用 `thumbnail` 指向 WebP/AVIF 缩略图，点开后用 `image` 原图。
+2. 在 `js/works-data.js` 的 `window.WORKS` 数组中加入一项：
+
+```js
+{
+  id: 'photo-001',
+  image: './assets/images/works/photo-001.jpg',
+  thumbnail: './assets/images/works/thumbs/photo-001.webp',
+  title: '作品标题',
+  description: '简短介绍',
+  date: '2026-09-28',
+  category: '风景',
+  tags: ['天空', '摄影'],
+  width: 1600,
+  height: 1200
+}
+```
+
+`thumbnail`、`description`、`date`、`category`、`tags`、`width`、`height` 都是可选字段。没有缩略图时卡片会用原图并延迟加载。用逗号分隔数组中不同作品。页面会从作品数据自动生成分类按钮，添加新 `category` 即增加筛选项。
+
+点击图片可打开大图预览；支持上/下一张、关闭、背景点击关闭、Escape、方向键和触摸左右滑动。照片卡片使用图片懒加载。仓库目前还没有作品照片，所以页面现在显示说明，不会伪造照片。
+
+静态图库不提供在线上传。未来若需登录后上传与发布，需增加带身份验证和持久化存储的后端（例如对象存储与受控 API），不要把凭据放进静态网页。
+
 ## 添加背景音乐
 
-1. 将拥有使用权的 MP3 保存为 `assets/audio/bgm.mp3`。
-2. 在 config.js 中将 `music.enabled` 改为 `true`。
-3. `volume` 为 0～1，可调整默认音量。
-4. 页面右下角点击 ♫ 播放，再次点击暂停。不会自动播放。
-
-当前没有音频，点击按钮会提示尚未添加，也不会请求不存在的文件。启用后如文件缺失、格式不支持或浏览器拒绝播放，会显示错误提示。
+音乐文件位于 `assets/audio/bgm.mp3`。配置在 `js/config.js` 的 `music`：`enabled: true` 开启，`volume` 设置默认音量。页面打开时会尝试播放；浏览器若阻止有声自动播放，页面会提示点击后播放。音乐按钮可暂停和恢复。音乐在首页播放。
 
 ## 调整视觉和动画
 
@@ -83,10 +120,8 @@ scripts/placeholders.ps1   初始占位图生成脚本，无需重复运行
 | `--pink` / `--accent` / `--light-pink` | 主粉色、强调色、浅粉色 |
 | `--background-color` | 背景后备色 |
 | `--text` / `--muted` | 正文、次要文字颜色 |
-| `--background-blur` | 背景模糊，例如 `2px` |
-| `--background-brightness` | 背景亮度，例如 `0.9` |
 | `--overlay-opacity` | 粉色叠加层不透明度，0～1 |
-| `--glass-blur` | 毛玻璃模糊，例如 `22px` |
+| `--glass-blur` | 毛玻璃模糊 |
 | `--glass-opacity` / `--card-opacity` | 容器、卡片透明度，0～1 |
 
 为保证浅色占位背景上的可读性，文字默认深玫瑰色。更换成深色背景后可将 `--text` 调为 `#FFFFFF`，并相应调整次要文字和玻璃层。
@@ -95,37 +130,19 @@ scripts/placeholders.ps1   初始占位图生成脚本，无需重复运行
 
 ## 上传 GitHub 并发布到公网
 
-项目尚未关联或创建远程仓库。推荐使用账号 `shimingcode` 创建名为 `shimingcode.github.io` 的公开仓库。
+此项目的 GitHub Pages 地址是 https://shimingcode.github.io 。把新页面及资源提交到仓库 `shimingcode/shimingcode.github.io` 的 `main` 分支，Pages 会自动更新。
 
-### 方法一：网页上传（无需 Git 命令）
+已部署网站更新步骤（Windows）：
 
-1. 登录 GitHub，点击右上角 `+` → `New repository`。
-2. Repository name 填 `shimingcode.github.io`，选择 Public，创建仓库。
-3. 使用 `uploading an existing file` 或 `Add file → Upload files`。
-4. 上传本项目文件及 css、js、assets 文件夹，确保 index.html 在仓库根目录，不要外套一层项目文件夹。不上传 .git、artifacts 或测试截图。
-5. 点击 Commit changes 保存。
-6. 进入仓库 `Settings → Pages`。
-7. 在 Build and deployment 下选择 `Deploy from a branch`，分支选 `main`、目录选 `/(root)`，点击 Save。
-8. 等待 Actions 中部署任务成功，再打开 https://shimingcode.github.io 。这是未来发布地址，并不表示当前已经上线。
+1. 打开本项目文件夹中的终端。
+2. 运行 `git status` 确认工作区内容。
+3. 运行 `git add index.html works.html css js assets README.md`。
+4. 运行 `git commit -m "Add works gallery page"`。
+5. 运行 `git push`。GitHub Actions 完成部署后，首页仍是 https://shimingcode.github.io/，作品页是 https://shimingcode.github.io/works.html。
 
-### 方法二：Windows Git 命令
+若此电脑尚未克隆仓库，请先从 `https://github.com/shimingcode/shimingcode.github.io` 克隆，再把项目更新复制到克隆目录；不要对已部署仓库重复执行 `git init`。
 
-先在 GitHub 创建空仓库，然后在项目终端运行：
-
-```powershell
-git init
-git add index.html 404.html css js assets favicon.svg README.md .gitignore .nojekyll scripts
-git commit -m "Create Shiming social links site"
-git branch -M main
-git remote add origin https://github.com/shimingcode/shimingcode.github.io.git
-git push -u origin main
-```
-
-如果已经有 origin，先用 `git remote -v` 检查，不要重复添加或覆盖不相关仓库。根据 Git 的提示完成登录，不要将令牌写入源码。推送后按上面的 Settings → Pages 步骤开启发布。
-
-后续更新：修改文件，执行 `git add`、`git commit` 和 `git push`，GitHub Pages 会重新发布。
-
-普通项目仓库也受支持：首页资源均为相对路径，地址为 `https://shimingcode.github.io/仓库名/`。若使用普通项目仓库，请把 404.html 的首页链接改为 `/仓库名/`；用户主页仓库和独立域名使用 `/`。
+普通项目仓库也受支持：首页和作品页资源均为相对路径，地址为 `https://shimingcode.github.io/仓库名/`。若使用普通项目仓库，请把 404.html 的首页链接改为 `/仓库名/`；用户主页仓库和独立域名使用 `/`。
 
 ## 将来绑定独立域名
 
