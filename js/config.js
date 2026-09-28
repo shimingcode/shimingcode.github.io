@@ -7,7 +7,7 @@ window.SITE_CONFIG = {
   background: './assets/images/background.jpg.jpg',
   email: 'shimingfox@gmail.com',
   qq: '2057466996',
-  music: { src: './assets/audio/bgm.mp3', enabled: true, volume: 0.4 },
+  music: { src: './assets/audio/bgm.mp3', enabled: true, volume: 0.30 },
   sakura: { desktop: 18, mobile: 9 },
   socialLinks: [
     { name: 'X / Twitter', icon: 'x', username: '@mingshixsq', url: 'https://x.com/mingshixsq?s=11' },
@@ -19,4 +19,3 @@ window.SITE_CONFIG = {
     { name: 'Email', icon: 'email', action: 'copy', field: 'email', mailto: true }
   ]
 };
-

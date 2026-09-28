@@ -59,16 +59,74 @@
     for (let i = 0; i < count; i++) { const petal = document.createElement('i'); petal.className = 'petal'; petal.style.cssText = `left:${Math.random()*100}%;--size:${8+Math.random()*9}px;--duration:${15+Math.random()*15}s;--delay:-${Math.random()*30}s;--drift:${Math.random()*180-90}px;--rotation:${180+Math.random()*540}deg`; $('sakura').append(petal); }
   }
   petals(); reduced.addEventListener('change', petals); mobile.addEventListener('change', petals);
-  const audio = $('bgm'); const toggle = $('music-toggle'); let pending = false;
-  audio.volume = Math.min(1, Math.max(0, config.music.volume ?? .4));
-  function musicState(playing) { toggle.setAttribute('aria-pressed', String(playing)); toggle.setAttribute('aria-label', playing ? '暂停背景音乐' : '播放背景音乐'); $('music-status').textContent = playing ? 'Music · On' : 'Music · Off'; }
-  toggle.addEventListener('click', async () => {
-    if (!config.music.enabled) { toast('音乐尚未添加，狐狐暂时安静一下 ♡'); return; }
+  const audio = $('bgm');
+  const musicButtons = [$('music-toggle'), $('music-status')];
+  let pending = false;
+  let failed = false;
+  audio.loop = true;
+  audio.volume = Math.min(1, Math.max(0, Number(config.music.volume) || 0.30));
+  audio.preload = 'metadata';
+  if (config.music.enabled === true) audio.src = config.music.src;
+
+  function musicState(state) {
+    const playing = state === 'On';
+    musicButtons.forEach(button => {
+      button.setAttribute('aria-pressed', String(playing));
+      button.setAttribute('aria-label', state === 'Error' ? '音乐加载失败，点击重试' : playing ? '暂停背景音乐' : '播放背景音乐');
+      button.setAttribute('aria-busy', String(pending));
+    });
+    $('music-status').textContent = `Music · ${state}`;
+  }
+  function reportMusicError(error) {
+    failed = true;
+    pending = false;
+    musicState('Error');
+    console.error('BGM playback failed:', {
+      name: error?.name,
+      message: error?.message,
+      mediaErrorCode: audio.error?.code,
+      mediaErrorMessage: audio.error?.message,
+      currentSrc: audio.currentSrc || audio.src,
+      networkState: audio.networkState,
+      readyState: audio.readyState
+    });
+    toast('音乐加载失败，请检查音频路径、网络和文件格式；点击可重试。');
+  }
+  async function toggleMusic() {
+    if (config.music.enabled !== true) {
+      toast('音乐尚未启用 ♡');
+      return;
+    }
+    // A second click can cancel playback even while the first play promise is pending.
+    if (!audio.paused) {
+      pending = false;
+      audio.pause();
+      musicState('Off');
+      return;
+    }
     if (pending) return;
-    if (!audio.paused) { audio.pause(); return; }
+    if (failed || audio.error) {
+      failed = false;
+      audio.load();
+    }
     pending = true;
-    try { if (!audio.getAttribute('src')) audio.src = config.music.src; await audio.play(); } catch { musicState(false); toast('音乐暂时无法播放，请检查音乐文件。'); } finally { pending = false; }
-  });
-  audio.addEventListener('play', () => musicState(true)); audio.addEventListener('pause', () => musicState(false));
-  audio.addEventListener('error', () => musicState(false));
+    musicState('Off');
+    try {
+      // Keep play() in the original click event: no fetch or timer before it.
+      await audio.play();
+      if (!audio.paused) musicState('On');
+    } catch (error) {
+      if (error.name === 'AbortError' && audio.paused) musicState('Off');
+      else reportMusicError(error);
+    } finally {
+      pending = false;
+      musicButtons.forEach(button => button.setAttribute('aria-busy', 'false'));
+    }
+  }
+  musicButtons.forEach(button => button.addEventListener('click', toggleMusic));
+  audio.addEventListener('playing', () => { failed = false; musicState('On'); });
+  audio.addEventListener('pause', () => musicState(failed ? 'Error' : 'Off'));
+  audio.addEventListener('ended', () => musicState('Off'));
+  audio.addEventListener('error', () => reportMusicError(audio.error));
+  musicState('Off');
 })();

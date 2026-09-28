@@ -29,8 +29,8 @@
     <nav id="social-links" aria-label="社交账号"></nav>
     <footer><span aria-hidden="true">♡</span> A little pink, a little magic.</footer>
   </main>
-  <div class="music-control"><span id="music-status">Music · Off</span><button id="music-toggle" type="button" aria-label="播放背景音乐" aria-pressed="false">♫</button></div>
-  <audio id="bgm" loop preload="none"></audio>
+  <div class="music-control"><button id="music-status" type="button" aria-label="播放背景音乐" aria-pressed="false">Music · Off</button><button id="music-toggle" type="button" aria-label="播放背景音乐" aria-pressed="false">♫</button></div>
+  <audio id="bgm" loop preload="metadata" playsinline></audio>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <noscript><p class="noscript">请启用 JavaScript 以显示社交链接和复制功能。</p></noscript>
 </body>
