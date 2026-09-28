@@ -6,7 +6,8 @@ window.SITE_CONFIG = {
   avatar: './assets/images/avatar.png.jpg',
   background: './assets/images/background.jpg.jpg',
   email: 'shimingfox@gmail.com',
-  qq: '2057466996',
+  qq1: '2057466996',
+  qq2: '2890574329',
   music: { src: './assets/audio/bgm.mp3', enabled: true, volume: 0.30 },
   sakura: { desktop: 18, mobile: 9 },
   socialLinks: [
@@ -15,7 +16,8 @@ window.SITE_CONFIG = {
     { name: 'YouTube', icon: 'youtube', username: '@mingshi-k1r', url: 'https://youtube.com/@mingshi-k1r?si=5YlRghc-mL6YyMxZ' },
     { name: 'Facebook', icon: 'facebook', username: 'Facebook 个人主页', url: 'https://www.facebook.com/profile.php?id=61593617921184' },
     { name: 'Bilibili', icon: 'bilibili', username: '哔哩哔哩 · Bilibili', url: 'https://b23.tv/ehpyF4v' },
-    { name: 'QQ', icon: 'qq', action: 'copy', field: 'qq' },
+    { name: 'QQ', icon: 'qq', action: 'copy', field: 'qq1' },
+    { name: 'QQ', icon: 'qq', action: 'copy', field: 'qq2' },
     { name: 'Email', icon: 'email', action: 'copy', field: 'email', mailto: true }
   ]
 };
