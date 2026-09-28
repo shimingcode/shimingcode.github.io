@@ -66,6 +66,7 @@ scripts/placeholders.ps1   初始占位图生成脚本，无需重复运行
 
 ## 更换图片
 
+- 作品页背景：替换 `assets/images/works-background.jpg`，仅用于作品展示页。当前图片为 1280 × 1720，采用 cover 铺满并优先显示人物上半身；以后可用同名图片替换。
 - 头像：替换 `assets/images/avatar.png.jpg`，建议正方形 PNG，至少 320 × 320。
 - 背景：替换 `assets/images/background.jpg.jpg`，建议横向 JPG，至少 1920 × 1080。以 cover 居中裁切，手机会裁掉左右两侧。
 - 文件名、大小写不变时无需改代码。换成其他格式时，在 config.js 更新路径；不要仅修改扩展名假装转换格式。
