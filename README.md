@@ -24,6 +24,7 @@ js/config.js               个人资料、账号、目录、音乐、樱花配�
 js/works-data.js           摄影作品元数据列表
 js/works.js                分类筛选、图库和 Lightbox
 js/main.js                 渲染与交互
+js/music.js                首页和作品页共用的音乐播放控制
 assets/images/avatar.png.jpg   头像占位图，直接替换
 assets/images/background.jpg.jpg 背景图，直接替换
 assets/images/works/      作品原图目录
@@ -112,7 +113,7 @@ scripts/placeholders.ps1   初始占位图生成脚本，无需重复运行
 
 ## 添加背景音乐
 
-音乐文件位于 `assets/audio/bgm.mp3`。配置在 `js/config.js` 的 `music`：`enabled: true` 开启，`volume` 设置默认音量。页面打开时会尝试播放；浏览器若阻止有声自动播放，页面会提示点击后播放。音乐按钮可暂停和恢复。音乐在首页播放。
+音乐文件位于 `assets/audio/bgm.mp3`。配置在 `js/config.js` 的 `music`：`enabled: true` 开启，`volume` 设置默认音量。首页和作品页共用 `js/music.js`，右下角音乐按钮可暂停和恢复。页面打开时会尝试播放；浏览器若阻止有声自动播放，页面会提示点击后播放。同一标签页切换页面时会记住播放位置和开关状态；完整页面跳转时会有短暂中断，浏览器仍可能要求再次点击才能播放。
 
 ## 调整视觉和动画
 
