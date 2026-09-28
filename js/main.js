@@ -187,3 +187,4 @@
   document.addEventListener('keydown', unlockMusic);
   if (config.music.enabled === true) toggleMusic({ automatic: true });
 })();
+
