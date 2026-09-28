@@ -3,6 +3,7 @@
   const config = window.SITE_CONFIG;
   const $ = (id) => document.getElementById(id);
   const icons = {
+    douyin: '<path d="M16 2h-4v13.5a2.5 2.5 0 1 1-2-2.45V9a6.5 6.5 0 1 0 6 6.5V8.1A9 9 0 0 0 22 10V6a6 6 0 0 1-6-4Z"/>',
     facebook: '<path d="M24 12a12 12 0 1 0-13.875 11.854V15.47H7.078V12h3.047V9.356c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953h-1.513c-1.491 0-1.956.925-1.956 1.874V12h3.328l-.532 3.47h-2.796v8.384A12.003 12.003 0 0 0 24 12Z"/>',
     bilibili: '<g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="15" rx="4"/><path d="m7 2 4 4m6-4-4 4M7 11v3m10-3v3m-8 3 3 1 3-1"/></g>',
     x: '<path d="M18.9 2H22l-6.8 7.8L23.2 22H17l-4.8-7.3L5.8 22H2.6l8.1-9.3L.8 2h6.4l4.4 6.7L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"/>',
