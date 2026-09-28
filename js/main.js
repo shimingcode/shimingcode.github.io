@@ -64,6 +64,7 @@
   let pending = false;
   let failed = false;
   let wantsMusic = false;
+  let reachedLoopBoundary = false;
   audio.loop = true;
   audio.volume = Math.min(1, Math.max(0, Number(config.music.volume) || 0.30));
   audio.preload = 'metadata';
@@ -129,7 +130,19 @@
   }
   musicButtons.forEach(button => button.addEventListener('click', toggleMusic));
   audio.addEventListener('playing', () => { failed = false; musicState('On'); });
-  audio.addEventListener('pause', () => musicState(failed ? 'Error' : 'Off'));
+  const rememberLoopBoundary = () => {
+    if (Number.isFinite(audio.duration) && audio.currentTime >= audio.duration - 0.75) reachedLoopBoundary = true;
+    else if (audio.currentTime > 1) reachedLoopBoundary = false;
+  };
+  audio.addEventListener('timeupdate', rememberLoopBoundary);
+  audio.addEventListener('seeking', rememberLoopBoundary);
+  audio.addEventListener('pause', () => {
+    // WebKit can rewind a native loop and emit pause without an ended event.
+    if (wantsMusic && !failed && audio.loop && reachedLoopBoundary && audio.currentTime < 0.1) {
+      reachedLoopBoundary = false;
+      audio.play().catch(reportMusicError);
+    } else musicState(failed ? 'Error' : 'Off');
+  });
   audio.addEventListener('ended', () => {
     // Some WebKit media backends stop at the loop boundary despite loop=true.
     if (wantsMusic && audio.loop) {
