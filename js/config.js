@@ -8,6 +8,9 @@ window.SITE_CONFIG = {
   email: 'shimingfox@gmail.com',
   qq1: '2057466996',
   qq2: '2890574329',
+  pages: [
+    { number: '01', title: '作品展示', subtitle: 'Photography & Works', icon: 'works', url: './works.html', enabled: true }
+  ],
   music: { src: './assets/audio/bgm.mp3', enabled: true, volume: 0.30 },
   sakura: { desktop: 18, mobile: 9 },
   socialLinks: [
@@ -22,5 +25,3 @@ window.SITE_CONFIG = {
     { name: 'Email', icon: 'email', action: 'copy', field: 'email', mailto: true }
   ]
 };
-
-
