@@ -126,4 +126,3 @@
   renderFilters(); renderGallery(); renderSakura();
   reduced.addEventListener('change', renderSakura); mobile.addEventListener('change', renderSakura);
 })();
-

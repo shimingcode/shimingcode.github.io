@@ -9,6 +9,21 @@ window.WORKS = [
     category: '摄影',
     width: 1280,
     height: 1707
+  },
+  {
+    id: 'photo-002',
+    image: './assets/images/works/photo-002.jpg',
+    title: '作品 02',
+    category: '批图',
+    width: 1280,
+    height: 1707
+  },
+  {
+    id: 'photo-003',
+    image: './assets/images/works/photo-003.jpg',
+    title: '作品 03',
+    category: '批图',
+    width: 1280,
+    height: 1707
   }
 ];
-
