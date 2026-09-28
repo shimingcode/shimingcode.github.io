@@ -1,6 +1,6 @@
 # Shiming · Social Links
 
-一个原生 HTML / CSS / JavaScript 静态主页，无构建步骤、无跟踪脚本、无外部字体依赖。头像和背景已设置。作品集目前没有照片素材；页面会显示空状态，添加照片后即可展示。
+一个原生 HTML / CSS / JavaScript 静态主页，无构建步骤、无跟踪脚本、无外部字体依赖。头像和背景已设置。作品页展示 `assets/images/works/` 中登记在 `js/works-data.js` 的照片。
 
 ## Windows 本地启动
 
@@ -83,14 +83,14 @@ scripts/placeholders.ps1   初始占位图生成脚本，无需重复运行
 
 ### 添加摄影作品
 
-1. 将照片放入 `assets/images/works/`，例如 `photo-001.jpg`。建议先缩小超高分辨率原图；画廊卡片使用 `thumbnail` 指向 WebP/AVIF 缩略图，点开后用 `image` 原图。
+1. 将照片放入 `assets/images/works/`，使用简单英文文件名和正确扩展名，例如 `photo-002.jpg`（不要把 `.jpg` 重复加到文件名）。建议先缩小超高分辨率原图；画廊卡片可用 `thumbnail` 指向 WebP/AVIF 缩略图，点开后用 `image` 原图。
 2. 在 `js/works-data.js` 的 `window.WORKS` 数组中加入一项：
 
 ```js
 {
-  id: 'photo-001',
-  image: './assets/images/works/photo-001.jpg',
-  thumbnail: './assets/images/works/thumbs/photo-001.webp',
+  id: 'photo-002',
+  image: './assets/images/works/photo-002.jpg',
+  thumbnail: './assets/images/works/thumbs/photo-002.webp',
   title: '作品标题',
   description: '简短介绍',
   date: '2026-09-28',
@@ -103,7 +103,9 @@ scripts/placeholders.ps1   初始占位图生成脚本，无需重复运行
 
 `thumbnail`、`description`、`date`、`category`、`tags`、`width`、`height` 都是可选字段。没有缩略图时卡片会用原图并延迟加载。用逗号分隔数组中不同作品。页面会从作品数据自动生成分类按钮，添加新 `category` 即增加筛选项。
 
-点击图片可打开大图预览；支持上/下一张、关闭、背景点击关闭、Escape、方向键和触摸左右滑动。照片卡片使用图片懒加载。仓库目前还没有作品照片，所以页面现在显示说明，不会伪造照片。
+`id` 每张作品唯一；`title` 和 `category` 建议填写，其余字段可选。页面按记录加载照片，不会自动扫描静态服务器目录。若路径无效，卡片会显示“图片加载失败”，并在浏览器 Console 输出失败路径。当前已登记的照片为 `photo-001.jpg`。
+
+点击图片可打开大图预览；支持上/下一张、关闭、背景点击关闭、Escape、方向键和触摸左右滑动。照片卡片使用图片懒加载。
 
 静态图库不提供在线上传。未来若需登录后上传与发布，需增加带身份验证和持久化存储的后端（例如对象存储与受控 API），不要把凭据放进静态网页。
 

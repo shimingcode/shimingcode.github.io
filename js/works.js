@@ -40,9 +40,27 @@
       const card = document.createElement('button'); card.type = 'button'; card.className = 'work-card';
       card.setAttribute('aria-label', `查看作品：${work.title || '未命名作品'}`);
       const image = document.createElement('img');
-      image.src = work.thumbnail || work.image; image.alt = work.title || '摄影作品';
+      const primaryImage = work.thumbnail || work.image;
+      image.alt = work.title || '摄影作品';
       image.loading = 'lazy'; image.decoding = 'async';
       if (Number(work.width) > 0 && Number(work.height) > 0) card.style.setProperty('--work-ratio', `${work.width} / ${work.height}`);
+      image.addEventListener('error', () => {
+        const failedPath = image.currentSrc || image.src || primaryImage;
+        if (work.thumbnail && primaryImage !== work.image && image.dataset.triedOriginal !== 'true') {
+          console.error('作品缩略图加载失败，改用原图:', failedPath);
+          image.dataset.triedOriginal = 'true';
+          image.src = work.image;
+          return;
+        }
+        console.error('作品图片加载失败:', failedPath);
+        const placeholder = document.createElement('span');
+        placeholder.className = 'work-image-error';
+        placeholder.setAttribute('role', 'img');
+        placeholder.setAttribute('aria-label', `图片加载失败：${work.title || failedPath}`);
+        placeholder.innerHTML = '<span aria-hidden="true">☹</span><strong>图片加载失败</strong>';
+        image.replaceWith(placeholder);
+      });
+      image.src = primaryImage;
       const copy = document.createElement('span'); copy.className = 'work-card-copy';
       const heading = document.createElement('span'); heading.className = 'work-card-title'; heading.textContent = work.title || '未命名作品'; copy.append(heading);
       if (work.description) { const description = document.createElement('span'); description.className = 'work-card-description'; description.textContent = work.description; copy.append(description); }
@@ -58,11 +76,19 @@
     currentIndex = index;
     const work = works[currentIndex];
     if (!work) return;
+    preview.classList.remove('image-load-failed');
     preview.src = work.image; preview.alt = work.title || '摄影作品';
     title.textContent = work.title || '';
     details.textContent = [work.date, work.category, work.description, ...(work.tags || []).map(tag => `#${tag}`)].filter(Boolean).join(' · ');
     dialog.showModal();
   }
+
+  preview.addEventListener('error', () => {
+    const failedPath = preview.currentSrc || preview.src;
+    console.error('作品预览图片加载失败:', failedPath);
+    preview.classList.add('image-load-failed');
+    details.textContent = '图片加载失败，请检查作品数据中的图片路径。';
+  });
   function move(delta) {
     const indices = visibleWorks().map(work => work.sourceIndex);
     if (!indices.length) return;
@@ -100,3 +126,4 @@
   renderFilters(); renderGallery(); renderSakura();
   reduced.addEventListener('change', renderSakura); mobile.addEventListener('change', renderSakura);
 })();
+
