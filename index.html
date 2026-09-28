@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shiming</title>
+  <meta name="description" content="Shiming's personal links.">
+  <meta property="og:title" content="Shiming">
+  <meta property="og:description" content="Shiming's personal links.">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#FFB7D5">
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./css/style.css">
+  <script src="./js/config.js" defer></script>
+  <script src="./js/main.js" defer></script>
+</head>
+<body>
+  <div class="background" aria-hidden="true"></div>
+  <div id="sakura" aria-hidden="true"></div>
+  <main class="glass-panel">
+    <div class="eyebrow"><span></span> A LITTLE CORNER OF THE INTERNET <span></span></div>
+    <header class="profile">
+      <div class="avatar-wrap"><img id="avatar" src="./assets/images/avatar.png" alt="Shiming 的头像" width="112" height="112"><span class="avatar-sparkle" aria-hidden="true">✧</span></div>
+      <h1 id="name">Shiming</h1>
+      <p id="bio" class="bio">喜欢狐狐</p>
+      <p id="status" class="status">♡ Welcome to my little world ♡</p>
+    </header>
+    <div class="section-label"><span>FIND ME HERE</span><span aria-hidden="true">✧</span></div>
+    <nav id="social-links" aria-label="社交账号"></nav>
+    <footer><span aria-hidden="true">♡</span> A little pink, a little magic.</footer>
+  </main>
+  <div class="music-control"><span id="music-status">Music · Off</span><button id="music-toggle" type="button" aria-label="播放背景音乐" aria-pressed="false">♫</button></div>
+  <audio id="bgm" loop preload="none"></audio>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <noscript><p class="noscript">请启用 JavaScript 以显示社交链接和复制功能。</p></noscript>
+</body>
+</html>
