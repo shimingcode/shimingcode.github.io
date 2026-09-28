@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#FFB7D5">
+  <meta name="description" content="Shiming 的摄影与作品展示。">
+  <title>作品展示 · Shiming</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="./css/works.css">
+  <script src="./js/works-data.js" defer></script>
+  <script src="./js/works.js" defer></script>
+</head>
+<body class="works-page">
+  <div class="background" aria-hidden="true"></div>
+  <div id="sakura" aria-hidden="true"></div>
+  <main class="works-shell">
+    <a class="back-home" href="./index.html"><span aria-hidden="true">←</span> 返回首页</a>
+    <header class="works-heading">
+      <span class="works-kicker">01 · A LITTLE GALLERY</span>
+      <h1>作品展示</h1>
+      <p>Photography &amp; Works</p>
+    </header>
+    <nav id="work-filters" class="work-filters" aria-label="作品分类筛选"></nav>
+    <section id="work-gallery" class="work-gallery" aria-label="摄影作品" aria-live="polite"></section>
+    <footer class="works-footer"><a href="./index.html">Shiming</a><span aria-hidden="true">♡</span> A little pink, a little magic.</footer>
+  </main>
+
+  <dialog id="lightbox" class="lightbox" aria-label="作品大图预览">
+    <button class="lightbox-close" type="button" aria-label="关闭预览">×</button>
+    <button class="lightbox-nav lightbox-prev" type="button" aria-label="上一张">‹</button>
+    <figure class="lightbox-figure"><img id="lightbox-image" alt=""><figcaption><strong id="lightbox-title"></strong><span id="lightbox-details"></span></figcaption></figure>
+    <button class="lightbox-nav lightbox-next" type="button" aria-label="下一张">›</button>
+  </dialog>
+</body>
+</html>
