@@ -73,7 +73,7 @@ scripts/placeholders.ps1   初始占位图生成脚本，无需重复运行
 
 ## 新增目录页和作品展示
 
-首页目录由 `js/config.js` 中的 `pages` 数组驱动。当前作品展示入口已经启用。新增实际页面后，按需添加类似配置：
+首页右上角的页面入口由 `js/config.js` 中的 `pages` 数组驱动。当前作品展示入口已经启用。新增实际页面后，按需添加类似配置：
 
 ```js
 { number: '02', title: '关于我', subtitle: 'About Me', icon: 'link', url: './about.html', enabled: true }
