@@ -2,6 +2,8 @@
   'use strict';
   const config = window.SITE_CONFIG;
   const $ = (id) => document.getElementById(id);
+  const mobile = matchMedia('(max-width: 600px)');
+  const background = document.querySelector('.background');
   const icons = {
     works: '<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="m21 15-5-5L5 19"/>',
     douyin: '<path d="M16 2h-4v13.5a2.5 2.5 0 1 1-2-2.45V9a6.5 6.5 0 1 0 6 6.5V8.1A9 9 0 0 0 22 10V6a6 6 0 0 1-6-4Z"/>',
@@ -18,10 +20,20 @@
   $('bio').textContent = config.bio;
   $('status').textContent = config.status;
   $('avatar').src = config.avatar;
+  const avatarSource = $('avatar-webp');
+  if (config.avatarWebp) avatarSource.srcset = config.avatarWebp;
+  else avatarSource.removeAttribute('srcset');
   $('avatar').alt = `${config.name} 的头像`;
   document.title = config.name;
   document.querySelector('[property="og:title"]').content = config.name;
-  document.querySelector('.background').style.backgroundImage = `url(${JSON.stringify(config.background)})`;
+  function updateBackground() {
+    const webp = mobile.matches ? config.backgroundMobileWebp || config.backgroundWebp : config.backgroundWebp;
+    const fallback = `url(${JSON.stringify(config.background)})`;
+    const optimized = `image-set(url(${JSON.stringify(webp)}) type("image/webp"), ${fallback} type("image/jpeg"))`;
+    background.style.backgroundImage = webp && CSS.supports('background-image', optimized) ? optimized : fallback;
+  }
+  updateBackground();
+  mobile.addEventListener('change', updateBackground);
   let toastTimer;
   function toast(message) { $('toast').textContent = message; $('toast').classList.add('visible'); clearTimeout(toastTimer); toastTimer = setTimeout(() => $('toast').classList.remove('visible'), 3500); }
   async function copy(value, label) {
@@ -37,6 +49,7 @@
     }
     toast(`已复制 ${label}：${value}`);
   }
+  const socialCards = document.createDocumentFragment();
   config.socialLinks.forEach((item, index) => {
     const value = item.field ? String(config[item.field] ?? '') : (item.username || item.url || '');
     const row = document.createElement('div'); row.className = 'card-row'; row.style.setProperty('--index', index);
@@ -51,8 +64,9 @@
     const arrow = document.createElement('span'); arrow.className = 'card-arrow'; arrow.setAttribute('aria-hidden', 'true'); arrow.textContent = item.action === 'copy' ? '⧉' : '↗';
     card.append(icon, text, arrow); row.append(card);
     if (item.mailto) { const mail = document.createElement('a'); mail.className = 'mail-link'; mail.href = `mailto:${value}`; mail.setAttribute('aria-label', `发送邮件至 ${value}`); mail.innerHTML = '<span aria-hidden="true">↗</span><span>发邮件</span>'; row.append(mail); }
-    $('social-links').append(row);
+    socialCards.append(row);
   });
+  $('social-links').append(socialCards);
   (config.pages || []).filter(page => page.enabled).forEach((page, index) => {
     const link = document.createElement('a');
     link.className = 'page-card'; link.href = page.url;
@@ -68,13 +82,16 @@
     const arrow = document.createElement('span'); arrow.className = 'page-card-arrow'; arrow.setAttribute('aria-hidden', 'true'); arrow.textContent = '↗';
     link.append(symbol, copy, arrow); $('page-navigation').append(link);
   });
-    const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  const mobile = matchMedia('(max-width: 600px)');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const sakura = $('sakura');
   function petals() {
-    $('sakura').replaceChildren(); if (reduced.matches) return;
-    const count = Math.min(60, Math.max(0, mobile.matches ? config.sakura.mobile : config.sakura.desktop));
-    for (let i = 0; i < count; i++) { const petal = document.createElement('i'); petal.className = 'petal'; petal.style.cssText = `left:${Math.random()*100}%;--size:${8+Math.random()*9}px;--duration:${15+Math.random()*15}s;--delay:-${Math.random()*30}s;--drift:${Math.random()*180-90}px;--rotation:${180+Math.random()*540}deg`; $('sakura').append(petal); }
+    const fragment = document.createDocumentFragment();
+    const count = reduced.matches ? 0 : Math.min(mobile.matches ? 12 : 24, Math.max(0, mobile.matches ? config.sakura.mobile : config.sakura.desktop));
+    for (let i = 0; i < count; i++) { const petal = document.createElement('i'); petal.className = 'petal'; petal.style.cssText = `left:${Math.random()*100}%;--size:${8+Math.random()*9}px;--duration:${15+Math.random()*15}s;--delay:-${Math.random()*30}s;--drift:${Math.random()*180-90}px;--rotation:${180+Math.random()*540}deg`; fragment.append(petal); }
+    sakura.replaceChildren(fragment);
   }
   petals(); reduced.addEventListener('change', petals); mobile.addEventListener('change', petals);
+  const syncVisibility = () => document.documentElement.classList.toggle('page-hidden', document.hidden);
+  document.addEventListener('visibilitychange', syncVisibility); syncVisibility();
 })();
 

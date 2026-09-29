@@ -5,6 +5,7 @@ window.WORKS = [
   {
     id: 'photo-001',
     image: './assets/images/works/photo-001.jpg',
+    thumbnail: './assets/images/works/thumbs/photo-001.webp',
     title: '作品 01',
     category: '摄影',
     width: 1280,
@@ -13,6 +14,7 @@ window.WORKS = [
   {
     id: 'photo-002',
     image: './assets/images/works/photo-002.jpg',
+    thumbnail: './assets/images/works/thumbs/photo-002.webp',
     title: '作品 02',
     category: '批图',
     width: 1280,
@@ -21,9 +23,11 @@ window.WORKS = [
   {
     id: 'photo-003',
     image: './assets/images/works/photo-003.jpg',
+    thumbnail: './assets/images/works/thumbs/photo-003.webp',
     title: '作品 03',
     category: '批图',
     width: 1280,
     height: 1707
   }
 ];
+

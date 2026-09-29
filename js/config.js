@@ -3,15 +3,18 @@ window.SITE_CONFIG = {
   name: 'Shiming',
   bio: '喜欢狐狐',
   status: '♡ Welcome to my little world ♡',
-  avatar: './assets/images/avatar.png.jpg',
+  avatar: './assets/images/avatar-small.jpg',
+  avatarWebp: './assets/images/avatar.webp',
   background: './assets/images/background.jpg.jpg',
+  backgroundWebp: './assets/images/background.webp',
+  backgroundMobileWebp: './assets/images/background-mobile.webp',
   email: 'shimingfox@gmail.com',
   qq1: '2057466996',
   qq2: '2890574329',
   pages: [
     { number: '01', title: '作品展示', subtitle: 'Photography & Works', icon: 'works', url: './works.html', enabled: true }
   ],
-  music: { src: './assets/audio/bgm.mp3', enabled: true, volume: 0.30 },
+  music: { src: './assets/audio/bgm-web.mp3', enabled: true, volume: 0.25 },
   sakura: { desktop: 18, mobile: 9 },
   socialLinks: [
     { name: 'X / Twitter', icon: 'x', username: '@mingshixsq', url: 'https://x.com/mingshixsq?s=11' },
@@ -25,5 +28,6 @@ window.SITE_CONFIG = {
     { name: 'Email', icon: 'email', action: 'copy', field: 'email', mailto: true }
   ]
 };
+
 
 

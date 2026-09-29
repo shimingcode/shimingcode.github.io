@@ -36,28 +36,26 @@
       empty.innerHTML = '<span class="works-empty-icon" aria-hidden="true">✧</span><strong>作品正在准备中</strong><p>把照片放入 <code>assets/images/works/</code>，再在 <code>js/works-data.js</code> 添加作品信息，这里就会自动展示。</p>';
       gallery.append(empty); return;
     }
-    items.forEach(work => {
+    const fragment = document.createDocumentFragment();
+    items.forEach((work, index) => {
       const card = document.createElement('button'); card.type = 'button'; card.className = 'work-card';
       card.setAttribute('aria-label', `查看作品：${work.title || '未命名作品'}`);
       const image = document.createElement('img');
-      const primaryImage = work.thumbnail || work.image;
+      const originalUrl = new URL(work.image, document.baseURI);
+      const filename = originalUrl.pathname.split('/').pop().replace(/\.[^.]+$/, '.webp');
+      const primaryImage = work.thumbnail || new URL(`thumbs/${filename}`, originalUrl).href;
       image.alt = work.title || '摄影作品';
-      image.loading = 'lazy'; image.decoding = 'async';
+      image.loading = index < (matchMedia('(max-width: 700px)').matches ? 2 : 4) ? 'eager' : 'lazy'; image.decoding = 'async';
+      if (Number(work.width) > 0 && Number(work.height) > 0) { image.width = Number(work.width); image.height = Number(work.height); }
       if (Number(work.width) > 0 && Number(work.height) > 0) card.style.setProperty('--work-ratio', `${work.width} / ${work.height}`);
       image.addEventListener('error', () => {
         const failedPath = image.currentSrc || image.src || primaryImage;
-        if (work.thumbnail && primaryImage !== work.image && image.dataset.triedOriginal !== 'true') {
-          console.error('作品缩略图加载失败，改用原图:', failedPath);
-          image.dataset.triedOriginal = 'true';
-          image.src = work.image;
-          return;
-        }
-        console.error('作品图片加载失败:', failedPath);
+        console.warn('作品缩略图加载失败，请生成缩略图；点击作品仍可查看原图:', failedPath);
         const placeholder = document.createElement('span');
         placeholder.className = 'work-image-error';
         placeholder.setAttribute('role', 'img');
         placeholder.setAttribute('aria-label', `图片加载失败：${work.title || failedPath}`);
-        placeholder.innerHTML = '<span aria-hidden="true">☹</span><strong>图片加载失败</strong>';
+        placeholder.innerHTML = '<span aria-hidden="true">✧</span><strong>预览图暂不可用，点击查看原图</strong>';
         image.replaceWith(placeholder);
       });
       image.src = primaryImage;
@@ -68,8 +66,9 @@
       if (work.date) { const date = document.createElement('time'); date.dateTime = work.date; date.textContent = work.date; meta.append(date); }
       if (work.category) { const category = document.createElement('span'); category.className = 'work-tag'; category.textContent = work.category; meta.append(category); }
       if (meta.childElementCount) copy.append(meta);
-      card.append(image, copy); card.addEventListener('click', () => openLightbox(work.sourceIndex)); gallery.append(card);
+      card.append(image, copy); card.addEventListener('click', () => openLightbox(work.sourceIndex)); fragment.append(card);
     });
+    gallery.append(fragment);
   }
 
   function openLightbox(index) {
@@ -115,14 +114,18 @@
   const mobile = matchMedia('(max-width: 600px)');
   const sakura = document.getElementById('sakura');
   function renderSakura() {
-    sakura.replaceChildren(); if (reduced.matches) return;
-    const count = mobile.matches ? 8 : 15;
+    const fragment = document.createDocumentFragment();
+    const count = reduced.matches ? 0 : mobile.matches ? 8 : 15;
     for (let i = 0; i < count; i++) {
       const petal = document.createElement('i'); petal.className = 'petal';
       petal.style.cssText = `left:${Math.random()*100}%;--size:${8+Math.random()*8}px;--duration:${17+Math.random()*14}s;--delay:-${Math.random()*30}s;--drift:${Math.random()*160-80}px;--rotation:${180+Math.random()*540}deg`;
-      sakura.append(petal);
+      fragment.append(petal);
     }
+    sakura.replaceChildren(fragment);
   }
   renderFilters(); renderGallery(); renderSakura();
   reduced.addEventListener('change', renderSakura); mobile.addEventListener('change', renderSakura);
+  const syncVisibility = () => document.documentElement.classList.toggle('page-hidden', document.hidden);
+  document.addEventListener('visibilitychange', syncVisibility); syncVisibility();
 })();
+
