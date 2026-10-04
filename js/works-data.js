@@ -36,7 +36,7 @@ window.WORKS = [
     title: '作品 04',
     category: '摄影',
     width: 1280,
-    height: 1707
+    height: 960
   }
 ];
 
