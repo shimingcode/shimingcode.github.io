@@ -28,6 +28,15 @@ window.WORKS = [
     category: '批图',
     width: 1280,
     height: 1707
+  },
+  {
+    id: 'photo-004',
+    image: './assets/images/works/photo-004.jpg',
+    thumbnail: './assets/images/works/thumbs/photo-004.webp',
+    title: '作品 04',
+    category: '摄影',
+    width: 1280,
+    height: 1707
   }
 ];
 
