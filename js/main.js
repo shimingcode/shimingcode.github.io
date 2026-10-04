@@ -5,6 +5,7 @@
   const mobile = matchMedia('(max-width: 600px)');
   const background = document.querySelector('.background');
   const icons = {
+    reddit: '<g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="15" rx="9" ry="6"/><path d="m12 9 1.5-6 4.5 1M4.2 11.5a2.5 2.5 0 1 0-1 4M19.8 11.5a2.5 2.5 0 1 1 1 4M8 18c2 1.5 6 1.5 8 0"/><circle cx="20" cy="4" r="2"/></g><circle cx="8.5" cy="14.5" r="1.5"/><circle cx="15.5" cy="14.5" r="1.5"/>',
     works: '<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="m21 15-5-5L5 19"/>',
     douyin: '<path d="M16 2h-4v13.5a2.5 2.5 0 1 1-2-2.45V9a6.5 6.5 0 1 0 6 6.5V8.1A9 9 0 0 0 22 10V6a6 6 0 0 1-6-4Z"/>',
     facebook: '<path d="M24 12a12 12 0 1 0-13.875 11.854V15.47H7.078V12h3.047V9.356c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953h-1.513c-1.491 0-1.956.925-1.956 1.874V12h3.328l-.532 3.47h-2.796v8.384A12.003 12.003 0 0 0 24 12Z"/>',

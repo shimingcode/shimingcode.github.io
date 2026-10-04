@@ -50,6 +50,7 @@ scripts/placeholders.ps1   初始占位图生成脚本，无需重复运行
 | X / Twitter | `socialLinks` 中对应项的 `url` 和 `username` |
 | GitHub | `socialLinks` 中对应项的 `url` 和 `username` |
 | Telegram | `socialLinks` 中对应项的 `url` 和 `username`，当前为 `@shimingfox` |
+| Reddit | `socialLinks` 中对应项的 `url` 和 `username`，当前为 `u/shiming1234` |
 | YouTube | `socialLinks` 中对应项的 `url` 和 `username` |
 
 昵称同时更新浏览器标题和动态 Open Graph 标题。更名时也请更新 `index.html` 中的静态标题和 Open Graph 标题，以便不执行 JavaScript 的搜索引擎读取。SEO 描述不包含 QQ 和邮箱，但账号本身仍是主页上的公开信息。
@@ -62,7 +63,7 @@ scripts/placeholders.ps1   初始占位图生成脚本，无需重复运行
 { name: 'Bilibili', icon: 'link', username: '你的用户名', url: 'https://space.bilibili.com/你的UID' },
 ```
 
-把示例地址换成自己的真实地址。Steam、Discord、Telegram 同样添加 `name`、`username`、`url` 即可。内置 `icon` 有 `x`、`github`、`telegram`、`youtube`、`facebook`、`bilibili`、`douyin`、`qq`、`email`、`link`；未知值使用通用链接图标。增加专属 SVG 时可扩展 main.js 的 icons 对象，但增加平台本身无需改 HTML。
+把示例地址换成自己的真实地址。Steam、Discord、Telegram 同样添加 `name`、`username`、`url` 即可。内置 `icon` 有 `x`、`github`、`telegram`、`reddit`、`youtube`、`facebook`、`bilibili`、`douyin`、`qq`、`email`、`link`；未知值使用通用链接图标。增加专属 SVG 时可扩展 main.js 的 icons 对象，但增加平台本身无需改 HTML。
 
 删除平台时删除数组里对应的整个 `{ ... }` 项，调整顺序则移动该项。
 
