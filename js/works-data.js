@@ -17,8 +17,8 @@ window.WORKS = [
     thumbnail: './assets/images/works/thumbs/photo-002.webp',
     title: '作品 02',
     category: '批图',
-    width: 1280,
-    height: 1707
+    width: 993,
+    height: 1584
   },
   {
     id: 'photo-003',
@@ -26,8 +26,8 @@ window.WORKS = [
     thumbnail: './assets/images/works/thumbs/photo-003.webp',
     title: '作品 03',
     category: '批图',
-    width: 1280,
-    height: 1707
+    width: 993,
+    height: 1584
   },
   {
     id: 'photo-004',

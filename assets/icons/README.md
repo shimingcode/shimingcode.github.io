@@ -1,2 +1,2 @@
-平台 SVG 内置在 js/main.js 的 icons 对象中，不依赖第三方网络请求。
-新增平台可直接在 config.js 使用 icon: 'link' 通用图标。
+平台图标保存在 js/icons.js，由 js/links.js 渲染，所有页面共享同一套源码。
+SVG 只来自本地受控源码；账号名称和描述用 textContent 渲染。

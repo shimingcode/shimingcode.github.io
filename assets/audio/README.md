@@ -1,3 +1,4 @@
-把你拥有使用权的音乐保存为此目录下的 bgm.mp3。
-然后在 js/config.js 将 music.enabled 改成 true。默认不加载音乐，也不会自动播放。
-此目录不包含伪造的空 MP3；没有音乐时按钮会显示友好提示。
+在 js/config.js 的 music.playlist 中配置自己拥有使用权的音频。
+网站只在用户点击播放后加载音频，默认使用 bgm-web.mp3。
+原始 MP3 和 original-upload 目录保持存档，不重复作为歌单曲目。
+同一首歌的压缩与原始版本不是两首不同歌曲。NCM 不直接用于网页播放。

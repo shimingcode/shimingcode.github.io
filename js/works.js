@@ -18,7 +18,7 @@
       const button = document.createElement('button');
       button.type = 'button'; button.className = 'filter-button'; button.textContent = category;
       button.setAttribute('aria-pressed', String(selected === category));
-      button.addEventListener('click', () => { selected = category; renderFilters(); renderGallery(); });
+      button.addEventListener('click', () => { selected = category; for (const sibling of filters.children) sibling.setAttribute('aria-pressed', String(sibling === button)); renderGallery(); });
       filters.append(button);
     });
   }
@@ -33,7 +33,7 @@
     const items = visibleWorks();
     if (!items.length) {
       const empty = document.createElement('div'); empty.className = 'works-empty';
-      empty.innerHTML = '<span class="works-empty-icon" aria-hidden="true">✧</span><strong>作品正在准备中</strong><p>把照片放入 <code>assets/images/works/</code>，再在 <code>js/works-data.js</code> 添加作品信息，这里就会自动展示。</p>';
+      empty.innerHTML = '<span class="works-empty-icon" aria-hidden="true">✧</span><strong>作品正在准备中</strong><p>新的作品正在整理中，稍后再来看看吧。</p>';
       gallery.append(empty); return;
     }
     const fragment = document.createDocumentFragment();
@@ -79,7 +79,7 @@
     preview.src = work.image; preview.alt = work.title || '摄影作品';
     title.textContent = work.title || '';
     details.textContent = [work.date, work.category, work.description, ...(work.tags || []).map(tag => `#${tag}`)].filter(Boolean).join(' · ');
-    dialog.showModal();
+    if (!dialog.open) dialog.showModal();
   }
 
   preview.addEventListener('error', () => {
@@ -110,22 +110,5 @@
     if (Math.abs(delta) > 48) move(delta < 0 ? 1 : -1);
   }, { passive: true });
 
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  const mobile = matchMedia('(max-width: 600px)');
-  const sakura = document.getElementById('sakura');
-  function renderSakura() {
-    const fragment = document.createDocumentFragment();
-    const count = reduced.matches ? 0 : mobile.matches ? 8 : 15;
-    for (let i = 0; i < count; i++) {
-      const petal = document.createElement('i'); petal.className = 'petal';
-      petal.style.cssText = `left:${Math.random()*100}%;--size:${8+Math.random()*8}px;--duration:${17+Math.random()*14}s;--delay:-${Math.random()*30}s;--drift:${Math.random()*160-80}px;--rotation:${180+Math.random()*540}deg`;
-      fragment.append(petal);
-    }
-    sakura.replaceChildren(fragment);
-  }
-  renderFilters(); renderGallery(); renderSakura();
-  reduced.addEventListener('change', renderSakura); mobile.addEventListener('change', renderSakura);
-  const syncVisibility = () => document.documentElement.classList.toggle('page-hidden', document.hidden);
-  document.addEventListener('visibilitychange', syncVisibility); syncVisibility();
+  renderFilters(); renderGallery();
 })();
-

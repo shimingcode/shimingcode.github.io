@@ -1,0 +1,13 @@
+{
+  "name": "shiming-personal-website",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Framework-free personal website, published directly by GitHub Pages.",
+  "scripts": {
+    "test": "node --test tests/static.test.mjs",
+    "build": "node scripts/build.mjs",
+    "test:browser": "node tests/browser.cjs",
+    "serve": "python -m http.server 4173 --bind 127.0.0.1"
+  },
+  "devDependencies": { "playwright": "1.62.1" }
+}

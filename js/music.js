@@ -1,136 +1,95 @@
 (() => {
   'use strict';
-  const settings = window.SITE_CONFIG?.music;
+  const { el, url, storage } = window.Site;
+  const settings = window.SITE_CONFIG.music || {};
+  const tracks = (settings.playlist?.length ? settings.playlist : [{title:'背景音乐',src:settings.src}]).filter(track => url(track.src));
+  const root = document.getElementById('music-root');
   const audio = document.getElementById('bgm');
+  if (!root || !audio || settings.enabled === false || !tracks.length) return;
+  let index = Math.max(0, Math.min(tracks.length - 1, Number(storage.get('musicTrack','0')) || 0));
+  index = Math.floor(index);
+  let request = 0, pending = false, wanted = false, failed = false;
+  const savedVolume = Number(storage.get('volume', String(settings.volume ?? .25)));
+  audio.volume = Number.isFinite(savedVolume) ? Math.max(0, Math.min(1, savedVolume)) : .25;
+  audio.loop = tracks.length === 1;
+  root.className = 'music-player glass'; root.setAttribute('aria-label','音乐播放器');
+  root.innerHTML = `<button id="music-toggle" class="music-play" type="button" aria-label="播放音乐" aria-pressed="false">▶</button>
+    <details class="music-disclosure"><summary aria-label="展开音乐播放器"><strong id="music-title"></strong><small id="music-state" role="status" aria-live="polite">点击播放 · 展开歌单</small></summary>
+    <div class="music-panel"><label for="music-track">播放列表<select id="music-track"></select></label>
+    <label for="music-volume">音量 <output id="volume-value"></output><input id="music-volume" type="range" min="0" max="1" step="0.05"></label>
+    <div class="music-actions"><button id="music-prev" type="button">上一首</button><button id="music-next" type="button">下一首</button></div>
+    <p id="music-info"></p><p>手动播放，音频按需加载。手机音量也可使用设备按键调整。</p></div></details>`;
   const button = document.getElementById('music-toggle');
-  const label = document.getElementById('music-status');
-  const notice = document.getElementById('toast');
-  if (!settings || !audio || !button || !label) return;
-  const controls = [button, label];
-  const preferenceKey = 'shiming:musicPreference';
-  const positionKey = `shiming:music:${new URL(settings.src, document.baseURI).href}`;
-  let preference = null, savedTime = 0;
-  try { preference = localStorage.getItem(preferenceKey); } catch { /* Private mode may restrict storage. */ }
-  try { savedTime = JSON.parse(sessionStorage.getItem(positionKey))?.time || 0; } catch { /* Optional resume position. */ }
-  let pending = false, failed = false, wantsMusic = false, nearEnd = false;
-  let attempt = 0, armed = false, toastTimer;
-  const gestures = ['pointerdown', 'touchstart', 'click', 'keydown'];
-  audio.loop = true;
-  const volume = Number(settings.volume);
-  audio.volume = Number.isFinite(volume) ? Math.min(1, Math.max(0, volume)) : 0.25;
-  audio.preload = 'none';
-
-  function state(value) {
-    const on = value === 'On';
-    label.textContent = `Music · ${value}`;
-    for (const control of controls) {
-      control.setAttribute('aria-pressed', String(on));
-      control.setAttribute('aria-busy', String(pending));
-      control.setAttribute('aria-label', value === 'Error' ? '音乐加载失败，点击重试' : on ? '暂停背景音乐' : '播放背景音乐');
-    }
+  const state = document.getElementById('music-state');
+  const title = document.getElementById('music-title');
+  const select = document.getElementById('music-track');
+  const volume = document.getElementById('music-volume');
+  const output = document.getElementById('volume-value');
+  const info = document.getElementById('music-info');
+  tracks.forEach((track, i) => { const option = el('option','',track.title || `曲目 ${i+1}`); option.value=String(i); select.append(option); });
+  for (const id of ['music-prev','music-next']) document.getElementById(id).disabled = tracks.length < 2;
+  function update(message) {
+    const playing = !audio.paused && !failed;
+    button.textContent = playing || pending ? 'Ⅱ' : '▶';
+    button.setAttribute('aria-label', playing || pending ? '暂停音乐' : failed ? '音乐加载失败，点击重试' : '播放音乐');
+    button.setAttribute('aria-pressed', String(playing)); button.setAttribute('aria-busy', String(pending));
+    state.textContent = message || (failed ? '加载失败 · 点击重试' : pending ? '加载中…' : playing ? '正在播放 · 展开歌单' : '已暂停 · 点击播放');
   }
-  function toast(message) {
-    if (!notice) return;
-    notice.textContent = message; notice.classList.add('visible');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => notice.classList.remove('visible'), 3500);
+  function trackInfo() {
+    select.value = String(index); title.textContent = tracks[index].title || '背景音乐';
+    info.textContent = `${tracks[index].artist || ''}${tracks.length === 1 ? ' · 当前有 1 首歌曲' : ` · ${index+1} / ${tracks.length}`}`;
   }
-  function remember(value) {
-    preference = value;
-    try { localStorage.setItem(preferenceKey, value); } catch { /* Controls work without storage. */ }
-  }
-  function disarm() {
-    for (const event of gestures) document.removeEventListener(event, unlock, true);
-    armed = false;
-  }
-  function arm() {
-    if (armed || preference === 'off') return;
-    armed = true;
-    for (const event of gestures) document.addEventListener(event, unlock, { capture: true, passive: true });
-  }
-  function unlock(event) {
-    if (pending || preference === 'off' || event.target.closest?.('#music-toggle, #music-status')) return;
-    if (event.type === 'keydown' && (event.repeat || ['Shift', 'Control', 'Alt', 'Meta', 'Escape'].includes(event.key))) return;
-    // play() stays inside the trusted pointer/touch/click/key event, including on Safari.
-    play();
-  }
-  function error(error) {
-    if (error?.name === 'NotAllowedError') {
-      wantsMusic = false;
-      state('Off'); arm();
-      return;
-    }
-    if (error?.name === 'AbortError' && audio.paused) { state('Off'); return; }
-    if (!failed) console.error('BGM playback failed:', {
-      name: error?.name, message: error?.message,
-      mediaErrorCode: audio.error?.code, currentSrc: audio.currentSrc || audio.src
-    });
-    failed = true; wantsMusic = false;
-    state('Error');
-    toast('音乐加载失败，请点击重试。');
+  function volumeInfo() { volume.value = String(audio.volume); output.textContent = `${Math.round(audio.volume*100)}%`; }
+  function fail(message) { pending=false; wanted=false; failed=true; update(message || '加载失败 · 点击重试'); }
+  function stop() { ++request; wanted=false; pending=false; audio.pause(); update(); }
+  function saveTime() {
+    if (!audio.hasAttribute('src') || !audio.readyState) return;
+    try { sessionStorage.setItem(`shiming:position:${audio.src}`, String(audio.currentTime)); } catch { /* Optional. */ }
   }
   async function play() {
-    if (settings.enabled !== true || pending || !audio.paused) return;
-    const currentAttempt = ++attempt;
-    pending = true; wantsMusic = true;
-    state('Off');
-    // No audio request before this point. No fetch, await, or timer precedes play().
-    if (!audio.hasAttribute('src')) audio.src = settings.src;
-    if (failed || audio.error) { failed = false; audio.load(); }
+    const attempt = ++request; wanted=true; pending=true; failed=false; update();
+    const source = url(tracks[index].src);
+    if (audio.getAttribute('src') !== source) audio.src = source;
+    else if (audio.error) audio.load();
     try {
+      // Called directly from a playback gesture; never rely on audible autoplay.
       await audio.play();
-      if (currentAttempt !== attempt) return;
-      if (!audio.paused) { failed = false; state('On'); disarm(); }
-    } catch (reason) {
-      if (currentAttempt === attempt) error(reason);
-    } finally {
-      if (currentAttempt === attempt) {
-        pending = false;
-        controls.forEach(control => control.setAttribute('aria-busy', 'false'));
-      }
+      if (attempt !== request) return;
+      pending=false; update();
+    } catch (error) {
+      if (attempt !== request) return;
+      if (error.name === 'NotAllowedError') { pending=false; wanted=false; update('浏览器已阻止播放，请点击 ▶'); }
+      else if (error.name === 'AbortError') { pending=false; update(); }
+      else fail();
     }
   }
-  function toggle() {
-    if (settings.enabled !== true) { toast('音乐尚未启用 ♡'); return; }
-    if (!audio.paused || pending) {
-      ++attempt; pending = false; wantsMusic = false;
-      remember('off'); disarm(); audio.pause(); state('Off');
-    } else {
-      remember('on'); play();
-    }
+  function switchTrack(next) {
+    const resume = wanted || !audio.paused;
+    saveTime(); stop(); index=(next+tracks.length)%tracks.length; failed=false;
+    audio.removeAttribute('src'); audio.load(); storage.set('musicTrack',index); trackInfo(); update('已选择 · 点击播放');
+    if (resume) play();
   }
-  controls.forEach(control => control.addEventListener('click', toggle));
+  button.addEventListener('click', () => { if (pending || !audio.paused) stop(); else play(); });
+  select.addEventListener('change', () => switchTrack(Number(select.value)));
+  document.getElementById('music-prev').addEventListener('click', () => switchTrack(index-1));
+  document.getElementById('music-next').addEventListener('click', () => switchTrack(index+1));
+  volume.addEventListener('input', () => { audio.volume=Number(volume.value); storage.set('volume',audio.volume); volumeInfo(); });
+  audio.addEventListener('playing', () => { if (!wanted) { audio.pause(); return; } pending=false; update(); });
+  audio.addEventListener('pause', () => { if (!pending) update(); });
+  audio.addEventListener('waiting', () => { if (wanted) update('正在缓冲…'); });
+  audio.addEventListener('error', () => { if (audio.hasAttribute('src')) fail(); });
+  audio.addEventListener('ended', () => { if (wanted && tracks.length > 1) switchTrack(index+1); });
   audio.addEventListener('loadedmetadata', () => {
-    if (Number.isFinite(savedTime) && savedTime > 0 && Number.isFinite(audio.duration) && audio.duration > 0) audio.currentTime = savedTime % audio.duration;
-    savedTime = 0;
-  }, { once: true });
-  window.addEventListener('pagehide', () => {
-    if (!audio.readyState) return;
-    try { sessionStorage.setItem(positionKey, JSON.stringify({ time: audio.currentTime })); } catch { /* Optional. */ }
+    let position=0; try { position=Number(sessionStorage.getItem(`shiming:position:${audio.src}`)) || 0; } catch { /* Optional. */ }
+    if (Number.isFinite(position) && position > 0 && position < audio.duration-1) audio.currentTime=position;
   });
-  audio.addEventListener('playing', () => { if (!pending) { state('On'); disarm(); } });
-  audio.addEventListener('waiting', () => state('Off'));
-  audio.addEventListener('error', () => error(audio.error));
-  const markBoundary = () => {
-    if (Number.isFinite(audio.duration) && audio.currentTime >= audio.duration - 0.75) nearEnd = true;
-    else if (audio.currentTime > 1) nearEnd = false;
-  };
-  audio.addEventListener('timeupdate', markBoundary);
-  audio.addEventListener('seeking', markBoundary);
-  audio.addEventListener('pause', () => {
-    if (wantsMusic && !failed && nearEnd && audio.currentTime < 0.1) { nearEnd = false; play(); }
-    else state(failed ? 'Error' : 'Off');
+  window.addEventListener('pagehide', saveTime);
+  const disclosure = root.querySelector('details');
+  disclosure.addEventListener('toggle', () => {
+    if (!disclosure.open) return;
+    const bubble=document.getElementById('fox-bubble'); if (bubble) bubble.hidden=true;
+    document.querySelector('.fox-toggle')?.setAttribute('aria-expanded','false');
   });
-  audio.addEventListener('ended', () => {
-    if (wantsMusic && audio.loop) { audio.currentTime = 0; play(); }
-    else state('Off');
-  });
-  state('Off');
-  function startAfterPage() {
-    // Critical HTML/CSS/images finish first; audio never blocks their rendering.
-    requestAnimationFrame(() => { if (preference !== 'off') play(); });
-  }
-  if (document.readyState === 'complete') startAfterPage();
-  else window.addEventListener('load', startAfterPage, { once: true });
+  document.addEventListener('keydown', event => { if (event.key==='Escape' && disclosure.open) { disclosure.open=false; disclosure.querySelector('summary').focus(); } });
+  trackInfo(); volumeInfo();
 })();
-
