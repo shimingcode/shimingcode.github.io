@@ -2,22 +2,6 @@
   'use strict';
   const { el, url, storage } = window.Site;
   const config = window.SITE_CONFIG;
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  const mobile = matchMedia('(max-width: 599px)');
-  const layer = document.getElementById('sakura');
-  const weakDevice = (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) || (navigator.deviceMemory && navigator.deviceMemory <= 4) || navigator.connection?.saveData;
-  function petals() {
-    const enabled = storage.get('sakura', 'on') !== 'off' && !reduced.matches;
-    const requested = Number(mobile.matches ? config.sakura?.mobile : config.sakura?.desktop);
-    const count = enabled ? Math.max(0, Math.min(weakDevice ? 6 : mobile.matches ? 9 : 18, Number.isFinite(requested) ? requested : 9)) : 0;
-    const fragment = document.createDocumentFragment();
-    for (let i = 0; i < count; i++) {
-      const petal = el('i', 'petal');
-      petal.style.cssText = `left:${Math.random()*100}%;--size:${7+Math.random()*8}px;--duration:${18+Math.random()*15}s;--delay:-${Math.random()*30}s;--drift:${Math.random()*140-70}px;--rotation:${180+Math.random()*360}deg`;
-      fragment.append(petal);
-    }
-    layer.replaceChildren(fragment);
-  }
   const fox = el('aside', 'fox-assistant'); fox.setAttribute('aria-label', '狐狐助手');
   const button = el('button', 'fox-toggle'); button.type = 'button'; button.setAttribute('aria-label', '和狐狐打招呼'); button.setAttribute('aria-expanded', 'false'); button.setAttribute('aria-controls', 'fox-bubble');
   const picture = el('img'); picture.src = url(config.assistant?.image || config.avatar); picture.alt = ''; picture.width = 52; picture.height = 52; picture.decoding = 'async';
@@ -53,13 +37,7 @@
     if (fox.hidden) { bubble.hidden = true; button.setAttribute('aria-expanded','false'); }
     document.documentElement.dataset.interactionMotion = storage.get('interaction','on');
   }
-  let lastPetalSetting = '';
-  function update() {
-    const setting = `${storage.get('sakura','on')}/${reduced.matches}/${mobile.matches}`;
-    if (setting !== lastPetalSetting) { petals(); lastPetalSetting = setting; }
-    sync();
-  }
   const visibility = () => document.documentElement.classList.toggle('page-hidden', document.hidden);
-  window.addEventListener('site-preferences', update); reduced.addEventListener('change', update); mobile.addEventListener('change', update);
-  document.addEventListener('visibilitychange', visibility); update(); visibility();
+  window.addEventListener('site-preferences', sync);
+  document.addEventListener('visibilitychange', visibility); sync(); visibility();
 })();

@@ -40,7 +40,8 @@
     const fallback = url(config.background);
     const optimized = url(media.matches ? config.backgroundMobileWebp || config.backgroundWebp : config.backgroundWebp);
     if (!fallback) return;
-    const value = `image-set(url(${JSON.stringify(optimized)}) type("image/webp"), url(${JSON.stringify(fallback)}) type("image/jpeg"))`;
+    const avif = url(media.matches ? config.backgroundMobileAvif : config.backgroundAvif);
+    const value = `image-set(${avif ? `url(${JSON.stringify(avif)}) type("image/avif"), ` : ""}url(${JSON.stringify(optimized)}) type("image/webp"), url(${JSON.stringify(fallback)}) type("image/jpeg"))`;
     document.querySelector('.background').style.backgroundImage = optimized && CSS.supports('background-image', value) ? value : `url(${JSON.stringify(fallback)})`;
   }; media.addEventListener('change', update);
   window.Site.register('profile', () => {
@@ -55,8 +56,8 @@
     const avatar = document.getElementById('avatar');
     if (avatar) { avatar.src = url(config.avatar); avatar.alt = `${config.name} 的头像`; }
     const avatarWebp = document.getElementById('avatar-webp');
-    if (avatarWebp && url(config.avatarWebp)) avatarWebp.srcset = url(config.avatarWebp);
-    document.querySelectorAll('[data-profile-image]').forEach(img => { img.src = url(config.avatarWebp || config.avatar); });
+    if (avatarWebp && url(config.avatarWebp)) avatarWebp.srcset = config.avatarSmall ? `${url(config.avatarSmall)} 160w, ${url(config.avatarWebp)} 336w` : url(config.avatarWebp);
+    document.querySelectorAll('[data-profile-image]').forEach(img => { img.src = url(config.avatarSmall || config.avatarWebp || config.avatar); img.srcset = config.avatarSmall ? `${url(config.avatarSmall)} 160w, ${url(config.avatarWebp)} 336w` : ''; img.sizes = `${img.getAttribute('width') || 40}px`; });
     const about = document.getElementById('about-content');
     if (about) {
       about.append(el('p', '', config.about?.intro || config.bio));

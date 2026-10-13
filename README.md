@@ -29,6 +29,7 @@ npx playwright install chromium
 npm run build
 npm run test:browser
 npm run test:music
+npm run test:performance
 ```
 
 也可以使用已安装的 Edge，避免下载 Chromium：
@@ -37,9 +38,10 @@ npm run test:music
 $env:BROWSER_CHANNEL = 'msedge'
 npm run test:browser
 npm run test:music
+npm run test:performance
 ```
 
-截图和测试结果写入 `test-results/`（不提交）。此次验证使用本机 Edge 的隔离无头浏览器，实际结果见 [优化记录](docs/optimization-report.md)。没有用模拟视口替代 iPhone/iPad 真机测试的结论。
+截图和测试结果写入 `test-results/`（不提交）。此次验证使用本机 Edge 的隔离无头浏览器，最新性能对比见 [性能与算法报告](docs/performance-report.md)，此前改版见 [优化记录](docs/optimization-report.md)。没有用模拟视口替代 iPhone/iPad 真机测试的结论。
 
 ## 页面与文件
 
@@ -60,12 +62,15 @@ npm run test:music
 | `js/main.js` | 共用导航、设置、个人资料和页脚 |
 | `js/links.js` / `js/projects.js` | 平台与项目渲染 |
 | `js/music.js` / `css/music.css` | 持久化 CD 播放器与旋转样式 |
-| `js/router.js` / `js/effects.js` | 站内导航增强、樱花与狐狐助手 |
+| `js/router.js` / `js/effects.js` | 有界导航缓存、狐狐助手 |
+| `js/sakura.js` | 可复用樱花池、帧间隔自适应预算 |
 | `js/theme-init.js` | 首次绘制前恢复主题 |
-| `js/games.js` / `js/works.js` | 游戏与图库交互 |
+| `js/game-engine.js` / `js/games.js` | 独立游戏状态机与页面生命周期 |
+| `js/works.js` | 图库交互 |
 | `css/style.css` / `css/works.css` | 共用主题、响应式样式与图库 |
 | `scripts/build.mjs` | 可选静态打包 |
-| `scripts/optimize-images.py` | 原有离线图片优化工具 |
+| `scripts/responsive-images.py` | 从原图生成新增 AVIF、响应式 WebP |
+| `scripts/measure-performance.cjs` / `scripts/audit-lighthouse.cjs` | 本地实验室性能测量与 Lighthouse |
 | `tests/` | 静态与浏览器回归测试 |
 
 新页面使用真实目录和 `index.html`，通过轻量客户端导航保持音乐连续，仍不需要服务器重写规则。`/projects` 由静态服务器补全为 `/projects/`，刷新不会依赖首页脚本。新增页面的 HTML 资源采用 `../`；配置中的 `./` 路径由 `core.js` 相对站点根解析，支持仓库子路径部署。
@@ -120,7 +125,7 @@ npm run test:music
 
 主题、樱花开关、助手可见性、助手动画、音乐音量和最近使用记录保存到 `localStorage`；浏览器禁用存储时功能仍可使用，仅不记忆。音乐进度、音量、播放偏好、静音统一保存在 `localStorage` 的 `shiming:music-state`；站内导航保留音频元素，完整刷新按元数据恢复进度。
 
-樱花桌面最多 18 个、手机最多 9 个，低性能设备或省流模式最多 6 个。可调 `sakura.desktop/mobile`，设置 0 即不显示。页面隐藏时暂停 CSS 动画；系统减少动态效果时不创建粒子。关闭樱花会移除粒子，不占用点击区域。
+樱花默认上限为桌面 18 个、手机 9 个；低性能提示或省流模式初始最多 8 个。复用 CSS 粒子，单一 requestAnimationFrame 采样帧间隔，每 2 秒评估，连续掉帧减少、持续稳定再逐步恢复。配置 `sakura.desktop/mobile` 可调整上限，0 表示关闭。页面隐藏停止采样并暂停视觉动画；关闭或减少动态效果时移除粒子并停止循环。
 
 狐狐助手使用现有头像，是可替换的轻量互动组件，不是 Live2D 模型。点击头像显示按时间变化的问候、随机短句和快捷导航。可以隐藏、恢复、关闭悬浮动画；按 Escape 收起。替换素材或问候可编辑 `config.assistant`，不接入 AI API。
 
@@ -140,17 +145,17 @@ music: {
 
 只使用这一首已有 MP3，`audio.loop = true`，没有歌单和上一首/下一首。首次访问会调用一次 `play()` 尝试播放有声音乐；用户之前主动暂停则尊重暂停偏好。所有 Promise 拒绝都被处理，自动播放被拦截时提示“点击播放”，不反复重试、不强制静音、不用其他点击偷播。iOS 的音量限制可能需要使用设备音量键。
 
-`js/router.js` 为六个页面提供同源导航增强：请求真实 HTML，只替换 `main`，播放器、音频和共用设置始终保留。前进/后退使用 History API，更新标题、描述、当前导航、焦点和滚动位置；图库与游戏通过页面生命周期挂载、离页清理。页面模块按需加载且只注册一次。不拦截外链、下载、新窗口或带修饰键的点击。
+`js/router.js` 为六个页面提供同源导航增强：请求真实 HTML，只替换 `main`，播放器、音频和共用设置始终保留。前进/后退使用 History API，更新标题、描述、当前导航、焦点和滚动位置；图库与游戏通过页面生命周期挂载、离页清理。页面模块按需加载且只注册一次。导航缓存最多 6 份 HTML 文本、有效期 60 秒；使用惰性 template 解析，避免反复创建分离文档，滚动历史最多保留 100 条。不拦截外链、下载、新窗口或带修饰键的点击。
 
 刷新、禁用导航增强、未知页面或请求失败时使用真实 HTML 跳转，可能有短暂音乐中断；元数据加载后恢复进度，并根据偏好尝试播放。存储不能绕过浏览器自动播放限制。浏览器/系统在后台回收页面、锁屏或音频焦点中断时也不能保证持续播放。
 
-播放期间约每 5 秒保存一次状态，拖动进度、切换偏好、页面隐藏和卸载前补存；关闭存储不影响播放。详见 [CD 播放器实现与验证记录](docs/music-upgrade.md)。
+播放期间约每 5 秒保存一次状态，进度/音量连续事件限流、操作完成补存，切换偏好、页面隐藏和卸载前补存。收起或隐藏控制面板时不更新进度 DOM；音频保持运行；关闭存储不影响播放。详见 [CD 播放器实现与验证记录](docs/music-upgrade.md)。
 
 原来的 JPG/MP3/NCM 文件全部保留，不要把凭据放入此目录。原始上传文件若不希望公开，请在确认用途后另行移出公开仓库；本次不删除原有文件。
 
 ## 添加摄影作品与图片优化
 
-保留 `assets/images/works/` 的四张原图和相应缩略图。卡片加载 WebP 缩略图，点击后才请求原图；第一屏之外懒加载。列表和大图均有错误提示。作品 02/03 的尺寸已修正为 993×1584，作品 04 为 1280×960。
+保留 `assets/images/works/` 的四张原图和相应缩略图。卡片通过 srcset/sizes 按显示尺寸选择 320/480/768px WebP，点击后才请求较高清 WebP，预览中提供“查看原图”链接；第一屏之外懒加载。列表和大图均有错误提示。作品 02/03 的尺寸已修正为 993×1584，作品 04 为 1280×960。
 
 1. 将图片放入 `assets/images/works/photo-005.jpg`。
 2. 运行原有脚本（需要 Pillow）：
@@ -158,14 +163,15 @@ music: {
 ```powershell
 python -m pip install Pillow
 python scripts/optimize-images.py
+python scripts/responsive-images.py
 ```
 
-3. 在 `js/works-data.js` 添加真实尺寸、标题、分类、`image` 和 `thumbnail`。
-4. 同时提交原图、生成的 `thumbs/photo-005.webp` 和作品数据。
+3. 在 `js/works-data.js` 添加真实尺寸、标题、分类、`image`、`thumbnail`、`thumbnailSrcset` 和 `preview`。
+4. 同时提交原图、生成的缩略图、display 预览图和作品数据。
 
 仅重命名 `.jpg` 为 `.webp` 不会转换格式，也不要出现 `.webp.jpg`。`npm test` 会检查原图和缩略图是否存在及其真实格式，避免先前的缩略图 404。
 
-主页背景、作品背景、头像已经有 WebP 与移动尺寸版本，本次保留现有压缩结果和所有原图，不重复进行有损压缩。更换原图后运行脚本，同步配置即可。网站使用系统字体，无外部字体加载。
+主页与作品背景新增 AVIF，旧 WebP/JPG 作为回退；头像新增 160px WebP。所有新增衍生图直接从原图生成，原图和已有衍生资源全部保留。首次配置不需要重新压缩图片；更换原图后再运行脚本，同步配置即可。网站使用系统字体，无外部字体加载。
 
 ## GitHub Pages 部署
 
@@ -184,12 +190,15 @@ cd shimingcode.github.io
 npm test
 npm run build
 git status
-git add index.html works.html 404.html links projects games about css js assets/images/project-*.svg .nojekyll .gitignore package.json scripts/build.mjs tests README.md docs assets/icons/README.md assets/audio/README.md
-git commit -m "Keep CD music playing across internal page navigation"
-git push origin main
+git switch -c codex/frontend-performance
+# 逐项检查改动，只暂存准备发布的源码、图片、测试和文档
+git add index.html works.html links projects games about css js assets/images package.json scripts tests README.md docs
+git commit -m "Optimize rendering, image delivery and memory game lifecycle"
+git push -u origin codex/frontend-performance
+# 测试通过后通过 Pull Request 合并到 main，触发现有 Pages 部署
 ```
 
-检查 Actions 的当前提交部署成功后，再打开各个线上页面。CSS/JS 使用稳定的 `?v=3` 版本标识避开上一版缓存；以后发布不兼容版本时统一更新该值，不使用每次访问变化的随机参数。浏览器缓存旧内容时可 Ctrl+F5 刷新。
+检查 Actions 的当前提交部署成功后，再打开各个线上页面。CSS/JS 使用稳定的 `?v=4` 版本标识避开上一版缓存；以后发布不兼容版本时统一更新该值，不使用每次访问变化的随机参数。浏览器缓存旧内容时可 Ctrl+F5 刷新。
 
 如改为另一个普通项目仓库，目录页面和配置资源仍使用相对路径；请将 `404.html` 的首页及 favicon 地址从 `/` 和 `/favicon.svg` 改为实际项目子路径。当前没有 `CNAME`，此次未设置自定义域名。
 
@@ -198,5 +207,21 @@ git push origin main
 - 静态检查覆盖脚本语法、页面资源、配置、图库格式和唯一音源和持久播放器结构。
 - 浏览器回归覆盖真实音频播放、复制、主题、存储受限、非法链接、动态开关、图库、游戏、6 种视口和 6 条页面路由。
 - Safari、Firefox、真实 iPhone/Android/iPad 和不同网络环境未逐一实测；仍建议上线后用常用手机检查媒体播放和触摸体验。
-- 没有宣称 Lighthouse 分数或真实用户性能指标。`test-results/initial-resources.json` 是本地测试资源记录，不等同于生产网络测速。
+- 本次 Lighthouse 与 Performance API 对比均为本机实验室测量，不代表真实用户 INP 或真机结果；包含未改善项，详见性能报告。
 - 后续优先填入真实项目、补充原创作品；可按需要接入 GitHub 公共项目数据或更多小游戏。当前没有必要引入数据库或前端框架。
+
+## 记忆翻牌与性能复测
+
+四种难度为 4/6/8/12 对，保持现有 emoji 图案。Fisher–Yates 洗牌为 O(n)，稳定 imageId 配对为 O(1)。READY / PLAYING / CHECKING / PAUSED / COMPLETED 状态机控制快速点击，performance.now() 计算累计时间。页面隐藏暂停，恢复需要点击继续；离页销毁游戏，音乐继续。游戏页的播放器和助手停靠在内容之后，不覆盖卡牌。
+
+```powershell
+npm test
+npm run build
+npm run test:browser
+npm run test:music
+npm run test:performance
+npm run test:compat
+npm run measure -- after _site
+```
+
+Lighthouse 是可选开发工具，不进入站点依赖或发布包：另行安装 `lighthouse@13.0.1`，使用 `LIGHTHOUSE_PATH` 指向其 `core/index.js`，然后 `npm run audit -- after _site`。默认使用本机 Edge；其他 Chromium 可设置 `CHROME_PATH`。对比前先保留旧版独立静态快照，测量时不要并行运行浏览器测试。原始 JSON、HTML 报告及截图写入被忽略的 `test-results/`。

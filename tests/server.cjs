@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const http = require('node:http');
 module.exports = root => {
-const mime = { '.html':'text/html; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.css':'text/css; charset=utf-8', '.svg':'image/svg+xml', '.webp':'image/webp', '.jpg':'image/jpeg', '.mp3':'audio/mpeg' };
+const mime = { '.html':'text/html; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.css':'text/css; charset=utf-8', '.svg':'image/svg+xml', '.avif':'image/avif', '.webp':'image/webp', '.jpg':'image/jpeg', '.mp3':'audio/mpeg' };
 return http.createServer((req, res) => {
   const uri = new URL(req.url, 'http://localhost');
   const file = path.resolve(root, '.' + decodeURIComponent(uri.pathname));

@@ -1,30 +1,31 @@
 <!doctype html>
-<html lang="zh-CN" data-theme="sakura" data-site-shell="music-v3"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<html lang="zh-CN" data-theme="sakura" data-site-shell="music-v4"><head>
+<meta charset="UTF-8"><meta name="site-shell" content="music-v4"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>作品展示 · Shiming</title><meta name="description" content="Shiming 的摄影与图片作品展示。">
 <meta property="og:title" content="作品展示 · Shiming"><meta property="og:description" content="Shiming 的摄影与图片作品展示。"><meta property="og:type" content="website"><meta name="theme-color" content="#fff3f8"><meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-<script src="./js/theme-init.js?v=3"></script>
-<link rel="preload" as="image" type="image/webp" href="./assets/images/works-background-mobile.webp" media="(max-width: 599px)" fetchpriority="high">
-<link rel="preload" as="image" type="image/webp" href="./assets/images/works-background.webp" media="(min-width: 600px)" fetchpriority="high">
-<link rel="stylesheet" href="./css/style.css?v=3"><link rel="stylesheet" href="./css/works.css?v=3">
-<script src="./js/config.js?v=3" defer></script>
-<script src="./js/core.js?v=3" defer></script>
-<script src="./js/main.js?v=3" defer></script>
-<script src="./js/effects.js?v=3" defer></script>
-<script src="./js/music.js?v=3" defer></script>
-<script src="./js/works-data.js?v=3" defer></script>
-<script src="./js/works.js?v=3" defer></script>
-<link rel="stylesheet" href="./css/music.css?v=3">
-<script src="./js/router.js?v=3" defer></script>
+<script src="./js/theme-init.js?v=4"></script>
+<link rel="preload" as="image" type="image/avif" href="./assets/images/works-background-mobile.avif" media="(max-width: 599px)" fetchpriority="high">
+<link rel="preload" as="image" type="image/avif" href="./assets/images/works-background.avif" media="(min-width: 600px)" fetchpriority="high">
+<link rel="stylesheet" href="./css/style.css?v=4"><link rel="stylesheet" href="./css/works.css?v=4">
+<script src="./js/config.js?v=4" defer></script>
+<script src="./js/core.js?v=4" defer></script>
+<script src="./js/main.js?v=4" defer></script>
+<script src="./js/sakura.js?v=4" defer></script>
+<script src="./js/effects.js?v=4" defer></script>
+<script src="./js/music.js?v=4" defer></script>
+<script src="./js/works-data.js?v=4" defer></script>
+<script src="./js/works.js?v=4" defer></script>
+<link rel="stylesheet" href="./css/music.css?v=4">
+<script src="./js/router.js?v=4" defer></script>
 </head><body class="works-page">
 <a class="skip-link" href="#main">跳到主要内容</a><div class="background" aria-hidden="true"></div><div id="sakura" aria-hidden="true"></div>
 <header id="site-header" class="site-header"><a class="brand" href="./index.html"><img src="./favicon.svg" alt="" width="32" height="32">Shiming<span>✧</span></a></header>
-<main id="main" class="site-shell" tabindex="-1"><header class="page-intro"><p class="eyebrow">MOMENTS TO KEEP</p><h1>作品展示</h1><p>Photography &amp; Works · 留住那些喜欢的瞬间。</p></header><nav id="work-filters" class="work-filters filters" aria-label="作品分类筛选"></nav><section id="work-gallery" class="work-gallery" aria-label="摄影作品"></section>
+<main data-page-class="works-page" id="main" class="site-shell" tabindex="-1"><header class="page-intro"><p class="eyebrow">MOMENTS TO KEEP</p><h1>作品展示</h1><p>Photography &amp; Works · 留住那些喜欢的瞬间。</p></header><nav id="work-filters" class="work-filters filters" aria-label="作品分类筛选"></nav><section id="work-gallery" class="work-gallery" aria-label="摄影作品"></section>
 <dialog id="lightbox" class="lightbox" aria-label="作品大图预览">
     <button class="lightbox-close" type="button" aria-label="关闭预览">×</button>
     <button class="lightbox-nav lightbox-prev" type="button" aria-label="上一张">‹</button>
-    <figure class="lightbox-figure"><img id="lightbox-image" alt=""><figcaption><strong id="lightbox-title"></strong><span id="lightbox-details"></span></figcaption></figure>
+    <figure class="lightbox-figure"><img id="lightbox-image" alt=""><figcaption><strong id="lightbox-title"></strong><span id="lightbox-details"></span><a id="lightbox-original" target="_blank" rel="noopener noreferrer">查看原图 ↗</a></figcaption></figure>
     <button class="lightbox-nav lightbox-next" type="button" aria-label="下一张">›</button>
   </dialog></main>
 <footer id="site-footer" class="site-footer"></footer>

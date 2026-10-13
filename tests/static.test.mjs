@@ -43,7 +43,7 @@ test('CSS images resolve relative to their stylesheet', () => {
     }
   }
 });
-test('Every gallery item has a real JPEG and a real WebP thumbnail', () => {
+test('Every gallery item has a real JPEG and valid responsive WebP derivatives', () => {
   const ids = new Set();
   for (const work of context.window.WORKS) {
     assert.ok(!ids.has(work.id)); ids.add(work.id);
@@ -53,6 +53,10 @@ test('Every gallery item has a real JPEG and a real WebP thumbnail', () => {
     assert.equal(thumb.toString('ascii',0,4), 'RIFF');
     assert.equal(thumb.toString('ascii',8,12), 'WEBP');
     assert.ok(work.width > 0 && work.height > 0);
+    for(const entry of (work.thumbnailSrcset || '').split(',').filter(Boolean)) {
+      const [source,width]=entry.trim().split(/\s+/);assert.ok(existsSync(localPath(source)));assert.match(width,/^\d+w$/);
+    }
+    if(work.preview)assert.ok(existsSync(localPath(work.preview)));
   }
 });
 test('Project examples are explicit, covers exist, real local demos resolve', () => {
@@ -72,7 +76,7 @@ test('Single configured music source exists and pages keep one persistent audio 
   for (const page of pages.filter(x => x !== '404.html')) {
     const html=read(page); assert.match(html, /<audio[^>]+preload="none"/); assert.doesNotMatch(html, /<audio[^>]+(?:autoplay|src=)/);
     assert.equal((html.match(/<audio /g) || []).length,1);
-    assert.match(html, /data-site-shell="music-v3"/);
+    assert.match(html, /data-site-shell="music-v4"/);
     assert.doesNotMatch(html, /fonts\.googleapis|cdn\.jsdelivr|unpkg\.com/);
   }
 });
