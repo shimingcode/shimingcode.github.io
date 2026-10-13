@@ -1,0 +1,69 @@
+.music-player {
+  --disc-size:88px; position:fixed; z-index:12;
+  right:calc(18px + env(safe-area-inset-right)); bottom:calc(16px + env(safe-area-inset-bottom));
+  width:var(--disc-size); filter:drop-shadow(0 6px 12px #a7366c26);
+}
+.cd-button {
+  position:relative; display:block; width:var(--disc-size); height:var(--disc-size);
+  padding:0; border:0; border-radius:50%; background:transparent;
+  box-shadow:0 0 0 3px #ffffff80,0 0 22px #f7a4cb80; -webkit-tap-highlight-color:transparent;
+}
+.cd-button:hover { transform:none; box-shadow:0 0 0 3px #fff,0 0 28px #ec93bd; }
+.cd-disc {
+  position:absolute; inset:0; overflow:hidden; border:3px solid #ffd9ed; border-radius:50%;
+  background:repeating-radial-gradient(circle,#eadfe9 0 2px,#bfabbc 3px 4px);
+  animation:cd-spin 10s linear infinite; animation-play-state:paused;
+}
+.cd-cover { width:100%; height:100%; object-fit:cover; border-radius:50%; opacity:.9; }
+.cd-disc::after {
+  content:""; position:absolute; inset:0; border-radius:50%;
+  background:conic-gradient(from 20deg,transparent 0deg,#ffffffa6 45deg,transparent 85deg,#e8b2e880 160deg,transparent 200deg,#ffffffb3 245deg,transparent 285deg);
+  box-shadow:inset 0 0 0 5px #fff6,inset 0 0 0 7px #eacde980;
+}
+.cd-hole {
+  position:absolute; z-index:1; width:19%; height:19%; inset:40.5%;
+  border:3px solid #f1dce9; border-radius:50%; background:var(--solid);
+  box-shadow:0 0 0 4px #ffffff85,inset 0 1px 4px #41223880;
+}
+.cd-symbol {
+  position:absolute; right:-3px; bottom:0; width:30px; height:30px; display:grid; place-items:center;
+  border:1px solid var(--border); border-radius:50%; font-size:13px; background:var(--solid); color:var(--accent);
+}
+.cd-prompt {
+  display:none; position:absolute; bottom:calc(100% + 10px); right:0; padding:5px 9px;
+  white-space:nowrap; border-radius:10px; background:var(--solid); color:var(--text); font-size:11px;
+}
+.needs-play .cd-prompt { display:block; }
+.is-playing:not(.is-hidden-page) .cd-disc { animation-play-state:running; }
+.music-disclosure > summary {
+  list-style:none; width:44px; min-height:32px; margin:5px auto 0; display:flex; align-items:center; justify-content:center; gap:6px;
+  border:1px solid var(--border); border-radius:20px; background:var(--surface); color:var(--text); font-size:12px; backdrop-filter:blur(14px);
+}
+.music-disclosure > summary::-webkit-details-marker { display:none; }
+.music-disclosure[open] > summary span { transform:rotate(180deg); }
+.music-panel {
+  position:absolute; right:0; bottom:calc(100% + 14px);
+  width:min(300px,calc(100vw - 40px - env(safe-area-inset-right) - env(safe-area-inset-left)));
+  max-height:calc(100dvh - 160px - env(safe-area-inset-bottom)); overflow:auto;
+  padding:20px; border-radius:22px; background:var(--solid);
+}
+.music-panel .eyebrow { font-size:9px; letter-spacing:.13em; margin:0 0 10px; }
+#music-title { display:block; font-size:20px; }
+.music-panel p { font-size:11px; color:var(--muted); margin:8px 0 12px; }
+#music-state { color:var(--accent); min-height:2.8em; }
+.music-panel label { font-size:12px; color:var(--text); }
+.music-panel input[type="range"] { display:block; width:100%; min-height:32px; padding:0; accent-color:var(--accent); }
+.music-time { text-align:right; font-size:11px; color:var(--muted); font-variant-numeric:tabular-nums; margin-bottom:12px; }
+.music-volume-heading { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+#music-mute { font-size:11px; min-height:36px; padding:6px 10px; }
+@keyframes cd-spin { to { transform:rotate(360deg); } }
+/* The game needs the entire touch surface. Dock below its content instead of over cards. */
+.games-page { padding-bottom:calc(16px + env(safe-area-inset-bottom)); }
+.games-page .music-player { position:relative; right:auto; bottom:auto; margin:16px max(16px,env(safe-area-inset-right)) 0 auto; }
+@media(max-width:599px) {
+  .music-player { --disc-size:60px; right:calc(12px + env(safe-area-inset-right)); bottom:calc(8px + env(safe-area-inset-bottom)); }
+  .cd-symbol { width:24px; height:24px; font-size:11px; }
+  .music-disclosure > summary { min-height:44px; }
+  .music-panel { padding:16px; }
+}
+@media(prefers-reduced-motion:reduce) { .cd-disc { animation:none; } }

@@ -3,33 +3,11 @@ const { chromium } = require('playwright');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const http = require('node:http');
 const vm = require('node:vm');
 const root = path.resolve(__dirname, '..', '_site');
 const results = path.resolve(__dirname, '..', 'test-results');
 fs.mkdirSync(results, { recursive: true });
-const mime = { '.html':'text/html; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.css':'text/css; charset=utf-8', '.svg':'image/svg+xml', '.webp':'image/webp', '.jpg':'image/jpeg', '.mp3':'audio/mpeg' };
-const server = http.createServer((req, res) => {
-  const uri = new URL(req.url, 'http://localhost');
-  const file = path.resolve(root, '.' + decodeURIComponent(uri.pathname));
-  if (!file.startsWith(root + path.sep) && file !== root) { res.writeHead(403).end(); return; }
-  let target = file;
-  if (fs.existsSync(target) && fs.statSync(target).isDirectory()) {
-    if (!uri.pathname.endsWith('/')) { res.writeHead(301, { Location:uri.pathname+'/'+uri.search }).end(); return; }
-    target = path.join(target, 'index.html');
-  }
-  if (!fs.existsSync(target)) { res.writeHead(404).end('Not found'); return; }
-  const size=fs.statSync(target).size;
-  res.setHeader('Content-Type', mime[path.extname(target)] || 'application/octet-stream');
-  res.setHeader('Cache-Control','no-store');
-  res.setHeader('Accept-Ranges','bytes');
-  const range = /^bytes=(\d+)-(\d*)$/.exec(req.headers.range || '');
-  if (range) {
-    const start=Number(range[1]),end=Math.min(size-1,range[2]?Number(range[2]):size-1);
-    res.writeHead(206, {'Content-Range':`bytes ${start}-${end}/${size}`, 'Content-Length':end-start+1});
-    fs.createReadStream(target,{start,end}).pipe(res);
-  } else { res.setHeader('Content-Length',size); fs.createReadStream(target).pipe(res); }
-});
+const server = require('./server.cjs')(root);
 let browser, failures=[], checks=[], requests=[];
 async function check(name, fn) { await fn(); checks.push(name); console.log(`PASS ${name}`); }
 (async () => {
@@ -45,13 +23,12 @@ async function check(name, fn) { await fn(); checks.push(name); console.log(`PAS
   await page.goto(base+'/');
   const initialResources = await page.evaluate(() => performance.getEntriesByType('resource').map(entry => ({name: new URL(entry.name).pathname, bytes:entry.transferSize, decodedBytes:entry.decodedBodySize})));
   fs.writeFileSync(path.join(results,'initial-resources.json'),JSON.stringify(initialResources,null,2));
-  await check('11 original social entries, safe external anchors, no initial audio download',async()=>{
+  await check('11 original social entries and safe external anchors',async()=>{
     assert.equal(await page.locator('.social-card').count(),11);
     const external=await page.locator('#social-links a.social-card').evaluateAll(nodes=>nodes.map(a=>({href:a.href,rel:a.rel,target:a.target})));
     const ctx={window:{}};vm.runInNewContext(fs.readFileSync(path.join(root,'js/config.js'),'utf8'),ctx);
     assert.deepEqual(external.map(a=>a.href),Array.from(ctx.window.SITE_CONFIG.socialLinks).filter(x=>!x.action).map(x=>x.url));
     assert(external.every(a=>a.target==='_blank'&&a.rel.includes('noopener')&&a.rel.includes('noreferrer')));
-    assert(!requests.some(url=>url.endsWith('.mp3')));
   });
   await check('Directory search, empty state, category, sorting, focus preservation',async()=>{
     await page.getByRole('searchbox',{name:'搜索平台'}).fill('telegram');assert.equal(await page.locator('.social-card').count(),1);
@@ -103,12 +80,12 @@ async function check(name, fn) { await fn(); checks.push(name); console.log(`PAS
     assert.equal(await page.locator('html').getAttribute('data-interaction-motion'),'off');assert(await page.locator('.fox-assistant').isVisible());await page.keyboard.press('Escape');
   });
   await check('Music actual media playback, pause, volume and persistence',async()=>{
-    await page.getByRole('button',{name:'播放音乐',exact:true}).click();
+    if (await page.locator('#bgm').evaluate(a=>a.paused)) await page.getByRole('button',{name:'播放音乐',exact:true}).click();
     await page.waitForFunction(()=>!document.getElementById('bgm').paused&&document.getElementById('bgm').currentTime>0);
     await page.getByRole('button',{name:'暂停音乐',exact:true}).click();assert(await page.locator('#bgm').evaluate(a=>a.paused));
     await page.getByLabel('展开音乐播放器').click();await page.locator('#music-volume').fill('0.5');
-    assert.equal(await page.locator('#bgm').evaluate(a=>a.volume),.5);assert(await page.getByRole('button',{name:'下一首',exact:true}).isDisabled());
-    await page.reload();assert.equal(await page.locator('#bgm').evaluate(a=>a.volume),.5);assert(await page.locator('#bgm').evaluate(a=>a.paused&&!a.hasAttribute('src')));
+    assert.equal(await page.locator('#bgm').evaluate(a=>a.volume),.5);assert.equal(await page.locator('#music-next, #music-prev, #music-track').count(),0);
+    await page.reload();assert.equal(await page.locator('#bgm').evaluate(a=>a.volume),.5);assert(await page.locator('#bgm').evaluate(a=>a.paused&&a.loop));
   });
   await check('Invalid URL and hostile display text cannot inject markup',async()=>{
     await page.route('**/js/config.js*',async route=>{
@@ -122,17 +99,6 @@ async function check(name, fn) { await fn(); checks.push(name); console.log(`PAS
     const isolated=await browser.newContext();await isolated.addInitScript(()=>{Storage.prototype.getItem=()=>{throw new DOMException('Blocked','SecurityError')};Storage.prototype.setItem=()=>{throw new DOMException('Blocked','SecurityError')};});
     const tab=await isolated.newPage();const errors=[];tab.on('pageerror',e=>errors.push(e.message));await tab.goto(base+'/');assert.equal(await tab.locator('.social-card').count(),11);
     await tab.getByLabel('外观与互动设置').click();await tab.getByLabel('配色主题').selectOption('night');assert.equal(await tab.locator('html').getAttribute('data-theme'),'night');assert.deepEqual(errors,[]);await isolated.close();
-  });
-  await check('Multi-track switching and rejected autoplay show usable controls (fixtures)',async()=>{
-    await page.route('**/js/config.js*',async route=>{await route.fulfill({contentType:'text/javascript',body:fs.readFileSync(path.join(root,'js/config.js'),'utf8')+'\nwindow.SITE_CONFIG.music.playlist.push({title:"Test track",src:"./assets/audio/bgm.mp3"});'});});
-    await page.reload();await page.getByLabel('展开音乐播放器').click();await page.getByRole('button',{name:'下一首',exact:true}).click();assert.equal(await page.locator('#music-title').innerText(),'Test track');
-    assert(await page.locator('#bgm').evaluate(a=>!a.hasAttribute('src')));
-    await page.getByRole('button',{name:'播放音乐',exact:true}).click();await page.waitForFunction(()=>!document.getElementById('bgm').paused);
-    await page.getByRole('button',{name:'上一首',exact:true}).click();await page.waitForFunction(()=>document.getElementById('bgm').currentSrc.endsWith('bgm-web.mp3')&&!document.getElementById('bgm').paused);
-    await page.getByRole('button',{name:'暂停音乐',exact:true}).click();
-    await page.locator('#bgm').evaluate(a=>{a.play=()=>Promise.reject(new DOMException('Blocked','NotAllowedError'));});
-    await page.getByRole('button',{name:'播放音乐',exact:true}).click();await page.waitForFunction(()=>document.getElementById('music-state').textContent.includes('阻止'));
-    assert(await page.getByRole('button',{name:'播放音乐',exact:true}).isEnabled());await page.unroute('**/js/config.js*');
   });
   const routes=['/','/links/','/projects/','/games/','/about/','/works.html'];
   await check('Six routes, six viewport sizes, no overflow and correct grid columns',async()=>{

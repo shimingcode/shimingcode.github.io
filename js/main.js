@@ -20,6 +20,7 @@
     <label>助手互动动画<input id="interaction-enabled" type="checkbox"></label>
     <p>偏好只保存在当前浏览器。系统的“减少动态效果”优先生效。</p></div>`;
   header.append(nav, settings);
+  header.querySelector('.brand').href = url('./index.html');
   const theme = document.getElementById('theme-select');
   theme.value = document.documentElement.dataset.theme || 'sakura';
   function themeColor() { document.querySelector('meta[name="theme-color"]').content = {sakura:'#fff3f8',star:'#101c37',night:'#19161e'}[theme.value]; }
@@ -33,29 +34,35 @@
     if (event.key === 'Escape' && settings.open) { settings.open = false; settings.querySelector('summary').focus(); }
   });
   document.addEventListener('click', event => { if (!settings.contains(event.target)) settings.open = false; });
-  for (const [id, value] of [['name', config.name], ['bio', config.bio], ['status', config.status]]) {
-    const target = document.getElementById(id); if (target) target.textContent = value;
-  }
-  const avatar = document.getElementById('avatar');
-  if (avatar) { avatar.src = url(config.avatar); avatar.alt = `${config.name} 的头像`; }
-  const avatarWebp = document.getElementById('avatar-webp');
-  if (avatarWebp && url(config.avatarWebp)) avatarWebp.srcset = url(config.avatarWebp);
-  document.querySelectorAll('[data-profile-image]').forEach(img => { img.src = url(config.avatarWebp || config.avatar); });
-  if (!document.body.classList.contains('works-page')) {
-    const media = matchMedia('(max-width: 599px)');
-    const update = () => {
-      const fallback = url(config.background);
-      const optimized = url(media.matches ? config.backgroundMobileWebp || config.backgroundWebp : config.backgroundWebp);
-      if (!fallback) return;
-      const value = `image-set(url(${JSON.stringify(optimized)}) type("image/webp"), url(${JSON.stringify(fallback)}) type("image/jpeg"))`;
-      document.querySelector('.background').style.backgroundImage = optimized && CSS.supports('background-image', value) ? value : `url(${JSON.stringify(fallback)})`;
-    }; update(); media.addEventListener('change', update);
-  }
-  const about = document.getElementById('about-content');
-  if (about) {
-    about.append(el('p', '', config.about?.intro || config.bio));
-    for (const paragraph of config.about?.paragraphs || []) about.append(el('p', '', paragraph));
-  }
+  const media = matchMedia('(max-width: 599px)');
+  const update = () => {
+    if (document.body.classList.contains('works-page')) { document.querySelector('.background').style.removeProperty('background-image'); return; }
+    const fallback = url(config.background);
+    const optimized = url(media.matches ? config.backgroundMobileWebp || config.backgroundWebp : config.backgroundWebp);
+    if (!fallback) return;
+    const value = `image-set(url(${JSON.stringify(optimized)}) type("image/webp"), url(${JSON.stringify(fallback)}) type("image/jpeg"))`;
+    document.querySelector('.background').style.backgroundImage = optimized && CSS.supports('background-image', value) ? value : `url(${JSON.stringify(fallback)})`;
+  }; media.addEventListener('change', update);
+  window.Site.register('profile', () => {
+    update();
+    for (const link of nav.querySelectorAll('a')) {
+      if (normalize(new URL(link.href).pathname) === normalize(location.pathname)) link.setAttribute('aria-current','page');
+      else link.removeAttribute('aria-current');
+    }
+    for (const [id, value] of [['name', config.name], ['bio', config.bio], ['status', config.status]]) {
+      const target = document.getElementById(id); if (target) target.textContent = value;
+    }
+    const avatar = document.getElementById('avatar');
+    if (avatar) { avatar.src = url(config.avatar); avatar.alt = `${config.name} 的头像`; }
+    const avatarWebp = document.getElementById('avatar-webp');
+    if (avatarWebp && url(config.avatarWebp)) avatarWebp.srcset = url(config.avatarWebp);
+    document.querySelectorAll('[data-profile-image]').forEach(img => { img.src = url(config.avatarWebp || config.avatar); });
+    const about = document.getElementById('about-content');
+    if (about) {
+      about.append(el('p', '', config.about?.intro || config.bio));
+      for (const paragraph of config.about?.paragraphs || []) about.append(el('p', '', paragraph));
+    }
+  });
   const footer = document.getElementById('site-footer');
   footer.append(el('p', '', `© ${new Date().getFullYear()} ${config.name} · A little pink, a little magic.`));
   const footerNote = el('p', '', '原生前端 · 无追踪脚本 · ');

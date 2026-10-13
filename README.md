@@ -28,6 +28,7 @@ npm install
 npx playwright install chromium
 npm run build
 npm run test:browser
+npm run test:music
 ```
 
 也可以使用已安装的 Edge，避免下载 Chromium：
@@ -35,6 +36,7 @@ npm run test:browser
 ```powershell
 $env:BROWSER_CHANNEL = 'msedge'
 npm run test:browser
+npm run test:music
 ```
 
 截图和测试结果写入 `test-results/`（不提交）。此次验证使用本机 Edge 的隔离无头浏览器，实际结果见 [优化记录](docs/optimization-report.md)。没有用模拟视口替代 iPhone/iPad 真机测试的结论。
@@ -57,7 +59,8 @@ npm run test:browser
 | `js/core.js` | URL 校验、DOM、复制和存储辅助函数 |
 | `js/main.js` | 共用导航、设置、个人资料和页脚 |
 | `js/links.js` / `js/projects.js` | 平台与项目渲染 |
-| `js/music.js` / `js/effects.js` | 音乐、樱花与狐狐助手 |
+| `js/music.js` / `css/music.css` | 持久化 CD 播放器与旋转样式 |
+| `js/router.js` / `js/effects.js` | 站内导航增强、樱花与狐狐助手 |
 | `js/theme-init.js` | 首次绘制前恢复主题 |
 | `js/games.js` / `js/works.js` | 游戏与图库交互 |
 | `css/style.css` / `css/works.css` | 共用主题、响应式样式与图库 |
@@ -65,7 +68,7 @@ npm run test:browser
 | `scripts/optimize-images.py` | 原有离线图片优化工具 |
 | `tests/` | 静态与浏览器回归测试 |
 
-新页面使用真实目录和 `index.html`，没有客户端路由、History API 回退或重写要求。`/projects` 由静态服务器补全为 `/projects/`，刷新不会依赖首页脚本。新增页面的 HTML 资源采用 `../`；配置中的 `./` 路径由 `core.js` 相对站点根解析，支持仓库子路径部署。
+新页面使用真实目录和 `index.html`，通过轻量客户端导航保持音乐连续，仍不需要服务器重写规则。`/projects` 由静态服务器补全为 `/projects/`，刷新不会依赖首页脚本。新增页面的 HTML 资源采用 `../`；配置中的 `./` 路径由 `core.js` 相对站点根解析，支持仓库子路径部署。
 
 ## 维护社交平台
 
@@ -115,7 +118,7 @@ npm run test:browser
 
 右上角外观设置提供樱花粉、星空蓝和暗夜。CSS 变量集中在 `css/style.css` 顶部。
 
-主题、樱花开关、助手可见性、助手动画、音乐音量和最近使用记录保存到 `localStorage`；浏览器禁用存储时功能仍可使用，仅不记忆。音乐播放进度使用 `sessionStorage`，完整页面跳转仍会有中断，切页后需要主动播放。
+主题、樱花开关、助手可见性、助手动画、音乐音量和最近使用记录保存到 `localStorage`；浏览器禁用存储时功能仍可使用，仅不记忆。音乐进度、音量、播放偏好、静音统一保存在 `localStorage` 的 `shiming:music-state`；站内导航保留音频元素，完整刷新按元数据恢复进度。
 
 樱花桌面最多 18 个、手机最多 9 个，低性能设备或省流模式最多 6 个。可调 `sakura.desktop/mobile`，设置 0 即不显示。页面隐藏时暂停 CSS 动画；系统减少动态效果时不创建粒子。关闭樱花会移除粒子，不占用点击区域。
 
@@ -123,22 +126,25 @@ npm run test:browser
 
 ## 音乐
 
-默认只显示明确的播放按钮，**不会自动发出声音或在首次点击其他内容时偷播**。点击播放后才设置 `audio.src`；`preload="none"`。播放失败、浏览器拦截、缓冲、暂停均有文字状态。
-
-编辑 `music.playlist` 增加自己有使用权的音频：
+右下角 CD 复用现有动漫头像，播放时每 10 秒转一圈，暂停时停在当前角度。点击光碟播放/暂停，点击 ♫ 展开进度、时间、音量与静音面板。手机缩小至 60px，支持安全区域、系统减少动态效果；页面隐藏时仅暂停旋转。
 
 ```js
 music: {
   enabled: true,
   volume: 0.25,
-  src: './assets/audio/bgm-web.mp3', // 兼容旧配置
-  playlist: [
-    { title: '歌曲标题', artist: '作者', src: './assets/audio/bgm-web.mp3' }
-  ]
+  src: './assets/audio/bgm-web.mp3',
+  title: 'Music Box',
+  artist: 'miromaxmusic · 现有背景音乐'
 }
 ```
 
-支持播放/暂停、音量、选择曲目、上/下一首、播放结束切歌。当前只有一首独立可播放歌曲，所以切歌按钮禁用；原始 MP3 的多个副本不是新歌曲，不重复列入歌单。`.ncm` 是原始存档，不作为网页音频加载。iOS Safari 的音量可能由设备按键控制。没有测试或承诺无缝跨页播放。
+只使用这一首已有 MP3，`audio.loop = true`，没有歌单和上一首/下一首。首次访问会调用一次 `play()` 尝试播放有声音乐；用户之前主动暂停则尊重暂停偏好。所有 Promise 拒绝都被处理，自动播放被拦截时提示“点击播放”，不反复重试、不强制静音、不用其他点击偷播。iOS 的音量限制可能需要使用设备音量键。
+
+`js/router.js` 为六个页面提供同源导航增强：请求真实 HTML，只替换 `main`，播放器、音频和共用设置始终保留。前进/后退使用 History API，更新标题、描述、当前导航、焦点和滚动位置；图库与游戏通过页面生命周期挂载、离页清理。页面模块按需加载且只注册一次。不拦截外链、下载、新窗口或带修饰键的点击。
+
+刷新、禁用导航增强、未知页面或请求失败时使用真实 HTML 跳转，可能有短暂音乐中断；元数据加载后恢复进度，并根据偏好尝试播放。存储不能绕过浏览器自动播放限制。浏览器/系统在后台回收页面、锁屏或音频焦点中断时也不能保证持续播放。
+
+播放期间约每 5 秒保存一次状态，拖动进度、切换偏好、页面隐藏和卸载前补存；关闭存储不影响播放。详见 [CD 播放器实现与验证记录](docs/music-upgrade.md)。
 
 原来的 JPG/MP3/NCM 文件全部保留，不要把凭据放入此目录。原始上传文件若不希望公开，请在确认用途后另行移出公开仓库；本次不删除原有文件。
 
@@ -179,18 +185,18 @@ npm test
 npm run build
 git status
 git add index.html works.html 404.html links projects games about css js assets/images/project-*.svg .nojekyll .gitignore package.json scripts/build.mjs tests README.md docs assets/icons/README.md assets/audio/README.md
-git commit -m "Improve personal site navigation, themes and interactive pages"
+git commit -m "Keep CD music playing across internal page navigation"
 git push origin main
 ```
 
-检查 Actions 的当前提交部署成功后，再打开各个线上页面。CSS/JS 使用稳定的 `?v=2` 版本标识避开上一版缓存；以后发布不兼容版本时统一更新该值，不使用每次访问变化的随机参数。浏览器缓存旧内容时可 Ctrl+F5 刷新。
+检查 Actions 的当前提交部署成功后，再打开各个线上页面。CSS/JS 使用稳定的 `?v=3` 版本标识避开上一版缓存；以后发布不兼容版本时统一更新该值，不使用每次访问变化的随机参数。浏览器缓存旧内容时可 Ctrl+F5 刷新。
 
 如改为另一个普通项目仓库，目录页面和配置资源仍使用相对路径；请将 `404.html` 的首页及 favicon 地址从 `/` 和 `/favicon.svg` 改为实际项目子路径。当前没有 `CNAME`，此次未设置自定义域名。
 
 ## 测试边界与后续扩展
 
-- 静态检查覆盖脚本语法、页面资源、配置、图库格式和音乐懒加载约束。
+- 静态检查覆盖脚本语法、页面资源、配置、图库格式和唯一音源和持久播放器结构。
 - 浏览器回归覆盖真实音频播放、复制、主题、存储受限、非法链接、动态开关、图库、游戏、6 种视口和 6 条页面路由。
 - Safari、Firefox、真实 iPhone/Android/iPad 和不同网络环境未逐一实测；仍建议上线后用常用手机检查媒体播放和触摸体验。
 - 没有宣称 Lighthouse 分数或真实用户性能指标。`test-results/initial-resources.json` 是本地测试资源记录，不等同于生产网络测速。
-- 后续优先填入真实项目、补充原创音乐与作品；可按需要接入 GitHub 公共项目数据或更多小游戏。当前没有必要引入数据库或前端框架。
+- 后续优先填入真实项目、补充原创作品；可按需要接入 GitHub 公共项目数据或更多小游戏。当前没有必要引入数据库或前端框架。

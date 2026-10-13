@@ -1,4 +1,4 @@
-(() => {
+window.Site.register('projects', () => {
   'use strict';
   const { el, url, externalLink } = window.Site;
   const grid = document.getElementById('project-grid');
@@ -40,4 +40,4 @@
     }); filters.append(button);
   }
   render();
-})();
+});

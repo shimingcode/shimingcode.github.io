@@ -47,13 +47,8 @@ window.SITE_CONFIG = {
     "src": "./assets/audio/bgm-web.mp3",
     "enabled": true,
     "volume": 0.25,
-    "playlist": [
-      {
-        "title": "Music Box",
-        "artist": "miromaxmusic · 现有背景音乐",
-        "src": "./assets/audio/bgm-web.mp3"
-      }
-    ]
+    "title": "Music Box",
+    "artist": "miromaxmusic · 现有背景音乐"
   },
   "sakura": {
     "desktop": 18,

@@ -66,10 +66,13 @@ test('Project examples are explicit, covers exist, real local demos resolve', ()
   }
   assert.equal(categories.size, 5);
 });
-test('Music is opt-in, valid files exist, no eager audio or external font dependency', () => {
-  for (const track of config.music.playlist) assert.ok(existsSync(localPath(track.src)));
+test('Single configured music source exists and pages keep one persistent audio shell', () => {
+  assert.ok(existsSync(localPath(config.music.src)));
+  assert.equal(config.music.playlist, undefined);
   for (const page of pages.filter(x => x !== '404.html')) {
     const html=read(page); assert.match(html, /<audio[^>]+preload="none"/); assert.doesNotMatch(html, /<audio[^>]+(?:autoplay|src=)/);
+    assert.equal((html.match(/<audio /g) || []).length,1);
+    assert.match(html, /data-site-shell="music-v3"/);
     assert.doesNotMatch(html, /fonts\.googleapis|cdn\.jsdelivr|unpkg\.com/);
   }
 });

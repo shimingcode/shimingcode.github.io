@@ -1,7 +1,8 @@
-(() => {
+window.Site.register('works', () => {
   'use strict';
   const works = Array.isArray(window.WORKS) ? window.WORKS : [];
   const gallery = document.getElementById('work-gallery');
+  if (!gallery) return;
   const filters = document.getElementById('work-filters');
   const dialog = document.getElementById('lightbox');
   const preview = document.getElementById('lightbox-image');
@@ -111,4 +112,5 @@
   }, { passive: true });
 
   renderFilters(); renderGallery();
-})();
+  return () => { if (dialog.open) dialog.close(); };
+});

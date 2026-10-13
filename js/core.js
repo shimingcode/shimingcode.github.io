@@ -45,5 +45,15 @@
     try { await navigator.clipboard.writeText(value); toast(`已复制${label}`); }
     catch { window.prompt(`请手动复制${label}：`, value); }
   }
-  window.Site = Object.freeze({ base, storage, url, el, icon, externalLink, toast, copy });
+  // Page modules register once; only their main-content DOM is mounted per navigation.
+  const pages = new Map();
+  let cleanups = [];
+  function unmount() { for (const dispose of cleanups) dispose(); cleanups = []; }
+  function mount() {
+    unmount();
+    for (const init of pages.values()) { const dispose = init(); if (typeof dispose === 'function') cleanups.push(dispose); }
+  }
+  const register = (name, init) => pages.set(name, init);
+  document.addEventListener('DOMContentLoaded', mount, { once: true });
+  window.Site = Object.freeze({ base, storage, url, el, icon, externalLink, toast, copy, register, mount, unmount });
 })();

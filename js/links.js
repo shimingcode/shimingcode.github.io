@@ -1,4 +1,4 @@
-(() => {
+window.Site.register('links', () => {
   'use strict';
   const { el, icon, url, copy, storage } = window.Site;
   const config = window.SITE_CONFIG;
@@ -62,4 +62,4 @@
     count.textContent = `${items.length} / ${links.length} 个入口`;
   }
   search.addEventListener('input', render); sort.addEventListener('change', render); render();
-})();
+});

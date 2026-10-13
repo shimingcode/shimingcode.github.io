@@ -1,4 +1,4 @@
-(() => {
+window.Site.register('games', () => {
   'use strict';
   const { el } = window.Site;
   const grid=document.getElementById('memory-grid');
@@ -29,4 +29,5 @@
     });stats();message.textContent='翻开一张卡片，开始吧。';
   }
   document.getElementById('game-restart').addEventListener('click',restart);restart();
-})();
+  return () => clearTimeout(timer);
+});
