@@ -177,7 +177,7 @@ h3 {
   z-index:-2;
   pointer-events:none;
   background:center 25%/cover no-repeat url('../assets/images/background.jpg.jpg');
-  background-image:image-set(url('../assets/images/background.webp') type('image/webp'),url('../assets/images/background.jpg.jpg') type('image/jpeg'))
+  background-image:image-set(url('../assets/images/background.avif') type('image/avif'),url('../assets/images/background.webp') type('image/webp'),url('../assets/images/background.jpg.jpg') type('image/jpeg'))
 }
 
 .background::after {
@@ -194,6 +194,7 @@ h3 {
 }
 
 .site-header {
+  min-height:88px;
   display:flex;
   align-items:center;
   gap:28px;
@@ -788,6 +789,15 @@ select,input[type='search'] {
   z-index:11
 }
 
+/* Keep both persistent widgets away from the game's touch surface. */
+.games-page .fox-assistant {
+  position:relative;
+  left:auto;
+  bottom:auto;
+  width:60px;
+  margin:16px max(16px,env(safe-area-inset-left));
+}
+
 .fox-toggle {
   border-radius:50%;
   width:60px;
@@ -865,7 +875,8 @@ select,input[type='search'] {
   inset:0;
   z-index:-1;
   pointer-events:none;
-  overflow:hidden
+  overflow:hidden;
+  contain:strict
 }
 
 .petal {
@@ -879,7 +890,7 @@ select,input[type='search'] {
   animation-delay:var(--delay)
 }
 
-.page-hidden .petal {
+.petal[hidden],.page-hidden .petal {
   animation-play-state:paused
 }
 
@@ -1002,7 +1013,8 @@ select,input[type='search'] {
   }
 
   .site-header {
-    padding:16px 0
+    padding:16px 0;
+    min-height:130px
   }
 
   .main-nav {
@@ -1125,7 +1137,7 @@ select,input[type='search'] {
   }
 
   .background {
-    background-image:image-set(url('../assets/images/background-mobile.webp') type('image/webp'),url('../assets/images/background.jpg.jpg') type('image/jpeg'))
+    background-image:image-set(url('../assets/images/background-mobile.avif') type('image/avif'),url('../assets/images/background-mobile.webp') type('image/webp'),url('../assets/images/background.jpg.jpg') type('image/jpeg'))
   }
 
 }
@@ -1148,4 +1160,20 @@ select,input[type='search'] {
     transform:none
   }
 
+}
+
+/* Game flips affect only a compositor-friendly transform, never card geometry. */
+.memory-card { position:relative; padding:0; perspective:600px; }
+.memory-inner { display:block; position:absolute; inset:0; transform-style:preserve-3d; transition:transform .25s ease; }
+.memory-back,.memory-front { position:absolute; inset:0; display:grid; place-items:center; backface-visibility:hidden; -webkit-backface-visibility:hidden; }
+.memory-front { transform:rotateY(180deg); }
+.memory-card[data-open='true'] .memory-inner { transform:rotateY(180deg); }
+.memory-grid[data-state='PAUSED'] .memory-inner { opacity:.35; }
+.game-toolbar label,.game-toolbar>span { font-size:13px; }
+#game-difficulty { max-width:100%; min-height:44px; }
+#game-time { font-variant-numeric:tabular-nums; }
+.project-card,.work-card { contain:layout style; }
+@media(max-width:599px) {
+  .hero,.fox-bubble { backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); }
+  .glass { box-shadow:0 6px 20px #7147600d; }
 }

@@ -30,10 +30,14 @@
   const find = id => document.getElementById(id);
   const button = find('music-toggle'), state = find('music-state'), progress = find('music-progress');
   const volume = find('music-volume'), mute = find('music-mute'), disclosure = root.querySelector('details');
+  const currentLabel=find('music-current'),durationLabel=find('music-duration'),volumeLabel=find('volume-value');
+  const symbol=root.querySelector('.cd-symbol'),prompt=root.querySelector('.cd-prompt');
+  let shownSecond=-1,shownDuration=-1,uiFrame=0;
   find('music-title').textContent = settings.title || '背景音乐'; find('music-artist').textContent = settings.artist || '';
   const cover = root.querySelector('.cd-cover');
   cover.addEventListener('error', () => { cover.hidden = true; }, { once: true });
-  cover.src = url(settings.cover || window.SITE_CONFIG.avatarWebp || window.SITE_CONFIG.avatar);
+  cover.src = url(settings.cover || window.SITE_CONFIG.avatarSmall || window.SITE_CONFIG.avatarWebp || window.SITE_CONFIG.avatar);
+  if(!settings.cover && window.SITE_CONFIG.avatarSmall){cover.srcset=`${url(window.SITE_CONFIG.avatarSmall)} 160w, ${url(window.SITE_CONFIG.avatarWebp)} 336w`;cover.sizes='(max-width:599px) 60px, 88px';}
   const time = seconds => { const value = Math.max(0, Math.floor(Number.isFinite(seconds) ? seconds : 0)); return `${String(Math.floor(value / 60)).padStart(2, '0')}:${String(value % 60).padStart(2, '0')}`; };
   function save() {
     lastSave = Date.now();
@@ -44,20 +48,24 @@
     root.classList.toggle('is-playing', playing); root.classList.toggle('needs-play', blocked || failed);
     button.setAttribute('aria-label', playing || pending ? '暂停音乐' : failed ? '音乐加载失败，点击重试' : '播放音乐');
     button.setAttribute('aria-pressed', String(playing)); button.setAttribute('aria-busy', String(pending));
-    root.querySelector('.cd-symbol').textContent = playing || pending ? 'Ⅱ' : '▶';
-    root.querySelector('.cd-prompt').textContent = failed ? '点击重试' : '点击播放';
+    symbol.textContent = playing || pending ? 'Ⅱ' : '▶';
+    prompt.textContent = failed ? '点击重试' : '点击播放';
     const text = message || (failed ? '音频加载失败，请点击光碟重试。' : blocked ? '浏览器阻止了自动播放，点击光碟即可播放。' : pending ? '正在加载…' : playing ? '正在播放 · 单曲循环' : '已暂停 · 点击光碟播放');
     if (state.textContent !== text) state.textContent = text;
     button.title = text;
   }
   function updateTime() {
+    uiFrame=0;
+    if(document.hidden||!disclosure.open)return;
     const duration = Number.isFinite(audio.duration) ? audio.duration : 0;
-    progress.disabled = !duration; progress.max = String(duration); progress.value = String(audio.currentTime);
-    progress.setAttribute('aria-valuetext', `${time(audio.currentTime)} / ${time(duration)}`);
-    find('music-current').textContent = time(audio.currentTime); find('music-duration').textContent = time(duration);
+    if(duration!==shownDuration){progress.disabled=!duration;progress.max=String(duration);durationLabel.textContent=time(duration);shownDuration=duration;}
+    progress.value=String(audio.currentTime);
+    const second=Math.floor(audio.currentTime);
+    if(second!==shownSecond){currentLabel.textContent=time(second);progress.setAttribute('aria-valuetext',`${time(second)} / ${time(duration)}`);shownSecond=second;}
   }
+  function queueTime(){if(!uiFrame&&!document.hidden&&disclosure.open)uiFrame=requestAnimationFrame(updateTime);}
   function updateVolume() {
-    volume.value = String(audio.volume); find('volume-value').textContent = `${Math.round(audio.volume * 100)}%`;
+    volume.value = String(audio.volume); volumeLabel.textContent = `${Math.round(audio.volume * 100)}%`;
     const label = audio.muted ? '取消静音' : '静音'; mute.textContent = label; mute.setAttribute('aria-label', label); mute.setAttribute('aria-pressed', String(audio.muted));
   }
   async function play() {
@@ -78,9 +86,11 @@
   }
   function pause() { ++request; wanted = false; pending = false; blocked = false; audio.pause(); update(); save(); }
   button.addEventListener('click', () => { if (failed || blocked) play(); else if (pending || !audio.paused) pause(); else play(); });
-  volume.addEventListener('input', () => { audio.volume = Number(volume.value); updateVolume(); save(); });
+  volume.addEventListener('input', () => { audio.volume = Number(volume.value); updateVolume(); });
+  volume.addEventListener('change', save);
   mute.addEventListener('click', () => { audio.muted = !audio.muted; updateVolume(); save(); });
-  progress.addEventListener('input', () => { if (Number.isFinite(audio.duration)) audio.currentTime = Math.min(Number(progress.value), Math.max(0, audio.duration - .01)); updateTime(); save(); });
+  progress.addEventListener('input', () => { if (Number.isFinite(audio.duration)) audio.currentTime = Math.min(Number(progress.value), Math.max(0, audio.duration - .01)); queueTime(); });
+  progress.addEventListener('change',save);
   audio.addEventListener('loadedmetadata', () => {
     if (!restored && Number.isFinite(audio.duration) && audio.duration > 0) {
       if (restoreTime > 0) audio.currentTime = restoreTime % audio.duration;
@@ -89,18 +99,19 @@
     updateTime();
   });
   audio.addEventListener('durationchange', updateTime);
-  audio.addEventListener('timeupdate', () => { updateTime(); if (Date.now() - lastSave >= 5000) save(); });
-  audio.addEventListener('seeked', save);
-  audio.addEventListener('volumechange', () => { updateVolume(); save(); });
+  audio.addEventListener('timeupdate', () => { queueTime(); if (Date.now() - lastSave >= 5000) save(); });
+  audio.addEventListener('seeked', () => { if(Date.now()-lastSave>=1000)save(); });
+  audio.addEventListener('volumechange', () => { updateVolume(); if(Date.now()-lastSave>=1000)save(); });
   audio.addEventListener('playing', () => { pending = false; failed = false; blocked = false; update(); });
   audio.addEventListener('pause', () => { update(); save(); });
   audio.addEventListener('waiting', () => { if (wanted) update('正在缓冲…'); });
   audio.addEventListener('error', () => { ++request; pending = false; failed = true; update(); save(); });
-  function visibility() { root.classList.toggle('is-hidden-page', document.hidden); if (document.hidden) save(); }
+  function visibility() { root.classList.toggle('is-hidden-page', document.hidden); if (document.hidden) {cancelAnimationFrame(uiFrame);uiFrame=0;save();}else queueTime(); }
   document.addEventListener('visibilitychange', visibility); window.addEventListener('pagehide', save);
   window.addEventListener('pageshow', () => { visibility(); update(); });
   disclosure.addEventListener('toggle', () => {
-    if (!disclosure.open) return;
+    if (!disclosure.open) {cancelAnimationFrame(uiFrame);uiFrame=0;return;}
+    updateTime();
     const bubble = find('fox-bubble'); if (bubble) bubble.hidden = true;
     document.querySelector('.fox-toggle')?.setAttribute('aria-expanded', 'false');
   });

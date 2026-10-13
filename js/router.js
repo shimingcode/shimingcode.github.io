@@ -9,19 +9,27 @@
   const routes = new Map([
     ['./', ['icons', 'links', 'projects-data', 'projects']],
     ['./links/', ['icons', 'links']], ['./projects/', ['projects-data', 'projects']],
-    ['./games/', ['games']], ['./about/', []], ['./works.html', ['works-data', 'works']]
+    ['./games/', ['game-engine', 'games']], ['./about/', []], ['./works.html', ['works-data', 'works']]
   ].map(([path, scripts]) => [normalize(new URL(url(path)).pathname), scripts]));
   const loaded = new Map([...document.querySelectorAll('script[src]')].map(script => [script.src, Promise.resolve()]));
   const styles = new Map([...document.querySelectorAll('link[rel="stylesheet"]')].map(link => [link.href, Promise.resolve()]));
   let controller, rendered = new URL(location.href), key = 0, nextKey = 0;
   const positions = new Map();
+  const documents = new Map();
+  window.SiteNavigation=Object.freeze({invalidate(){documents.clear();},get cacheSize(){return documents.size;}});
+  const cacheKey = target => normalize(target.pathname)+target.search;
+  // Cache immutable response text, never detached page DOM or event handlers.
   history.replaceState({ ...history.state, shimingPage: key }, '', location.href);
   history.scrollRestoration = 'manual';
   function known(target) { return target.origin === location.origin && routes.has(normalize(target.pathname)); }
-  function remember() { positions.set(key, [scrollX, scrollY]); }
+  function remember() {
+    const position=positions.get(key);
+    if(position){position[0]=scrollX;position[1]=scrollY;}else positions.set(key,[scrollX,scrollY]);
+    if(positions.size>100)positions.delete(positions.keys().next().value);
+  }
   window.addEventListener('scroll', remember, { passive: true });
   function asset(name, style = false) {
-    const source = url(style ? `./css/${name}.css?v=3` : `./js/${name}.js?v=3`);
+    const source = url(style ? `./css/${name}.css?v=4` : `./js/${name}.js?v=4`);
     const cache = style ? styles : loaded;
     if (!cache.has(source)) {
       cache.set(source, new Promise((resolve, reject) => {
@@ -56,23 +64,31 @@
       const samePage = normalize(rendered.pathname) === normalize(target.pathname) && rendered.search === target.search;
       let incoming, page;
       if (!samePage) {
-        const response = await fetch(target.href, { signal: task.signal, headers: { Accept: 'text/html' } });
-        if (!response.ok || !known(new URL(response.url)) || !response.headers.get('content-type')?.includes('text/html')) throw new Error('Not a site page');
-        target = new URL(response.url); target.hash = fragment;
-        page = new DOMParser().parseFromString(await response.text(), 'text/html');
-        incoming = page.getElementById('main');
-        if (!incoming || !page.getElementById('music-root') || page.documentElement.dataset.siteShell !== 'music-v3') throw new Error('Incompatible page shell');
+        const id=cacheKey(target),cached=documents.get(id);
+        let html, fetched = false;
+        if(cached&&performance.now()-cached.time<60000){html=cached.html;documents.delete(id);documents.set(id,cached);}
+        else {
+          const response = await fetch(target.href, { signal: task.signal, headers: { Accept: 'text/html' } });
+          if (!response.ok || !known(new URL(response.url)) || !response.headers.get('content-type')?.includes('text/html')) throw new Error('Not a site page');
+          target = new URL(response.url); target.hash = fragment; html=await response.text(); fetched = true;
+        }
+        // A template uses one inert owner document and never starts image/media requests.
+        // Parsing a whole detached Document on every route retained extra document resources.
+        page = document.createElement('template'); page.innerHTML = html;
+        incoming = page.content.querySelector('#main');
+        if (!incoming || !page.content.querySelector('#music-root') || page.content.querySelector('meta[name="site-shell"]')?.content !== 'music-v4') throw new Error('Incompatible page shell');
+        if(fetched){documents.delete(id);documents.set(id,{html,time:performance.now()});if(documents.size>6)documents.delete(documents.keys().next().value);}
         for (const script of routes.get(normalize(target.pathname))) await asset(script);
-        if (page.body.classList.contains('works-page')) await asset('works', true);
+        if (incoming.dataset.pageClass === 'works-page') await asset('works', true);
         if (controller !== task || task.signal.aborted) throw new Error('Navigation cancelled');
       }
       if (!pop) { key = ++nextKey; history.pushState({ shimingPage: key }, '', target.href); }
       else { key = state?.shimingPage ?? ++nextKey; history.replaceState({ ...history.state, shimingPage: key }, '', target.href); }
       if (incoming) {
-        unmount(); document.body.className = page.body.className;
-        main.replaceWith(document.importNode(incoming, true)); document.title = page.title;
+        unmount(); document.body.className = incoming.dataset.pageClass || '';
+        main.replaceWith(document.importNode(incoming, true)); document.title = page.content.querySelector('title')?.textContent || document.title;
         for (const selector of ['meta[name="description"]', 'meta[property="og:title"]', 'meta[property="og:description"]']) {
-          const content = page.querySelector(selector)?.content;
+          const content = page.content.querySelector(selector)?.content;
           if (content !== undefined && document.querySelector(selector)) document.querySelector(selector).content = content;
         }
         mount();

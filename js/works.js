@@ -59,6 +59,7 @@ window.Site.register('works', () => {
         placeholder.innerHTML = '<span aria-hidden="true">✧</span><strong>预览图暂不可用，点击查看原图</strong>';
         image.replaceWith(placeholder);
       });
+      if(work.thumbnailSrcset){image.srcset=work.thumbnailSrcset;image.sizes='(max-width:599px) calc(100vw - 32px), (max-width:900px) 45vw, 280px';}
       image.src = primaryImage;
       const copy = document.createElement('span'); copy.className = 'work-card-copy';
       const heading = document.createElement('span'); heading.className = 'work-card-title'; heading.textContent = work.title || '未命名作品'; copy.append(heading);
@@ -77,7 +78,9 @@ window.Site.register('works', () => {
     const work = works[currentIndex];
     if (!work) return;
     preview.classList.remove('image-load-failed');
-    preview.src = work.image; preview.alt = work.title || '摄影作品';
+    preview.src = work.preview || work.image; preview.alt = work.title || '摄影作品';
+    const original=document.getElementById('lightbox-original');
+    if(original)original.href=window.Site.url(work.image);
     title.textContent = work.title || '';
     details.textContent = [work.date, work.category, work.description, ...(work.tags || []).map(tag => `#${tag}`)].filter(Boolean).join(' · ');
     if (!dialog.open) dialog.showModal();

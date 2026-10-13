@@ -31,8 +31,8 @@ async function check(name, fn) { await fn(); checks.push(name); console.log(`PAS
     assert(external.every(a=>a.target==='_blank'&&a.rel.includes('noopener')&&a.rel.includes('noreferrer')));
   });
   await check('Directory search, empty state, category, sorting, focus preservation',async()=>{
-    await page.getByRole('searchbox',{name:'搜索平台'}).fill('telegram');assert.equal(await page.locator('.social-card').count(),1);
-    await page.getByRole('searchbox').fill('does-not-exist');assert(await page.locator('.empty-state').isVisible());
+    await page.getByRole('searchbox',{name:'搜索平台'}).fill('telegram');await page.waitForFunction(()=>document.querySelectorAll('.social-card').length===1);assert.equal(await page.locator('.social-card').count(),1);
+    await page.getByRole('searchbox').fill('does-not-exist');await page.waitForSelector('.empty-state');assert(await page.locator('.empty-state').isVisible());
     await page.getByRole('searchbox').fill('');
     await page.locator('#platform-filters').getByRole('button',{name:'联系',exact:true}).click();
     assert.equal(await page.locator('.social-card').count(),3);

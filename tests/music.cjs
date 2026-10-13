@@ -141,11 +141,13 @@ const playing = page => page.waitForFunction(()=>!document.getElementById('bgm')
     await tab.getByRole('button',{name:'音乐加载失败，点击重试',exact:true}).click();await playing(tab);await tab.close();
   });
   await check('Rapid navigation cancels stale results without reloading the document',async()=>{
+    await page.evaluate(()=>window.SiteNavigation?.invalidate());
     await page.route('**/about/',async route=>{await new Promise(r=>setTimeout(r,500));await route.continue().catch(()=>{});});
     await page.evaluate(()=>{window.navigationSentinel=true;document.querySelector('.main-nav a[href$="about/"]').click();document.querySelector('.main-nav a[href$="games/"]').click();});
     await page.waitForURL(base+'/games/');await page.waitForTimeout(700);assert.equal(await page.evaluate(()=>window.navigationSentinel),true);assert(page.url().endsWith('/games/'));await page.unroute('**/about/');
   });
   await check('Fetch failure falls back to real HTML and restores progress',async()=>{
+    await page.evaluate(()=>window.SiteNavigation?.invalidate());
     await page.evaluate(()=>window.fullNavigationSentinel=true);
     const before=await current(page);
     await page.route('**/projects/',async route=>{if(route.request().resourceType()==='fetch')await route.fulfill({status:503,body:'Unavailable fixture'});else await route.continue();});

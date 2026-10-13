@@ -4,6 +4,9 @@ window.SITE_CONFIG = {
   "bio": "喜欢狐狐",
   "status": "♡ Welcome to my little world ♡",
   "avatar": "./assets/images/avatar-small.jpg",
+  "avatarSmall": "./assets/images/avatar-160.webp",
+  "backgroundAvif": "./assets/images/background.avif",
+  "backgroundMobileAvif": "./assets/images/background-mobile.avif",
   "avatarWebp": "./assets/images/avatar.webp",
   "background": "./assets/images/background.jpg.jpg",
   "backgroundWebp": "./assets/images/background.webp",
@@ -148,7 +151,7 @@ window.SITE_CONFIG = {
   "assistant": {
     "enabled": true,
     "name": "狐狐",
-    "image": "./assets/images/avatar.webp",
+    "image": "./assets/images/avatar-160.webp",
     "greetings": [
       "今天也要记得休息一下呀。",
       "一片樱花，送给路过的你。",
