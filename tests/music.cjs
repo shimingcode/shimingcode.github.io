@@ -114,15 +114,14 @@ const playing = page => page.waitForFunction(()=>!document.getElementById('bgm')
       if(width===390)await page.screenshot({path:path.join(output,'cd-mobile-collapsed.png')});
     }
   });
-  await check('Rejected autoplay fixture makes one attempt, displays a button and allows a real manual play',async()=>{
+    await check('Rejected autoplay fixture waits for a real navigation gesture then starts once',async()=>{
     const blockedContext=await browser.newContext();
     await blockedContext.addInitScript(()=>{window.attempts=0;const play=HTMLMediaElement.prototype.play;HTMLMediaElement.prototype.play=function(){if(++window.attempts===1)return Promise.reject(new DOMException('Autoplay blocked','NotAllowedError'));return play.call(this);};});
     const tab=await blockedContext.newPage();await tab.goto(base+'/');
     await tab.waitForFunction(()=>document.querySelector('.music-player').classList.contains('needs-play'));
     assert(await tab.locator('.cd-prompt').isVisible());assert.equal(await tab.evaluate(()=>window.attempts),1);
     await tab.locator('.main-nav').getByRole('link',{name:'项目',exact:true}).click();await tab.waitForURL(base+'/projects/');
-    await tab.waitForTimeout(300);assert.equal(await tab.evaluate(()=>window.attempts),1);
-    await tab.getByRole('button',{name:'播放音乐',exact:true}).click();await playing(tab);assert.equal(await tab.evaluate(()=>window.attempts),2);
+      await playing(tab);assert.equal(await tab.evaluate(()=>window.attempts),2);
     await blockedContext.close();
   });
   await check('Game page reserves its touch surface; the CD never overlaps cards or restart',async()=>{
