@@ -12,6 +12,7 @@
   const clamp = (value, fallback, max = 1) => typeof value === 'number' && Number.isFinite(value) ? Math.max(0, Math.min(max, value)) : fallback;
   let restoreTime = clamp(saved.currentTime, 0, Number.MAX_SAFE_INTEGER);
   let wanted = saved.isPlaying !== false, pending = false, failed = false, blocked = false, request = 0, lastSave = 0, restored = false;
+  let gestureEvents = null;
   audio.loop = true; audio.preload = 'metadata';
   audio.volume = clamp(saved.volume, clamp(Number(storage.get('volume', String(settings.volume ?? .25))), .25));
   audio.muted = saved.muted === true;
@@ -49,8 +50,8 @@
     button.setAttribute('aria-label', playing || pending ? '暂停音乐' : failed ? '音乐加载失败，点击重试' : '播放音乐');
     button.setAttribute('aria-pressed', String(playing)); button.setAttribute('aria-busy', String(pending));
     symbol.textContent = playing || pending ? 'Ⅱ' : '▶';
-    prompt.textContent = failed ? '点击重试' : '点击播放';
-    const text = message || (failed ? '音频加载失败，请点击光碟重试。' : blocked ? '浏览器阻止了自动播放，点击光碟即可播放。' : pending ? '正在加载…' : playing ? '正在播放 · 单曲循环' : '已暂停 · 点击光碟播放');
+    prompt.textContent = failed ? '点击重试' : blocked && gestureEvents ? '轻触页面播放' : '点击播放';
+    const text = message || (failed ? '音频加载失败，请点击光碟重试。' : blocked ? gestureEvents ? '轻触页面、点击或按键即可尝试播放音乐，也可点击光碟。' : '浏览器仍阻止播放，请点击光碟重试。' : pending ? '正在加载…' : playing ? '正在播放 · 单曲循环' : '已暂停 · 点击光碟播放');
     if (state.textContent !== text) state.textContent = text;
     button.title = text;
   }
@@ -68,23 +69,39 @@
     volume.value = String(audio.volume); volumeLabel.textContent = `${Math.round(audio.volume * 100)}%`;
     const label = audio.muted ? '取消静音' : '静音'; mute.textContent = label; mute.setAttribute('aria-label', label); mute.setAttribute('aria-pressed', String(audio.muted));
   }
-  async function play() {
+  function clearGesture() { gestureEvents?.abort(); gestureEvents = null; }
+  function waitForGesture() {
+    clearGesture(); gestureEvents = new AbortController();
+    const options = { signal: gestureEvents.signal, passive: true };
+    const activate = event => {
+      if (!event.isTrusted || !wanted || !blocked || pending || failed || document.hidden) return;
+      // Let the CD's own click handler run, without immediately toggling playback twice.
+      if (button.contains(event.target)) return;
+      if ((event.type === 'click' || event.type === 'pointerup') && event.button !== 0) return;
+      if (event.type === 'keydown' && (event.repeat || event.ctrlKey || event.altKey || event.metaKey || ['Escape','Shift','Control','Alt','Meta','CapsLock','NumLock','ScrollLock','PrintScreen'].includes(event.key))) return;
+      // One real gesture retry. A further rejection leaves the explicit CD control available.
+      clearGesture(); play();
+    };
+    for (const type of ['pointerup', 'touchend', 'click', 'keydown']) document.addEventListener(type, activate, options);
+  }
+  async function play(automatic = false) {
+    clearGesture();
     const attempt = ++request; wanted = true; pending = true; failed = false; blocked = false; update(); save();
     if (audio.error) { restoreTime = restored ? audio.currentTime : restoreTime; restored = false; audio.load(); }
     try {
-      // Called directly within the manual click; no fabricated gesture or silent autoplay.
+      // Gesture retries call play synchronously, while the browser's activation is available.
       await audio.play();
       if (attempt !== request) return;
       pending = false; update(); save();
     } catch (error) {
       if (attempt !== request) return;
       pending = false;
-      if (error.name === 'NotAllowedError') blocked = true;
+      if (error.name === 'NotAllowedError') { blocked = true; if (automatic && wanted) waitForGesture(); }
       else if (error.name !== 'AbortError') failed = true;
       update(); save();
     }
   }
-  function pause() { ++request; wanted = false; pending = false; blocked = false; audio.pause(); update(); save(); }
+  function pause() { clearGesture(); ++request; wanted = false; pending = false; blocked = false; audio.pause(); update(); save(); }
   button.addEventListener('click', () => { if (failed || blocked) play(); else if (pending || !audio.paused) pause(); else play(); });
   volume.addEventListener('input', () => { audio.volume = Number(volume.value); updateVolume(); });
   volume.addEventListener('change', save);
@@ -102,10 +119,10 @@
   audio.addEventListener('timeupdate', () => { queueTime(); if (Date.now() - lastSave >= 5000) save(); });
   audio.addEventListener('seeked', () => { if(Date.now()-lastSave>=1000)save(); });
   audio.addEventListener('volumechange', () => { updateVolume(); if(Date.now()-lastSave>=1000)save(); });
-  audio.addEventListener('playing', () => { pending = false; failed = false; blocked = false; update(); });
+  audio.addEventListener('playing', () => { clearGesture(); pending = false; failed = false; blocked = false; update(); });
   audio.addEventListener('pause', () => { update(); save(); });
   audio.addEventListener('waiting', () => { if (wanted) update('正在缓冲…'); });
-  audio.addEventListener('error', () => { ++request; pending = false; failed = true; update(); save(); });
+  audio.addEventListener('error', () => { clearGesture(); ++request; pending = false; failed = true; update(); save(); });
   function visibility() { root.classList.toggle('is-hidden-page', document.hidden); if (document.hidden) {cancelAnimationFrame(uiFrame);uiFrame=0;save();}else queueTime(); }
   document.addEventListener('visibilitychange', visibility); window.addEventListener('pagehide', save);
   window.addEventListener('pageshow', () => { visibility(); update(); });
@@ -119,5 +136,5 @@
   window.SiteMusic = Object.freeze({ save });
   updateVolume(); update(); visibility(); audio.src = source;
   // Exactly one automatic attempt per document, unless the user previously chose pause.
-  if (wanted) play();
+  if (wanted) play(true);
 })();
