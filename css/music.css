@@ -1,12 +1,13 @@
 .music-player {
   --disc-size:88px; position:fixed; z-index:12;
   right:calc(18px + env(safe-area-inset-right)); bottom:calc(16px + env(safe-area-inset-bottom));
-  width:var(--disc-size); filter:drop-shadow(0 6px 12px #a7366c26);
+  width:var(--disc-size);
 }
 .cd-button {
   position:relative; display:block; width:var(--disc-size); height:var(--disc-size);
   padding:0; border:0; border-radius:50%; background:transparent;
   box-shadow:0 0 0 3px #ffffff80,0 0 22px #f7a4cb80; -webkit-tap-highlight-color:transparent;
+  filter:drop-shadow(0 6px 12px #a7366c26);
 }
 .cd-button:hover { transform:none; box-shadow:0 0 0 3px #fff,0 0 28px #ec93bd; }
 .cd-disc {
@@ -37,7 +38,7 @@
 .is-playing:not(.is-hidden-page) .cd-disc { animation-play-state:running; }
 .music-disclosure > summary {
   list-style:none; width:44px; min-height:32px; margin:5px auto 0; display:flex; align-items:center; justify-content:center; gap:6px;
-  border:1px solid var(--border); border-radius:20px; background:var(--surface); color:var(--text); font-size:12px; backdrop-filter:blur(14px);
+  border:1px solid var(--border); border-radius:20px; background:var(--surface); color:var(--text); font-size:12px; backdrop-filter:blur(var(--glass-blur)); -webkit-backdrop-filter:blur(var(--glass-blur));
 }
 .music-disclosure > summary::-webkit-details-marker { display:none; }
 .music-disclosure[open] > summary span { transform:rotate(180deg); }
@@ -45,7 +46,8 @@
   position:absolute; right:0; bottom:calc(100% + 14px);
   width:min(300px,calc(100vw - 40px - env(safe-area-inset-right) - env(safe-area-inset-left)));
   max-height:calc(100dvh - 160px - env(safe-area-inset-bottom)); overflow:auto;
-  padding:20px; border-radius:22px; background:var(--solid);
+  padding:20px; border-radius:var(--glass-radius); background:var(--glass-hover);
+  backdrop-filter:blur(var(--overlay-blur,6px)); -webkit-backdrop-filter:blur(var(--overlay-blur,6px));
 }
 .music-panel .eyebrow { font-size:9px; letter-spacing:.13em; margin:0 0 10px; }
 #music-title { display:block; font-size:20px; }
@@ -64,6 +66,7 @@
   .music-player { --disc-size:60px; right:calc(12px + env(safe-area-inset-right)); bottom:calc(8px + env(safe-area-inset-bottom)); }
   .cd-symbol { width:24px; height:24px; font-size:11px; }
   .music-disclosure > summary { min-height:44px; }
-  .music-panel { padding:16px; }
+  .music-panel { padding:16px; --overlay-blur:4px; }
 }
+:root[data-glass-quality='low'] .music-panel { --overlay-blur:2px; }
 @media(prefers-reduced-motion:reduce) { .cd-disc { animation:none; } }

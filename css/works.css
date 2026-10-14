@@ -19,7 +19,7 @@
   overflow:hidden;
   padding:0;
   border:1px solid var(--border);
-  border-radius:20px;
+  border-radius:var(--glass-radius);
   background:var(--surface);
   color:var(--text);
   text-align:left;
@@ -30,7 +30,7 @@
 
 .work-card:hover {
   transform:translateY(-3px);
-  border-color:var(--accent)
+  border-color:var(--glass-border-hover)
 }
 
 .work-card img {
@@ -112,12 +112,13 @@
   max-height:none;
   padding:60px 40px 28px;
   border:0;
-  background:#18111ded;
-  color:white
+  background:rgba(20,15,30,.28);
+  color:white;
+  text-shadow:0 1px 3px #080611
 }
 
 .lightbox::backdrop {
-  background:#18111de0
+  background:rgba(20,15,30,.48)
 }
 
 .lightbox[open] {

@@ -13,7 +13,8 @@
     "test:performance": "node tests/performance.cjs",
     "measure": "node scripts/measure-performance.cjs",
     "audit": "node scripts/audit-lighthouse.cjs",
-    "test:music-gesture": "node tests/music-gesture.cjs"
+    "test:music-gesture": "node tests/music-gesture.cjs",
+    "test:glass": "node tests/glass.cjs after"
   },
   "devDependencies": {
     "playwright": "1.62.1"

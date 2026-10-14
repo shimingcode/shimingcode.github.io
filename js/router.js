@@ -29,7 +29,7 @@
   }
   window.addEventListener('scroll', remember, { passive: true });
   function asset(name, style = false) {
-    const source = url(style ? `./css/${name}.css?v=4` : `./js/${name}.js?v=4`);
+    const source = url(style ? `./css/${name}.css?v=6` : `./js/${name}.js?v=4`);
     const cache = style ? styles : loaded;
     if (!cache.has(source)) {
       cache.set(source, new Promise((resolve, reject) => {
