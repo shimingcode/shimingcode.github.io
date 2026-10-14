@@ -198,7 +198,7 @@ git push -u origin codex/frontend-performance
 # 测试通过后通过 Pull Request 合并到 main，触发现有 Pages 部署
 ```
 
-检查 Actions 的当前提交部署成功后，再打开各个线上页面。音乐脚本使用 `?v=5`，其余 CSS/JS 使用稳定的 `?v=4` 版本标识避开上一版缓存；以后发布不兼容版本时统一更新该值，不使用每次访问变化的随机参数。浏览器缓存旧内容时可 Ctrl+F5 刷新。
+检查 Actions 的当前提交部署成功后，再打开各个线上页面。音乐脚本使用 `?v=5`，样式、主题初始化及路由脚本使用 `?v=6`，其余 JS 保持 `?v=4` 版本标识避开上一版缓存；以后发布不兼容版本时统一更新该值，不使用每次访问变化的随机参数。浏览器缓存旧内容时可 Ctrl+F5 刷新。
 
 如改为另一个普通项目仓库，目录页面和配置资源仍使用相对路径；请将 `404.html` 的首页及 favicon 地址从 `/` 和 `/favicon.svg` 改为实际项目子路径。当前没有 `CNAME`，此次未设置自定义域名。
 
@@ -227,3 +227,7 @@ npm run measure -- after _site
 Lighthouse 是可选开发工具，不进入站点依赖或发布包：另行安装 `lighthouse@13.0.1`，使用 `LIGHTHOUSE_PATH` 指向其 `core/index.js`，然后 `npm run audit -- after _site`。默认使用本机 Edge；其他 Chromium 可设置 `CHROME_PATH`。对比前先保留旧版独立静态快照，测量时不要并行运行浏览器测试。原始 JSON、HTML 报告及截图写入被忽略的 `test-results/`。
 
 首次交互播放回归：`npm run test:music-gesture`，覆盖鼠标、触摸、键盘、模拟事件、重复拒绝、暂停偏好和跨页行为。
+
+## 透明面板
+
+透明背景、边框、圆角、阴影和模糊集中在 `css/style.css` 的 `--glass-*` 变量中；`.glass` 与 `.glass-panel` 共用基础样式。三套主题保留不同文字与透明底色。手机列表卡片关闭模糊，弱设备提示关闭大面板模糊、播放器仅保留 2px。图片、CD 和游戏卡牌本体保留清晰度。运行 `npm run test:glass` 生成三套主题截图和计算样式检查。详见 [透明面板验收记录](docs/transparent-panels.md)。

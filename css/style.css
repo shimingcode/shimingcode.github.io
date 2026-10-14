@@ -1,56 +1,72 @@
 :root {
   color-scheme:light;
-  --text:#392b3a;
-  --muted:#6d5265;
-  --accent:#a52f64;
+  --text:#2e1d2c;
+  --muted:#49303e;
+  --accent:#84224f;
   --accent-strong:#84224f;
   --pink:#e9abc7;
   --light-pink:#ffe0ed;
   --background-color:#fff3f8;
-  --surface:#fff8fbed;
+  --glass-bg:rgba(255,255,255,.12);
+  --glass-card-bg:rgba(255,255,255,.10);
+  --glass-hover:rgba(255,255,255,.18);
+  --glass-border:rgba(206,112,157,.42);
+  --glass-border-hover:rgba(190,80,133,.64);
+  --glass-blur:4px;
+  --hero-blur:2px;
+  --glass-radius:20px;
+  --glass-shadow:0 8px 28px rgba(139,51,99,.10);
+  --reading-shadow:0 1px 2px rgba(255,248,252,.95),0 0 5px rgba(255,248,252,.75);
+  --surface:var(--glass-bg);
   --solid:#fff8fb;
-  --card:#fffffff0;
-  --tint:#fce8f1;
-  --border:#d9b8c9;
-  --shadow:0 12px 40px #71476012;
-  --wash:#fff3f89c;
-  --radius:24px
+  --card:var(--glass-card-bg);
+  --tint:rgba(248,184,214,.18);
+  --border:var(--glass-border);
+  --shadow:var(--glass-shadow);
+  --wash:rgba(255,243,248,.08);
+  --radius:var(--glass-radius)
 }
 
 :root[data-theme='star'] {
   color-scheme:dark;
   --text:#edf2ff;
-  --muted:#c0cce6;
-  --accent:#b6ccff;
+  --muted:#e0e8fa;
+  --accent:#d3e2ff;
   --accent-strong:#d9e5ff;
   --pink:#9aaef4;
   --light-pink:#273d65;
   --background-color:#101c37;
-  --surface:#16243bef;
+  --glass-bg:rgba(18,38,70,.18);
+  --glass-card-bg:rgba(18,38,70,.14);
+  --glass-hover:rgba(18,38,70,.26);
+  --glass-border:rgba(169,196,249,.38);
+  --glass-border-hover:rgba(194,212,255,.65);
+  --glass-shadow:0 8px 28px rgba(6,12,33,.15);
+  --reading-shadow:0 1px 2px rgba(6,12,33,.95),0 0 5px rgba(6,12,33,.8);
   --solid:#16243b;
-  --card:#203252f2;
-  --tint:#2a3e61;
-  --border:#53688b;
-  --shadow:0 12px 40px #060c212e;
-  --wash:#101d39b8
+  --tint:rgba(140,177,240,.18);
+  --wash:rgba(9,20,46,.52)
 }
 
 :root[data-theme='night'] {
   color-scheme:dark;
   --text:#f7eef8;
-  --muted:#cec0d2;
+  --muted:#eee0f1;
   --accent:#edb1d5;
   --accent-strong:#ffdaee;
   --pink:#b889af;
   --light-pink:#403044;
   --background-color:#19161e;
-  --surface:#25202cf2;
+  --glass-bg:rgba(20,20,35,.28);
+  --glass-card-bg:rgba(20,20,35,.22);
+  --glass-hover:rgba(20,20,35,.34);
+  --glass-border:rgba(227,169,212,.35);
+  --glass-border-hover:rgba(240,183,222,.6);
+  --glass-shadow:0 8px 28px rgba(12,8,22,.15);
+  --reading-shadow:0 1px 2px rgba(12,8,22,.95),0 0 5px rgba(12,8,22,.8);
   --solid:#25202c;
-  --card:#302936f5;
-  --tint:#433347;
-  --border:#6e5773;
-  --shadow:0 12px 40px #0c08162e;
-  --wash:#1b1720c7
+  --tint:rgba(192,140,190,.18);
+  --wash:rgba(20,15,30,.54)
 }
 
 * {
@@ -68,6 +84,7 @@ body {
   min-height:100svh;
   isolation:isolate;
   color:var(--text);
+  text-shadow:var(--reading-shadow);
   font:15px/1.65 'Segoe UI','Microsoft YaHei',system-ui,sans-serif;
   padding-bottom:calc(100px + env(safe-area-inset-bottom));
   transition:color .2s,background-color .2s
@@ -313,19 +330,34 @@ select,input[type='search'] {
   color:var(--muted)
 }
 
-.glass {
-  border:1px solid var(--border);
-  background:var(--surface);
-  box-shadow:var(--shadow);
-  border-radius:var(--radius)
+.glass,.glass-panel,.social-card,.project-card,.work-card,.preferences-panel,.works-empty {
+  border:1px solid var(--glass-border);
+  background:var(--glass-bg);
+  box-shadow:var(--glass-shadow);
+  border-radius:var(--glass-radius);
+  backdrop-filter:blur(var(--glass-blur));
+  -webkit-backdrop-filter:blur(var(--glass-blur));
+  transition:background-color .25s,border-color .25s,box-shadow .25s,transform .25s
 }
 
-@supports(backdrop-filter:blur(8px)) {
-  .hero,.music-player,.fox-bubble {
-    backdrop-filter:blur(8px);
-    -webkit-backdrop-filter:blur(8px)
-  }
+/* Only one backdrop filter in a nested group; keep the large background legible. */
+.directory,.game-panel {
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none
+}
 
+.hero {
+  backdrop-filter:blur(var(--hero-blur));
+  -webkit-backdrop-filter:blur(var(--hero-blur))
+}
+
+@media(hover:hover) and (pointer:fine) {
+  .glass-panel:hover,.social-card:hover:not(:disabled),.project-card:hover,.work-card:hover {
+    background:var(--glass-hover);
+    border-color:var(--glass-border-hover);
+    box-shadow:var(--glass-shadow);
+    transform:translateY(-3px)
+  }
 }
 
 .hero {
@@ -397,7 +429,8 @@ select,input[type='search'] {
 .button.primary {
   background:var(--accent);
   color:var(--solid);
-  border-color:var(--accent)
+  border-color:var(--accent);
+  text-shadow:none
 }
 
 .profile {
@@ -570,9 +603,7 @@ select,input[type='search'] {
 }
 
 .social-card:hover:not(:disabled) {
-  transform:translateY(-4px);
-  border-color:var(--accent);
-  box-shadow:0 8px 22px #633d5a16
+  border-color:var(--glass-border-hover)
 }
 
 .social-card:active:not(:disabled) {
@@ -938,12 +969,12 @@ select,input[type='search'] {
   min-width:0;
   font-size:clamp(22px,5vw,42px);
   border-radius:18px;
-  background:var(--tint);
+  background:var(--solid);
   color:var(--accent)
 }
 
 .memory-card[data-matched='true'] {
-  background:var(--surface);
+  background:var(--solid);
   border-style:dashed
 }
 
@@ -1165,8 +1196,10 @@ select,input[type='search'] {
 /* Game flips affect only a compositor-friendly transform, never card geometry. */
 .memory-card { position:relative; padding:0; perspective:600px; }
 .memory-inner { display:block; position:absolute; inset:0; transform-style:preserve-3d; transition:transform .25s ease; }
-.memory-back,.memory-front { position:absolute; inset:0; display:grid; place-items:center; backface-visibility:hidden; -webkit-backface-visibility:hidden; }
-.memory-front { transform:rotateY(180deg); }
+.memory-back,.memory-front { position:absolute; inset:0; display:grid; place-items:center; border-radius:inherit; backface-visibility:hidden; -webkit-backface-visibility:hidden; }
+.memory-back { background:linear-gradient(145deg,var(--solid),var(--light-pink)); }
+.memory-inner { border-radius:inherit; }
+.memory-front { transform:rotateY(180deg); background:var(--solid); text-shadow:none; }
 .memory-card[data-open='true'] .memory-inner { transform:rotateY(180deg); }
 .memory-grid[data-state='PAUSED'] .memory-inner { opacity:.35; }
 .game-toolbar label,.game-toolbar>span { font-size:13px; }
@@ -1174,6 +1207,12 @@ select,input[type='search'] {
 #game-time { font-variant-numeric:tabular-nums; }
 .project-card,.work-card { contain:layout style; }
 @media(max-width:599px) {
-  .hero,.fox-bubble { backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); }
-  .glass { box-shadow:0 6px 20px #7147600d; }
+  :root { --glass-blur:2px; --hero-blur:1px; --glass-shadow:0 4px 14px rgba(60,25,49,.07); }
+  .social-card,.project-card,.work-card { backdrop-filter:none; -webkit-backdrop-filter:none; }
 }
+:root[data-glass-quality='low'] { --glass-blur:0px; --hero-blur:0px; --glass-shadow:none; }
+@media(prefers-reduced-motion:reduce) {
+  .glass-panel:hover,.social-card:hover,.project-card:hover,.work-card:hover { transform:none; }
+}
+/* Native option popups need a readable solid surface; the closed select stays transparent. */
+select option { color:var(--text); background:var(--solid); text-shadow:none; }
