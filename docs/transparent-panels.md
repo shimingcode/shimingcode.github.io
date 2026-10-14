@@ -46,7 +46,7 @@
 
 - `css/style.css`、`css/music.css`、`css/works.css`：统一透明主题、层次、模糊与卡牌样式。
 - `js/theme-init.js`：低性能提示；`js/router.js`：按需加载样式版本。
-- `index.html`、`links/index.html`、`projects/index.html`、`games/index.html`、`about/index.html`、`works.html`、`404.html`：对应资源版本。
+- `index.html`、`links/index.html`、`projects/index.html`、`games/index.html`、`about/index.html`、`works.html`：对应资源版本。
 - `tests/glass.cjs`、`package.json`：视觉回归入口。
 - `README.md`、本文：维护与验收记录。
 
