@@ -9,10 +9,11 @@ const context = { window: {} };
 for (const file of ['config', 'projects-data', 'works-data']) vm.runInNewContext(read(`js/${file}.js`), context);
 const config = context.window.SITE_CONFIG;
 const localPath = value => join(root, decodeURIComponent(value.split(/[?#]/)[0]));
-const pages = ['index.html','works.html','404.html','projects/index.html','games/index.html','links/index.html','about/index.html'];
+const pages = ['index.html','works.html','404.html','projects/index.html','games/index.html','games/funny-hit/index.html','links/index.html','about/index.html'];
 
 test('Every JavaScript file parses', () => {
   for (const file of readdirSync(join(root, 'js'))) if (file.endsWith('.js')) new vm.Script(read(`js/${file}`), { filename: file });
+  for (const file of readdirSync(join(root, 'games/funny-hit'))) if (file.endsWith('.js')) new vm.Script(read(`games/funny-hit/${file}`), { filename: file });
 });
 test('All eleven existing platform entries remain valid and configurable', () => {
   assert.equal(config.socialLinks.length, 11);
