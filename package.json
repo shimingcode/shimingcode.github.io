@@ -4,7 +4,7 @@
   "private": true,
   "description": "Framework-free personal website, published directly by GitHub Pages.",
   "scripts": {
-    "test": "node --test tests/static.test.mjs tests/game.test.cjs",
+    "test": "node --test tests/static.test.mjs tests/game.test.cjs tests/funny-hit.test.cjs",
     "build": "node scripts/build.mjs",
     "test:browser": "node tests/browser.cjs",
     "serve": "python -m http.server 4173 --bind 127.0.0.1",
@@ -14,7 +14,8 @@
     "measure": "node scripts/measure-performance.cjs",
     "audit": "node scripts/audit-lighthouse.cjs",
     "test:music-gesture": "node tests/music-gesture.cjs",
-    "test:glass": "node tests/glass.cjs after"
+    "test:glass": "node tests/glass.cjs after",
+    "test:funny-hit": "node tests/funny-hit-browser.cjs"
   },
   "devDependencies": {
     "playwright": "1.62.1"

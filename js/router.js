@@ -9,7 +9,9 @@
   const routes = new Map([
     ['./', ['icons', 'links', 'projects-data', 'projects']],
     ['./links/', ['icons', 'links']], ['./projects/', ['projects-data', 'projects']],
-    ['./games/', ['game-engine', 'games']], ['./about/', []], ['./works.html', ['works-data', 'works']]
+    ['./games/', ['game-engine', 'games']],
+    ['./games/funny-hit/', ['dialogue','game-state','audio-manager','voice-manager','effects','game'].map(name=>`funny-hit/${name}`)],
+    ['./about/', []], ['./works.html', ['works-data', 'works']]
   ].map(([path, scripts]) => [normalize(new URL(url(path)).pathname), scripts]));
   const loaded = new Map([...document.querySelectorAll('script[src]')].map(script => [script.src, Promise.resolve()]));
   const styles = new Map([...document.querySelectorAll('link[rel="stylesheet"]')].map(link => [link.href, Promise.resolve()]));
@@ -29,7 +31,7 @@
   }
   window.addEventListener('scroll', remember, { passive: true });
   function asset(name, style = false) {
-    const source = url(style ? `./css/${name}.css?v=6` : `./js/${name}.js?v=4`);
+    const source = url(name.startsWith('funny-hit/') ? `./games/${name}.${style?'css':'js'}?v=1` : style ? `./css/${name}.css?v=6` : `./js/${name}.js?v=4`);
     const cache = style ? styles : loaded;
     if (!cache.has(source)) {
       cache.set(source, new Promise((resolve, reject) => {
@@ -80,6 +82,7 @@
         if(fetched){documents.delete(id);documents.set(id,{html,time:performance.now()});if(documents.size>6)documents.delete(documents.keys().next().value);}
         for (const script of routes.get(normalize(target.pathname))) await asset(script);
         if (incoming.dataset.pageClass === 'works-page') await asset('works', true);
+        if (incoming.dataset.pageClass === 'funny-hit-page') await asset('funny-hit/style', true);
         if (controller !== task || task.signal.aborted) throw new Error('Navigation cancelled');
       }
       if (!pop) { key = ++nextKey; history.pushState({ shimingPage: key }, '', target.href); }
