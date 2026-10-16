@@ -8,7 +8,7 @@
 
 ## 实际验证
 
-本地构建输出 78 个静态文件。逻辑/静态 32 项、游戏浏览器 11 项、语音浏览器 5 项、CD 音乐 15 项，共 63 项通过。
+本地构建输出 78 个静态文件。逻辑/静态 33 项、游戏浏览器 11 项、语音浏览器 5 项、CD 音乐 15 项，本轮累计 64 项通过。
 
 逻辑覆盖连续 10,000 次计数、七个节点、彩蛋每局仅一次、重开；固定时钟下 1,000 次音效请求均启动，活动节点上限四个、旧节点全部清理。浏览器覆盖 20 次后直接连续 200 次点击，观察到 200 次音频 source.start 调用，计数到 220；收起彩蛋后照片点击继续到 221。静音、音量、重置、离页释放、SPA 背景音乐延续及控制台/资源检查通过。
 
@@ -16,7 +16,7 @@
 
 ## 文件与运行
 
-运行时代码：`games/funny-hit/{game-state.js,audio-manager.js,game.js,effects.js,index.html}`、`js/router.js`。入口文案：`games/index.html`；七个页面更新路由版本至 v9，游戏资源 v3。测试：`tests/{funny-hit.test.cjs,funny-hit-browser.cjs,voice-browser.cjs}`。文档：README、本文，保留并修复上一版语音记录的 UTF-8 发布编码。
+运行时代码：`games/funny-hit/{game-state.js,audio-manager.js,game.js,effects.js,index.html}`、`js/router.js`。入口文案：`games/index.html`；七个页面更新路由版本至 v10，游戏资源 v4。测试：`tests/{funny-hit.test.cjs,funny-hit-browser.cjs,voice-browser.cjs}`。文档：README、本文，保留并修复上一版语音记录的 UTF-8 发布编码。
 
 ```sh
 node scripts/build.mjs
@@ -27,3 +27,5 @@ node tests/music.cjs
 ```
 
 浏览器测试需要 Playwright 与可用 Edge（或设置 BROWSER_CHANNEL）。继续使用现有 GitHub Pages 分支部署，未添加构建服务或更改仓库权限。发布结果以对应 PR 和 Pages 运行记录为准。
+
+线上复测曾捕获照片动画取消事件延迟导致的临时引用残留；现改为取消动画时立即解除管理引用与回调。新增连续 1,000 次替换的确定性回归测试，且浏览器在同步点击循环结束时立即验证动画上限。本地重新运行构建、33 项静态/逻辑、11 项游戏检查均通过。
