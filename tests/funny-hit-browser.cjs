@@ -16,9 +16,9 @@ await check('automatically continues beyond 20; every rapid click starts sound w
     const ctx=managers.sounds[0].context,original=ctx.createBufferSource.bind(ctx);let starts=0;
     ctx.createBufferSource=()=>{const source=original(),start=source.start.bind(source);source.start=(...args)=>{starts++;return start(...args);};return source;};
     const start=performance.now();for(let i=0;i<200;i++)b.click();ctx.createBufferSource=original;
-    return {ms:performance.now()-start,starts,sources:managers.sounds[0].sources.size};
+    return {ms:performance.now()-start,starts,sources:managers.sounds[0].sources.size,animations:managers.effects[0].animations.size};
   });
-  rapidClickMs=result.ms;assert.equal(result.starts,200);assert(result.sources<=4);
+  rapidClickMs=result.ms;assert.equal(result.starts,200);assert(result.sources<=4);assert(result.animations<=22);
   assert.equal(await p.locator('#hit-count').textContent(),'220 次');
   assert.equal(await p.locator('#hit-progress').getAttribute('value'),'20');
   await p.getByRole('button',{name:'收起彩蛋',exact:true}).click();

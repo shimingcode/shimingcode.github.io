@@ -9,7 +9,9 @@
       this.cursor=0;this.last=-Infinity;this.change=()=>this.stop();this.motion.addEventListener('change',this.change);
     }
     animate(node,frames,options) {
-      node.getAnimations().forEach(a=>a.cancel());
+      // Cancellation callbacks run asynchronously. Drop ownership immediately so
+      // rapid hits cannot retain cancelled photo animations until the next task.
+      node.getAnimations().forEach(a=>{a.oncancel=null;a.onfinish=null;this.animations.delete(a);a.cancel();});
       const animation=node.animate(frames,options);this.animations.add(animation);
       const done=()=>{this.animations.delete(animation);if(node!==this.photo)node.hidden=true;};animation.onfinish=done;animation.oncancel=done;
     }

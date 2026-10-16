@@ -26,3 +26,12 @@ test('important lines queue without overlap and final preempts the entire queue'
 test('explicit emotion preview works in quiet mode, muted preview remains subtitle only',()=>{const {F,spoken}=setup(),settings={...F.defaults,voiceMode:'quiet'},v=new F.VoiceManager(settings);assert(v.say('preview',{preview:true,emotion:'HAPPY'}));assert.equal(spoken[0].rate,F.emotions.HAPPY.rate);settings.voiceEnabled=false;assert(!v.say('muted preview',{preview:true}));assert.equal(spoken.length,1);v.dispose();});
 test('invalid source paths and unlicensed manifests cannot fetch recordings',()=>{const {F}=setup(),v=new F.VoiceManager({...F.defaults});F.recordings={'a':{src:'../../x.mp3',label:'test',license:'test'},'b':{src:'file.wav',label:'test'},'c':{src:'https://example.com/x.mp3',label:'test',license:'test'}};for(const text of ['a','b','c'])assert.equal(v.record(text),null);v.dispose();});
 test('game priority can interrupt a preview instead of queuing behind it',()=>{const {F,spoken}=setup(),v=new F.VoiceManager({...F.defaults});v.say('preview',{priority:true,preview:true});assert.equal(v.state,'PLAYING');v.say('game milestone',{priority:true});assert.equal(spoken.length,2);assert.equal(v.queue.length,0);assert.equal(v.state,'PRIORITY');v.dispose();});
+
+test('rapid animation replacement releases cancelled ownership before cancel events fire',()=>{
+  const {F,c}=setup();vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../games/funny-hit/effects.js'),'utf8'),c);
+  const created=[],node={getAnimations:()=>created.filter(a=>!a.cancelled),animate(){const a={cancelled:false,cancel(){this.cancelled=true;}};created.push(a);return a;}};
+  const effects={photo:node,animations:new Set()};
+  for(let i=0;i<1000;i++){F.Effects.prototype.animate.call(effects,node,[],{});assert.equal(effects.animations.size,1);}
+  assert(created.slice(0,-1).every(a=>a.oncancel===null&&a.onfinish===null));
+  created.at(-1).onfinish();assert.equal(effects.animations.size,0);
+});
