@@ -18,7 +18,7 @@
       const now=performance.now();if(!result.priority && now-this.last<90)return;this.last=now;
       if(this.settings.effectsEnabled) this.animate(this.photo,[{transform:'translate(0) scale(1)'},{transform:'translate(3px,-2px) scale(1.015)'},{transform:'translate(-2px,1px)'},{transform:'translate(0) scale(1)'}],{duration:260});
       if(this.settings.effectsEnabled && result.combo){this.speed.getAnimations().forEach(a=>{a.oncancel=null;this.animations.delete(a);a.cancel();});this.speed.hidden=false;this.animate(this.speed,[{opacity:.5,transform:'scale(.98)'},{opacity:0,transform:'scale(1.04)'}],{duration:300});}
-      const blossom=this.settings.sakuraEnabled && [5,12,15,20].includes(result.hit) && !result.free;
+      const blossom=this.settings.sakuraEnabled && [5,12,15,20].includes(result.hit);
       if(!this.settings.effectsEnabled && !blossom)return;
       const count=blossom?this.pool.length:4;
       for(let i=0;i<count;i++) {
