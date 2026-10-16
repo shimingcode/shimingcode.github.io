@@ -3,7 +3,7 @@
   const F = window.FunnyHit ||= {};
   // Original, synthesized cartoon tones. A single context and four cached buffers per visit.
   F.AudioManager = class {
-    constructor(settings) { this.settings=settings; this.context=null; this.buffers=new Map(); this.sources=new Set(); this.last=-Infinity; this.disposed=false; }
+    constructor(settings) { this.settings=settings; this.context=null; this.buffers=new Map(); this.sources=new Set(); this.disposed=false; }
     unlock() {
       if(this.disposed || !this.settings.soundEnabled) return;
       try {
@@ -25,14 +25,14 @@
       }
       this.buffers.set(kind,buffer); return buffer;
     }
-    play(kind='pop', priority=false) {
+    play(kind='pop') {
       if(this.disposed || document.hidden || !this.settings.soundEnabled) return false;
-      const now=performance.now(); if(!priority && now-this.last<150)return false;
       this.unlock(); if(!this.context)return false;
       try {
-        while(this.sources.size>=4) { const oldest=this.sources.values().next().value; oldest.stop(); this.sources.delete(oldest); }
+        // Every click starts a sound; recycle the oldest voice instead of dropping input.
+        while(this.sources.size>=4) { const oldest=this.sources.values().next().value; oldest.onended=null; oldest.stop(); oldest.disconnect(); this.sources.delete(oldest); }
         const source=this.context.createBufferSource(); source.buffer=this.buffer(kind); source.connect(this.gain);
-        this.sources.add(source); source.onended=()=>{source.disconnect();this.sources.delete(source);}; source.start(); this.last=now; return true;
+        this.sources.add(source); source.onended=()=>{source.disconnect();this.sources.delete(source);}; source.start(); return true;
       } catch { return false; }
     }
     stop() { for(const source of this.sources){source.onended=null;try{source.stop();}catch{}source.disconnect();}this.sources.clear(); }

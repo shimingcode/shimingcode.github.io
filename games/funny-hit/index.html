@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="zh-CN" data-theme="sakura" data-site-shell="music-v4"><head>
 <meta charset="UTF-8"><meta name="site-shell" content="music-v4"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>狐狐暴击求饶模拟器 · Shiming</title><meta name="description" content="20次卡通点击通关，体验漫画特效与虚构狐狐旁白。">
-<meta property="og:title" content="狐狐暴击求饶模拟器 · Shiming"><meta property="og:description" content="20次卡通点击通关，体验漫画特效与虚构狐狐旁白。"><meta property="og:type" content="website"><meta name="theme-color" content="#fff3f8"><meta name="referrer" content="strict-origin-when-cross-origin">
+<title>狐狐暴击求饶模拟器 · Shiming</title><meta name="description" content="无限次卡通点击，每次都有短音效，第20次解锁樱花彩蛋。">
+<meta property="og:title" content="狐狐暴击求饶模拟器 · Shiming"><meta property="og:description" content="无限次卡通点击，每次都有短音效，第20次解锁樱花彩蛋。"><meta property="og:type" content="website"><meta name="theme-color" content="#fff3f8"><meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
 <script src="../../js/theme-init.js?v=6"></script>
 <link rel="preload" as="image" type="image/avif" href="../../assets/images/background-mobile.avif" media="(max-width: 599px)" fetchpriority="high">
@@ -14,26 +14,26 @@
 <script src="../../js/sakura.js?v=4" defer></script>
 <script src="../../js/effects.js?v=4" defer></script>
 <script src="../../js/music.js?v=5" defer></script>
-<script src="./dialogue.js?v=2" defer></script>
-<script src="./game-state.js?v=2" defer></script>
-<script src="./audio-manager.js?v=2" defer></script>
-<script src="./voice-manager.js?v=2" defer></script>
-<script src="./effects.js?v=2" defer></script>
-<script src="./game.js?v=2" defer></script>
-<link rel="stylesheet" href="./style.css?v=2">
+<script src="./dialogue.js?v=3" defer></script>
+<script src="./game-state.js?v=3" defer></script>
+<script src="./audio-manager.js?v=3" defer></script>
+<script src="./voice-manager.js?v=3" defer></script>
+<script src="./effects.js?v=3" defer></script>
+<script src="./game.js?v=3" defer></script>
+<link rel="stylesheet" href="./style.css?v=3">
 <link rel="stylesheet" href="../../css/music.css?v=6">
-<script src="../../js/router.js?v=8" defer></script>
+<script src="../../js/router.js?v=9" defer></script>
 </head><body class="funny-hit-page">
 <a class="skip-link" href="#main">跳到主要内容</a><div class="background" aria-hidden="true"></div><div id="sakura" aria-hidden="true"></div>
 <header id="site-header" class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.svg" alt="" width="32" height="32">Shiming<span>✧</span></a></header>
 <main data-page-class="funny-hit-page" id="main" class="site-shell" tabindex="-1">
 <section id="funny-hit" class="hit-game glass" aria-labelledby="hit-heading">
-<header class="hit-heading"><div><p class="eyebrow">FOX FOX · PLAYFUL MOMENTS</p><h1 id="hit-heading">狐狐暴击求饶模拟器</h1><p>20 次小小互动，一场樱花彩蛋。</p></div><a class="button" href="../../games/">返回小游戏中心</a></header>
+<header class="hit-heading"><div><p class="eyebrow">FOX FOX · PLAYFUL MOMENTS</p><h1 id="hit-heading">狐狐暴击求饶模拟器</h1><p>无限互动，每次点击都有短音效；第 20 次解锁樱花彩蛋。</p></div><a class="button" href="../../games/">返回小游戏中心</a></header>
 <div class="hit-layout"><div class="hit-stage"><button id="hit-trigger" class="hit-trigger" type="button" data-hit-action="hit" aria-label="点击照片，暴击一下"><img id="hit-photo" class="hit-photo" src="../../assets/games/funny-hit/character.webp" srcset="../../assets/games/funny-hit/character-640.webp 640w, ../../assets/games/funny-hit/character.webp 1086w" sizes="(max-width:700px) min(380px, 90vw), 520px" width="1086" height="1448" alt="戴眼镜的人穿黑灰上衣和绿色裤子，坐在宿舍地板上做搞怪伸展" decoding="async" fetchpriority="high"></button><div id="hit-effects" class="hit-effects" aria-hidden="true"></div><p id="photo-error" hidden>照片暂时无法加载，仍可使用下方按钮互动。</p></div>
 <div class="hit-side"><div class="hit-bubble"><small>✧ 狐狐的悄悄话 · <span id="voice-emotion">害羞</span></small><p id="hit-dialogue" role="status" aria-live="polite">轻轻点一下，和狐狐打个招呼吧～</p></div>
-<div class="hit-score"><output id="hit-count" aria-label="点击进度">0 / 20</output><span id="hit-combo">0 连击 · 最高 0</span></div><progress id="hit-progress" max="20" value="0" aria-label="通关进度"></progress>
+<div class="hit-score"><output id="hit-count" aria-label="累计点击次数">0 次</output><span id="hit-combo">0 连击 · 最高 0</span></div><progress id="hit-progress" max="20" value="0" aria-label="20 次樱花彩蛋解锁进度"></progress>
 <button id="hit-button" class="button primary hit-main-button" data-hit-action="hit" type="button">✦ 暴击一下</button>
-<section id="hit-complete" class="hit-complete" hidden aria-labelledby="hit-complete-title"><h2 id="hit-complete-title" tabindex="-1">狐狐已经认输啦！还要继续玩吗？</h2><p>20 次互动完成！谢谢你陪狐狐玩～</p><div class="hit-actions"><button class="button" type="button" data-hit-action="reset">重新开始</button><button class="button" type="button" data-hit-action="free">自由互动</button><a class="button" href="../../games/">返回小游戏中心</a></div></section>
+<section id="hit-complete" class="hit-complete" hidden aria-labelledby="hit-complete-title"><h2 id="hit-complete-title" tabindex="-1">樱花彩蛋已解锁！继续和狐狐玩吧～</h2><p>已完成 20 次互动，点击次数没有上限，无需切换模式即可继续！</p><div class="hit-actions"><button class="button" type="button" data-hit-action="reset">重新开始</button><button class="button" type="button" data-hit-action="dismiss">收起彩蛋</button><a class="button" href="../../games/">返回小游戏中心</a></div></section>
 <details class="hit-settings"><summary>声音与特效设置</summary>
 <p class="hit-note">目标风格：萌系狐娘 · 害羞、软糯、轻声。当前实际声音见下方状态；系统语音不等于预录角色音。</p>
 <div class="hit-actions"><button class="button" type="button" data-hit-action="preview">语音试听</button></div>
