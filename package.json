@@ -15,7 +15,8 @@
     "audit": "node scripts/audit-lighthouse.cjs",
     "test:music-gesture": "node tests/music-gesture.cjs",
     "test:glass": "node tests/glass.cjs after",
-    "test:funny-hit": "node tests/funny-hit-browser.cjs"
+    "test:funny-hit": "node tests/funny-hit-browser.cjs",
+    "test:voice": "node tests/voice-browser.cjs"
   },
   "devDependencies": {
     "playwright": "1.62.1"

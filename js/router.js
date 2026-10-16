@@ -31,7 +31,7 @@
   }
   window.addEventListener('scroll', remember, { passive: true });
   function asset(name, style = false) {
-    const source = url(name.startsWith('funny-hit/') ? `./games/${name}.${style?'css':'js'}?v=1` : style ? `./css/${name}.css?v=6` : `./js/${name}.js?v=4`);
+    const source = url(name.startsWith('funny-hit/') ? `./games/${name}.${style?'css':'js'}?v=2` : style ? `./css/${name}.css?v=6` : `./js/${name}.js?v=4`);
     const cache = style ? styles : loaded;
     if (!cache.has(source)) {
       cache.set(source, new Promise((resolve, reject) => {
