@@ -1,6 +1,6 @@
 {
   "baselineCommit": "7462593dabed6918973ae6684d122ae17f1dc480",
-  "note": "Laboratory only. No field INP or physical devices. Final CD clipping fix is included in Performance API samples, but excluded from after Lighthouse: rerun was rejected by approval-service quota.",
+  "note": "Laboratory measurements only; no field INP or physical-device results. Final Performance API and Lighthouse after measurements include the CD clipping fix. Different throttling methods must not be mixed.",
   "before": {
     "label": "site-before",
     "browser": "Edge",
@@ -999,11 +999,11 @@
     ],
     "lighthouse": {
       "lighthouseVersion": "13.0.1",
-      "fetchTime": "2026-10-17T10:01:53.579Z",
+      "fetchTime": "2026-10-17T10:14:37.714Z",
       "environment": {
         "networkUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Mobile Safari/537.36",
         "hostUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36 Edg/155.0.0.0",
-        "benchmarkIndex": 3000,
+        "benchmarkIndex": 3054,
         "credits": {
           "axe-core": "4.14.0"
         }
@@ -1071,11 +1071,11 @@
         "seo": 100
       },
       "metrics": {
-        "largest-contentful-paint": 2348.1711,
-        "first-contentful-paint": 1073.1711,
-        "total-blocking-time": 60,
+        "largest-contentful-paint": 2344.206,
+        "first-contentful-paint": 1069.206,
+        "total-blocking-time": 68,
         "cumulative-layout-shift": 0.001155817825663503,
-        "speed-index": 1116.942033483043
+        "speed-index": 1094.4784149306279
       }
     },
     "medians": {
@@ -1092,5 +1092,151 @@
       "navigationMs": 141.01294999999664,
       "gameClickToTwoFramesMs": 25.349999994039536
     }
+  },
+  "intermediateLighthouseBeforeCDClip": {
+    "lighthouseVersion": "13.0.1",
+    "fetchTime": "2026-10-17T10:01:53.579Z",
+    "environment": {
+      "networkUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Mobile Safari/537.36",
+      "hostUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36 Edg/155.0.0.0",
+      "benchmarkIndex": 3000,
+      "credits": {
+        "axe-core": "4.14.0"
+      }
+    },
+    "configSettings": {
+      "output": "html",
+      "maxWaitForFcp": 30000,
+      "maxWaitForLoad": 45000,
+      "pauseAfterFcpMs": 1000,
+      "pauseAfterLoadMs": 1000,
+      "networkQuietThresholdMs": 1000,
+      "cpuQuietThresholdMs": 1000,
+      "formFactor": "mobile",
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "throttlingMethod": "simulate",
+      "screenEmulation": {
+        "mobile": true,
+        "width": 412,
+        "height": 823,
+        "deviceScaleFactor": 1.75,
+        "disabled": false
+      },
+      "emulatedUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36",
+      "auditMode": false,
+      "gatherMode": false,
+      "clearStorageTypes": [
+        "file_systems",
+        "shader_cache",
+        "service_workers",
+        "cache_storage"
+      ],
+      "disableStorageReset": false,
+      "debugNavigation": false,
+      "channel": "node",
+      "usePassiveGathering": false,
+      "disableFullPageScreenshot": false,
+      "skipAboutBlank": false,
+      "blankPage": "about:blank",
+      "ignoreStatusCode": false,
+      "locale": "en-US",
+      "blockedUrlPatterns": null,
+      "additionalTraceCategories": null,
+      "extraHeaders": null,
+      "precomputedLanternData": null,
+      "onlyAudits": null,
+      "onlyCategories": [
+        "performance",
+        "accessibility",
+        "best-practices",
+        "seo"
+      ],
+      "skipAudits": null
+    },
+    "scores": {
+      "performance": 98.0,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "metrics": {
+      "largest-contentful-paint": 2348.1711,
+      "first-contentful-paint": 1073.1711,
+      "total-blocking-time": 60,
+      "cumulative-layout-shift": 0.001155817825663503,
+      "speed-index": 1116.942033483043
+    }
+  },
+  "deployment": {
+    "codePullRequest": "https://github.com/shimingcode/shimingcode.github.io/pull/10",
+    "mergeCommit": "cec33049be0b1d1faa5410b52c7242713729513b",
+    "workflow": "https://github.com/shimingcode/shimingcode.github.io/actions/runs/39024044260",
+    "conclusion": "success",
+    "onlineChecks": 25,
+    "responseHeaders": [
+      {
+        "path": "/",
+        "status": 200,
+        "cacheControl": "max-age=600",
+        "contentType": "text/html; charset=utf-8",
+        "etag": "W/\"6ad34a3d-174d\"",
+        "contentLength": "2373"
+      },
+      {
+        "path": "/css/music.css?v=7",
+        "status": 200,
+        "cacheControl": "max-age=600",
+        "contentType": "text/css; charset=utf-8",
+        "etag": "W/\"6ad34a3d-1224\"",
+        "contentLength": "1641"
+      },
+      {
+        "path": "/js/router.js?v=12",
+        "status": 200,
+        "cacheControl": "max-age=600",
+        "contentType": "application/javascript; charset=utf-8",
+        "etag": "W/\"6ad34a3d-21b8\"",
+        "contentLength": "3163"
+      },
+      {
+        "path": "/assets/images/background-mobile.avif",
+        "status": 200,
+        "cacheControl": "max-age=600",
+        "contentType": "image/avif",
+        "etag": "\"6ad34a3d-153f3\"",
+        "contentLength": "87027"
+      },
+      {
+        "path": "/assets/audio/bgm.mp3",
+        "status": 200,
+        "cacheControl": "max-age=600",
+        "contentType": "audio/mp3",
+        "etag": "\"6ad34a3d-26d6db\"",
+        "contentLength": "2545371"
+      },
+      {
+        "path": "/robots.txt",
+        "status": 200,
+        "cacheControl": "max-age=600",
+        "contentType": "text/plain; charset=utf-8",
+        "etag": "\"6ad34a3d-4a\"",
+        "contentLength": "74"
+      },
+      {
+        "path": "/sitemap.xml",
+        "status": 200,
+        "cacheControl": "max-age=600",
+        "contentType": "application/xml",
+        "etag": "W/\"6ad34a3d-224\"",
+        "contentLength": "198"
+      }
+    ]
   }
 }
