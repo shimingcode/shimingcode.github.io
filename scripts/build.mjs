@@ -7,7 +7,7 @@ const output = join(root, '_site');
 if (dirname(output) !== root) throw new Error('Output must stay inside this project.');
 await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });
-const entries = ['index.html', 'works.html', '404.html', 'favicon.svg', '.nojekyll', 'css', 'js', 'assets', 'links', 'projects', 'games', 'about'];
+const entries = ['index.html', 'works.html', '404.html', 'favicon.svg', 'robots.txt', 'sitemap.xml', '.nojekyll', 'css', 'js', 'assets', 'links', 'projects', 'games', 'about'];
 for (const entry of entries) await cp(join(root, entry), join(output, entry), {
   recursive: true,
   filter: path => !path.includes('original-upload') && !path.endsWith('README.md')

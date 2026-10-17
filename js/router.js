@@ -2,9 +2,10 @@
 (() => {
   'use strict';
   const { url, mount, unmount } = window.Site;
-  // Persistent head/header resources must not resolve against the next page's directory.
-  document.head.querySelectorAll('link[href]').forEach(link => { link.href = link.href; });
-  document.querySelectorAll('#site-header img[src]').forEach(img => { img.src = img.src; });
+  // Keep already loaded resource attributes untouched. Reassigning identical URLs
+  // can trigger another stylesheet/image request; history navigation keeps their loads.
+  // Favicons are re-resolved on history navigation, so only pin their URL.
+  document.head.querySelectorAll('link[rel="icon"]').forEach(link=>{link.href=link.href;});
   const normalize = path => path.replace(/index\.html$/, '').replace(/\/$/, '');
   const routes = new Map([
     ['./', ['icons', 'links', 'projects-data', 'projects']],
@@ -31,7 +32,7 @@
   }
   window.addEventListener('scroll', remember, { passive: true });
   function asset(name, style = false) {
-    const source = url(name.startsWith('funny-hit/') ? `./games/${name}.${style?'css':'js'}?v=5` : style ? `./css/${name}.css?v=6` : `./js/${name}.js?v=4`);
+    const source = url(name.startsWith('funny-hit/') ? `./games/${name}.${style?'css':'js'}?v=5` : style ? `./css/${name}.css?v=6` : `./js/${name}.js?v=${['links','projects','works'].includes(name)?5:4}`);
     const cache = style ? styles : loaded;
     if (!cache.has(source)) {
       cache.set(source, new Promise((resolve, reject) => {
@@ -93,10 +94,12 @@
       if (incoming) {
         unmount(); document.body.className = incoming.dataset.pageClass || '';
         main.replaceWith(document.importNode(incoming, true)); document.title = page.content.querySelector('title')?.textContent || document.title;
-        for (const selector of ['meta[name="description"]', 'meta[property="og:title"]', 'meta[property="og:description"]']) {
+        for (const selector of ['meta[name="description"]', 'meta[property="og:title"]', 'meta[property="og:description"]', 'meta[property="og:url"]', 'meta[property="og:image"]']) {
           const content = page.content.querySelector(selector)?.content;
           if (content !== undefined && document.querySelector(selector)) document.querySelector(selector).content = content;
         }
+        const canonical=page.content.querySelector('link[rel="canonical"]')?.getAttribute('href');
+        if(canonical&&document.querySelector('link[rel="canonical"]'))document.querySelector('link[rel="canonical"]').href=canonical;
         mount();
       }
       rendered = new URL(target.href);

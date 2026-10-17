@@ -10,6 +10,8 @@
   filter:drop-shadow(0 6px 12px #a7366c26);
 }
 .cd-button:hover { transform:none; box-shadow:0 0 0 3px #fff,0 0 28px #ec93bd; }
+/* Clip the rotating square's layout bounds without clipping the button prompt. */
+.cd-viewport { position:absolute; inset:0; overflow:hidden; border-radius:50%; }
 .cd-disc {
   position:absolute; inset:0; overflow:hidden; border:3px solid #ffd9ed; border-radius:50%;
   background:repeating-radial-gradient(circle,#eadfe9 0 2px,#bfabbc 3px 4px);

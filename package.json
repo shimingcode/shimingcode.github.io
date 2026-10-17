@@ -18,7 +18,8 @@
     "test:funny-hit": "node tests/funny-hit-browser.cjs",
     "test:voice": "node tests/voice-browser.cjs",
     "measure:hit": "node scripts/measure-hit-performance.cjs",
-    "test:route-loading": "node tests/router-loading.cjs"
+    "test:route-loading": "node tests/router-loading.cjs",
+    "test:site-quality": "node tests/site-quality.cjs"
   },
   "devDependencies": {
     "playwright": "1.62.1"

@@ -41,7 +41,9 @@ npm run test:music
 npm run test:performance
 ```
 
-截图和测试结果写入 `test-results/`（不提交）。此次验证使用本机 Edge 的隔离无头浏览器，最新性能对比见 [性能与算法报告](docs/performance-report.md)，此前改版见 [优化记录](docs/optimization-report.md)。没有用模拟视口替代 iPhone/iPad 真机测试的结论。
+截图和测试结果写入 `test-results/`（不提交）。最新审计、加载对比、兼容性限制及修改清单见 [全站质量与性能报告](docs/site-quality-2026-10-17.md)，数据见 [原始测量记录](docs/site-quality-samples.json)。此前改版见 [性能与算法报告](docs/performance-report.md) 和 [优化记录](docs/optimization-report.md)。没有用模拟视口替代 iPhone/iPad 真机测试的结论。
+
+新增 `npm run test:site-quality`：检查冷缓存样式请求、卡片复用、相册生命周期、页面元信息、全站响应式及子目录部署。音乐旋转边界由 `npm run test:performance` 在 45° 角度检查。`robots.txt` 和 `sitemap.xml` 随静态构建发布；新增页面时需要同时维护站点地图。
 
 ## 页面与文件
 

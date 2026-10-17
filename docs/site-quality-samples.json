@@ -1,0 +1,1096 @@
+{
+  "baselineCommit": "7462593dabed6918973ae6684d122ae17f1dc480",
+  "note": "Laboratory only. No field INP or physical devices. Final CD clipping fix is included in Performance API samples, but excluded from after Lighthouse: rerun was rejected by approval-service quota.",
+  "before": {
+    "label": "site-before",
+    "browser": "Edge",
+    "conditions": {
+      "viewport": "390x844 DPR2",
+      "cpuSlowdown": 4,
+      "latencyMs": 80,
+      "downloadBytesPerSec": 200000,
+      "cache": "disabled",
+      "runs": 3,
+      "INP": "No field data; Event Timing sample is not field INP",
+      "blocking": "Observed long-task blocking, not Lighthouse TBT"
+    },
+    "samples": [
+      {
+        "run": 0,
+        "lcpMs": 1204,
+        "fcpMs": 1204,
+        "cls": 0,
+        "loadMs": 1868,
+        "longTaskCount": 2,
+        "observedBlockingMs": 298,
+        "resourceBytes": 209482,
+        "imageBytes": 99245,
+        "resources": [
+          {
+            "url": "/js/theme-init.js",
+            "bytes": 905
+          },
+          {
+            "url": "/assets/images/background-mobile.avif",
+            "bytes": 87327
+          },
+          {
+            "url": "/css/style.css",
+            "bytes": 22456
+          },
+          {
+            "url": "/js/icons.js",
+            "bytes": 3329
+          },
+          {
+            "url": "/js/config.js",
+            "bytes": 5013
+          },
+          {
+            "url": "/js/core.js",
+            "bytes": 3071
+          },
+          {
+            "url": "/js/main.js",
+            "bytes": 5989
+          },
+          {
+            "url": "/js/sakura.js",
+            "bytes": 3980
+          },
+          {
+            "url": "/js/effects.js",
+            "bytes": 3479
+          },
+          {
+            "url": "/js/music.js",
+            "bytes": 11476
+          },
+          {
+            "url": "/js/links.js",
+            "bytes": 4429
+          },
+          {
+            "url": "/js/projects-data.js",
+            "bytes": 2343
+          },
+          {
+            "url": "/js/projects.js",
+            "bytes": 2794
+          },
+          {
+            "url": "/css/music.css",
+            "bytes": 4780
+          },
+          {
+            "url": "/js/router.js",
+            "bytes": 8657
+          },
+          {
+            "url": "/favicon.svg",
+            "bytes": 717
+          },
+          {
+            "url": "/assets/images/avatar-160.webp",
+            "bytes": 10484
+          },
+          {
+            "url": "/css/style.css",
+            "bytes": 22456
+          },
+          {
+            "url": "/css/music.css",
+            "bytes": 4780
+          },
+          {
+            "url": "/assets/audio/bgm-web.mp3",
+            "bytes": 300
+          },
+          {
+            "url": "/favicon.svg",
+            "bytes": 717
+          }
+        ],
+        "scriptMs": 149.524,
+        "taskMs": 1553.829,
+        "fps": 60.003973773097556,
+        "slowFrames": 0,
+        "frames": 151,
+        "heapBefore": 1052780,
+        "heapAfter": 2706176,
+        "domBefore": {
+          "documents": 2,
+          "nodes": 790,
+          "jsEventListeners": 63
+        },
+        "domAfter": {
+          "documents": 7,
+          "nodes": 869,
+          "jsEventListeners": 95
+        },
+        "navigationMs": [
+          344.6822000000002,
+          358.6941999999999,
+          251.91710000000057,
+          551.8826000000008,
+          445.52809999999954,
+          422.78649999999834,
+          112.46079999999893,
+          83.33300000000054,
+          70.89569999999912,
+          74.78439999999864,
+          81.79320000000007,
+          99.1989999999987,
+          82.01969999999892,
+          92.48599999999897,
+          70.4971000000005,
+          74.91350000000057,
+          89.69470000000001,
+          106.9341000000004,
+          90.28129999999874,
+          94.60260000000017,
+          123.83630000000085,
+          107.23769999999968,
+          110.58089999999902,
+          103.14210000000094
+        ],
+        "gameClickToTwoFramesMs": [
+          17,
+          24.899999991059303,
+          30.700000002980232,
+          21.900000005960464,
+          23.900000005960464,
+          19.099999994039536
+        ],
+        "eventTimingMaxMs": 88
+      },
+      {
+        "run": 1,
+        "lcpMs": 1760,
+        "fcpMs": 1028,
+        "cls": 0,
+        "loadMs": 1940.5999999940395,
+        "longTaskCount": 3,
+        "observedBlockingMs": 448,
+        "resourceBytes": 209482,
+        "imageBytes": 99245,
+        "resources": [
+          {
+            "url": "/js/theme-init.js",
+            "bytes": 905
+          },
+          {
+            "url": "/assets/images/background-mobile.avif",
+            "bytes": 87327
+          },
+          {
+            "url": "/css/style.css",
+            "bytes": 22456
+          },
+          {
+            "url": "/js/config.js",
+            "bytes": 5013
+          },
+          {
+            "url": "/js/icons.js",
+            "bytes": 3329
+          },
+          {
+            "url": "/js/core.js",
+            "bytes": 3071
+          },
+          {
+            "url": "/js/main.js",
+            "bytes": 5989
+          },
+          {
+            "url": "/js/sakura.js",
+            "bytes": 3980
+          },
+          {
+            "url": "/js/effects.js",
+            "bytes": 3479
+          },
+          {
+            "url": "/js/music.js",
+            "bytes": 11476
+          },
+          {
+            "url": "/js/links.js",
+            "bytes": 4429
+          },
+          {
+            "url": "/js/projects-data.js",
+            "bytes": 2343
+          },
+          {
+            "url": "/css/music.css",
+            "bytes": 4780
+          },
+          {
+            "url": "/js/projects.js",
+            "bytes": 2794
+          },
+          {
+            "url": "/js/router.js",
+            "bytes": 8657
+          },
+          {
+            "url": "/favicon.svg",
+            "bytes": 717
+          },
+          {
+            "url": "/assets/images/avatar-160.webp",
+            "bytes": 10484
+          },
+          {
+            "url": "/css/style.css",
+            "bytes": 22456
+          },
+          {
+            "url": "/css/music.css",
+            "bytes": 4780
+          },
+          {
+            "url": "/assets/audio/bgm-web.mp3",
+            "bytes": 300
+          },
+          {
+            "url": "/favicon.svg",
+            "bytes": 717
+          }
+        ],
+        "scriptMs": 80.681,
+        "taskMs": 1828.5800000000002,
+        "fps": 60.00397377309754,
+        "slowFrames": 0,
+        "frames": 151,
+        "heapBefore": 1056500,
+        "heapAfter": 2714612,
+        "domBefore": {
+          "documents": 2,
+          "nodes": 790,
+          "jsEventListeners": 63
+        },
+        "domAfter": {
+          "documents": 3,
+          "nodes": 822,
+          "jsEventListeners": 95
+        },
+        "navigationMs": [
+          425.03269999999975,
+          359.3807000000015,
+          315.57650000000285,
+          719.8587000000007,
+          532.5959999999977,
+          1484.1481000000022,
+          344.33260000000155,
+          355.6304999999993,
+          150.59700000000157,
+          165.40239999999903,
+          161.64440000000104,
+          289.2586999999985,
+          246.92990000000282,
+          301.8192999999992,
+          256.34430000000066,
+          301.1395999999986,
+          260.9929000000011,
+          271.3662000000004,
+          210.28050000000076,
+          217.4491999999991,
+          119.59100000000035,
+          127.83399999999892,
+          115.34170000000086,
+          169.72820000000138
+        ],
+        "gameClickToTwoFramesMs": [
+          23.200000002980232,
+          24.599999994039536,
+          20.900000005960464,
+          22.700000002980232,
+          29.799999997019768,
+          29.299999997019768
+        ],
+        "eventTimingMaxMs": 184
+      },
+      {
+        "run": 2,
+        "lcpMs": 1056,
+        "fcpMs": 1056,
+        "cls": 0,
+        "loadMs": 1768.3999999910593,
+        "longTaskCount": 2,
+        "observedBlockingMs": 292,
+        "resourceBytes": 209482,
+        "imageBytes": 99245,
+        "resources": [
+          {
+            "url": "/js/theme-init.js",
+            "bytes": 905
+          },
+          {
+            "url": "/assets/images/background-mobile.avif",
+            "bytes": 87327
+          },
+          {
+            "url": "/css/style.css",
+            "bytes": 22456
+          },
+          {
+            "url": "/js/config.js",
+            "bytes": 5013
+          },
+          {
+            "url": "/js/icons.js",
+            "bytes": 3329
+          },
+          {
+            "url": "/js/core.js",
+            "bytes": 3071
+          },
+          {
+            "url": "/js/main.js",
+            "bytes": 5989
+          },
+          {
+            "url": "/js/sakura.js",
+            "bytes": 3980
+          },
+          {
+            "url": "/js/effects.js",
+            "bytes": 3479
+          },
+          {
+            "url": "/js/music.js",
+            "bytes": 11476
+          },
+          {
+            "url": "/js/links.js",
+            "bytes": 4429
+          },
+          {
+            "url": "/js/projects-data.js",
+            "bytes": 2343
+          },
+          {
+            "url": "/js/projects.js",
+            "bytes": 2794
+          },
+          {
+            "url": "/css/music.css",
+            "bytes": 4780
+          },
+          {
+            "url": "/js/router.js",
+            "bytes": 8657
+          },
+          {
+            "url": "/favicon.svg",
+            "bytes": 717
+          },
+          {
+            "url": "/assets/images/avatar-160.webp",
+            "bytes": 10484
+          },
+          {
+            "url": "/css/style.css",
+            "bytes": 22456
+          },
+          {
+            "url": "/css/music.css",
+            "bytes": 4780
+          },
+          {
+            "url": "/assets/audio/bgm-web.mp3",
+            "bytes": 300
+          },
+          {
+            "url": "/favicon.svg",
+            "bytes": 717
+          }
+        ],
+        "scriptMs": 102.513,
+        "taskMs": 1541.9830000000002,
+        "fps": 59.999999999999986,
+        "slowFrames": 0,
+        "frames": 150,
+        "heapBefore": 1052768,
+        "heapAfter": 2712812,
+        "domBefore": {
+          "documents": 2,
+          "nodes": 790,
+          "jsEventListeners": 63
+        },
+        "domAfter": {
+          "documents": 7,
+          "nodes": 869,
+          "jsEventListeners": 95
+        },
+        "navigationMs": [
+          433.47299999999814,
+          376.1180999999997,
+          335.56589999999414,
+          601.1438000000053,
+          479.637999999999,
+          454.85020000000077,
+          181.78080000000045,
+          119.72819999999774,
+          81.90610000000015,
+          113.30189999999857,
+          105.92149999999674,
+          149.4134000000049,
+          141.44670000000042,
+          121.31990000000224,
+          122.9400999999998,
+          113.98690000000352,
+          130.08780000000115,
+          266.21229999999923,
+          178.47430000000168,
+          170.9395000000004,
+          122.81929999999556,
+          129.33550000000105,
+          131.50650000000314,
+          168.56650000000081
+        ],
+        "gameClickToTwoFramesMs": [
+          21.200000002980232,
+          27,
+          31.799999997019768,
+          25.600000008940697,
+          25.5,
+          26.599999994039536
+        ],
+        "eventTimingMaxMs": 128
+      }
+    ],
+    "lighthouse": {
+      "lighthouseVersion": "13.0.1",
+      "fetchTime": "2026-10-17T09:55:55.795Z",
+      "environment": {
+        "networkUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Mobile Safari/537.36",
+        "hostUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36 Edg/155.0.0.0",
+        "benchmarkIndex": 3088.5,
+        "credits": {
+          "axe-core": "4.14.0"
+        }
+      },
+      "configSettings": {
+        "output": "html",
+        "maxWaitForFcp": 30000,
+        "maxWaitForLoad": 45000,
+        "pauseAfterFcpMs": 1000,
+        "pauseAfterLoadMs": 1000,
+        "networkQuietThresholdMs": 1000,
+        "cpuQuietThresholdMs": 1000,
+        "formFactor": "mobile",
+        "throttling": {
+          "rttMs": 150,
+          "throughputKbps": 1638.4,
+          "requestLatencyMs": 562.5,
+          "downloadThroughputKbps": 1474.5600000000002,
+          "uploadThroughputKbps": 675,
+          "cpuSlowdownMultiplier": 4
+        },
+        "throttlingMethod": "simulate",
+        "screenEmulation": {
+          "mobile": true,
+          "width": 412,
+          "height": 823,
+          "deviceScaleFactor": 1.75,
+          "disabled": false
+        },
+        "emulatedUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36",
+        "auditMode": false,
+        "gatherMode": false,
+        "clearStorageTypes": [
+          "file_systems",
+          "shader_cache",
+          "service_workers",
+          "cache_storage"
+        ],
+        "disableStorageReset": false,
+        "debugNavigation": false,
+        "channel": "node",
+        "usePassiveGathering": false,
+        "disableFullPageScreenshot": false,
+        "skipAboutBlank": false,
+        "blankPage": "about:blank",
+        "ignoreStatusCode": false,
+        "locale": "en-US",
+        "blockedUrlPatterns": null,
+        "additionalTraceCategories": null,
+        "extraHeaders": null,
+        "precomputedLanternData": null,
+        "onlyAudits": null,
+        "onlyCategories": [
+          "performance",
+          "accessibility",
+          "best-practices",
+          "seo"
+        ],
+        "skipAudits": null
+      },
+      "scores": {
+        "performance": 70.0,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "metrics": {
+        "largest-contentful-paint": 2925.1620000000003,
+        "first-contentful-paint": 1281.3175,
+        "total-blocking-time": 197.5,
+        "cumulative-layout-shift": 0.5895403980228622,
+        "speed-index": 1281.3175
+      }
+    },
+    "medians": {
+      "lcpMs": 1204,
+      "fcpMs": 1056,
+      "loadMs": 1868,
+      "resourceBytes": 209482,
+      "imageBytes": 99245,
+      "scriptMs": 102.513,
+      "longTaskCount": 2,
+      "observedBlockingMs": 298,
+      "heapAfter": 2712812,
+      "fps": 60.00397377309754,
+      "navigationMs": 163.52340000000004,
+      "gameClickToTwoFramesMs": 24.74999999254942
+    }
+  },
+  "after": {
+    "label": "site-after",
+    "browser": "Edge",
+    "conditions": {
+      "viewport": "390x844 DPR2",
+      "cpuSlowdown": 4,
+      "latencyMs": 80,
+      "downloadBytesPerSec": 200000,
+      "cache": "disabled",
+      "runs": 3,
+      "INP": "No field data; Event Timing sample is not field INP",
+      "blocking": "Observed long-task blocking, not Lighthouse TBT"
+    },
+    "samples": [
+      {
+        "run": 0,
+        "lcpMs": 1268,
+        "fcpMs": 1268,
+        "cls": 0,
+        "loadMs": 1824.9000000059605,
+        "longTaskCount": 1,
+        "observedBlockingMs": 265,
+        "resourceBytes": 183900,
+        "imageBytes": 99245,
+        "resources": [
+          {
+            "url": "/js/theme-init.js",
+            "bytes": 905
+          },
+          {
+            "url": "/assets/images/background-mobile.avif",
+            "bytes": 87327
+          },
+          {
+            "url": "/css/style.css",
+            "bytes": 22600
+          },
+          {
+            "url": "/js/config.js",
+            "bytes": 5013
+          },
+          {
+            "url": "/js/icons.js",
+            "bytes": 3329
+          },
+          {
+            "url": "/js/core.js",
+            "bytes": 3071
+          },
+          {
+            "url": "/js/main.js",
+            "bytes": 6021
+          },
+          {
+            "url": "/js/sakura.js",
+            "bytes": 4374
+          },
+          {
+            "url": "/js/effects.js",
+            "bytes": 3479
+          },
+          {
+            "url": "/js/music.js",
+            "bytes": 11509
+          },
+          {
+            "url": "/js/links.js",
+            "bytes": 4458
+          },
+          {
+            "url": "/js/projects-data.js",
+            "bytes": 2343
+          },
+          {
+            "url": "/js/projects.js",
+            "bytes": 3246
+          },
+          {
+            "url": "/css/music.css",
+            "bytes": 4944
+          },
+          {
+            "url": "/js/router.js",
+            "bytes": 9063
+          },
+          {
+            "url": "/favicon.svg",
+            "bytes": 717
+          },
+          {
+            "url": "/assets/images/avatar-160.webp",
+            "bytes": 10484
+          },
+          {
+            "url": "/assets/audio/bgm-web.mp3",
+            "bytes": 300
+          },
+          {
+            "url": "/favicon.svg",
+            "bytes": 717
+          }
+        ],
+        "scriptMs": 117.044,
+        "taskMs": 1490.481,
+        "fps": 60.003973773097556,
+        "slowFrames": 0,
+        "frames": 151,
+        "heapBefore": 1053104,
+        "heapAfter": 2712912,
+        "domBefore": {
+          "documents": 2,
+          "nodes": 795,
+          "jsEventListeners": 58
+        },
+        "domAfter": {
+          "documents": 6,
+          "nodes": 860,
+          "jsEventListeners": 90
+        },
+        "navigationMs": [
+          338.29489999999987,
+          237.86200000000008,
+          260.0042000000003,
+          554.2293000000009,
+          455.2386000000006,
+          469.3710999999985,
+          108.98060000000078,
+          85.7588999999989,
+          78.803100000001,
+          76.75480000000061,
+          82.8184999999994,
+          96.5726999999988,
+          87.85339999999997,
+          93.07400000000052,
+          66.21549999999843,
+          74.8793999999998,
+          90.40610000000015,
+          108.99070000000029,
+          96.03739999999925,
+          121.50979999999981,
+          76.69869999999901,
+          111.7494999999999,
+          108.2468000000008,
+          118.8068000000003
+        ],
+        "gameClickToTwoFramesMs": [
+          30.299999997019768,
+          21,
+          24.799999997019768,
+          27.5,
+          28.100000008940697,
+          22
+        ],
+        "eventTimingMaxMs": 72
+      },
+      {
+        "run": 1,
+        "lcpMs": 1096,
+        "fcpMs": 1096,
+        "cls": 0,
+        "loadMs": 1655.300000011921,
+        "longTaskCount": 1,
+        "observedBlockingMs": 191,
+        "resourceBytes": 183900,
+        "imageBytes": 99245,
+        "resources": [
+          {
+            "url": "/js/theme-init.js",
+            "bytes": 905
+          },
+          {
+            "url": "/assets/images/background-mobile.avif",
+            "bytes": 87327
+          },
+          {
+            "url": "/css/style.css",
+            "bytes": 22600
+          },
+          {
+            "url": "/js/config.js",
+            "bytes": 5013
+          },
+          {
+            "url": "/js/icons.js",
+            "bytes": 3329
+          },
+          {
+            "url": "/js/core.js",
+            "bytes": 3071
+          },
+          {
+            "url": "/js/main.js",
+            "bytes": 6021
+          },
+          {
+            "url": "/js/sakura.js",
+            "bytes": 4374
+          },
+          {
+            "url": "/js/effects.js",
+            "bytes": 3479
+          },
+          {
+            "url": "/js/music.js",
+            "bytes": 11509
+          },
+          {
+            "url": "/js/links.js",
+            "bytes": 4458
+          },
+          {
+            "url": "/js/projects-data.js",
+            "bytes": 2343
+          },
+          {
+            "url": "/js/projects.js",
+            "bytes": 3246
+          },
+          {
+            "url": "/css/music.css",
+            "bytes": 4944
+          },
+          {
+            "url": "/js/router.js",
+            "bytes": 9063
+          },
+          {
+            "url": "/favicon.svg",
+            "bytes": 717
+          },
+          {
+            "url": "/assets/images/avatar-160.webp",
+            "bytes": 10484
+          },
+          {
+            "url": "/assets/audio/bgm-web.mp3",
+            "bytes": 300
+          },
+          {
+            "url": "/favicon.svg",
+            "bytes": 717
+          }
+        ],
+        "scriptMs": 81.937,
+        "taskMs": 1312.0140000000001,
+        "fps": 60,
+        "slowFrames": 0,
+        "frames": 150,
+        "heapBefore": 1053104,
+        "heapAfter": 2714568,
+        "domBefore": {
+          "documents": 2,
+          "nodes": 795,
+          "jsEventListeners": 58
+        },
+        "domAfter": {
+          "documents": 6,
+          "nodes": 860,
+          "jsEventListeners": 90
+        },
+        "navigationMs": [
+          413.7306000000026,
+          302.27779999999984,
+          308.9801000000007,
+          648.7016000000003,
+          487.3060000000005,
+          459.3833999999988,
+          163.04299999999785,
+          94.81719999999768,
+          102.81689999999799,
+          105.93739999999889,
+          80.12129999999888,
+          141.0627999999997,
+          117.60090000000127,
+          121.2319000000025,
+          128.6159000000007,
+          128.97750000000087,
+          137.45829999999842,
+          220.67209999999977,
+          321.8574000000008,
+          184.09870000000228,
+          142.65369999999893,
+          138.46430000000328,
+          129.57489999999962,
+          163.6775000000016
+        ],
+        "gameClickToTwoFramesMs": [
+          32.400000005960464,
+          28.80000001192093,
+          30.700000002980232,
+          22.099999994039536,
+          25.899999991059303,
+          31.799999997019768
+        ],
+        "eventTimingMaxMs": 120
+      },
+      {
+        "run": 2,
+        "lcpMs": 1172,
+        "fcpMs": 1172,
+        "cls": 0,
+        "loadMs": 1944.5,
+        "longTaskCount": 1,
+        "observedBlockingMs": 369,
+        "resourceBytes": 183900,
+        "imageBytes": 99245,
+        "resources": [
+          {
+            "url": "/js/theme-init.js",
+            "bytes": 905
+          },
+          {
+            "url": "/assets/images/background-mobile.avif",
+            "bytes": 87327
+          },
+          {
+            "url": "/css/style.css",
+            "bytes": 22600
+          },
+          {
+            "url": "/js/config.js",
+            "bytes": 5013
+          },
+          {
+            "url": "/js/icons.js",
+            "bytes": 3329
+          },
+          {
+            "url": "/js/core.js",
+            "bytes": 3071
+          },
+          {
+            "url": "/js/main.js",
+            "bytes": 6021
+          },
+          {
+            "url": "/js/sakura.js",
+            "bytes": 4374
+          },
+          {
+            "url": "/js/effects.js",
+            "bytes": 3479
+          },
+          {
+            "url": "/js/music.js",
+            "bytes": 11509
+          },
+          {
+            "url": "/js/links.js",
+            "bytes": 4458
+          },
+          {
+            "url": "/js/projects-data.js",
+            "bytes": 2343
+          },
+          {
+            "url": "/js/projects.js",
+            "bytes": 3246
+          },
+          {
+            "url": "/css/music.css",
+            "bytes": 4944
+          },
+          {
+            "url": "/js/router.js",
+            "bytes": 9063
+          },
+          {
+            "url": "/favicon.svg",
+            "bytes": 717
+          },
+          {
+            "url": "/assets/images/avatar-160.webp",
+            "bytes": 10484
+          },
+          {
+            "url": "/assets/audio/bgm-web.mp3",
+            "bytes": 300
+          },
+          {
+            "url": "/favicon.svg",
+            "bytes": 717
+          }
+        ],
+        "scriptMs": 107.215,
+        "taskMs": 1996.8429999999998,
+        "fps": 60.001589446078036,
+        "slowFrames": 0,
+        "frames": 151,
+        "heapBefore": 1053104,
+        "heapAfter": 2714216,
+        "domBefore": {
+          "documents": 2,
+          "nodes": 795,
+          "jsEventListeners": 58
+        },
+        "domAfter": {
+          "documents": 6,
+          "nodes": 860,
+          "jsEventListeners": 90
+        },
+        "navigationMs": [
+          749.5835999999981,
+          536.8229999999967,
+          388.76750000000175,
+          837.340099999994,
+          613.5314999999973,
+          1494.8573000000033,
+          267.1495000000068,
+          213.35480000000098,
+          137.79490000000078,
+          212.99729999999545,
+          151.1721000000034,
+          227.39150000000518,
+          157.5486000000019,
+          132.58169999999518,
+          161.02509999999893,
+          140.96309999999357,
+          131.4632999999958,
+          242.20090000000346,
+          175.0268999999971,
+          184.07660000000033,
+          114.47820000000502,
+          130.65529999999853,
+          120.14389999999548,
+          171.66790000000037
+        ],
+        "gameClickToTwoFramesMs": [
+          17.200000002980232,
+          19.799999997019768,
+          27,
+          23.799999997019768,
+          18,
+          21.299999997019768
+        ],
+        "eventTimingMaxMs": 152
+      }
+    ],
+    "lighthouse": {
+      "lighthouseVersion": "13.0.1",
+      "fetchTime": "2026-10-17T10:01:53.579Z",
+      "environment": {
+        "networkUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Mobile Safari/537.36",
+        "hostUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36 Edg/155.0.0.0",
+        "benchmarkIndex": 3000,
+        "credits": {
+          "axe-core": "4.14.0"
+        }
+      },
+      "configSettings": {
+        "output": "html",
+        "maxWaitForFcp": 30000,
+        "maxWaitForLoad": 45000,
+        "pauseAfterFcpMs": 1000,
+        "pauseAfterLoadMs": 1000,
+        "networkQuietThresholdMs": 1000,
+        "cpuQuietThresholdMs": 1000,
+        "formFactor": "mobile",
+        "throttling": {
+          "rttMs": 150,
+          "throughputKbps": 1638.4,
+          "requestLatencyMs": 562.5,
+          "downloadThroughputKbps": 1474.5600000000002,
+          "uploadThroughputKbps": 675,
+          "cpuSlowdownMultiplier": 4
+        },
+        "throttlingMethod": "simulate",
+        "screenEmulation": {
+          "mobile": true,
+          "width": 412,
+          "height": 823,
+          "deviceScaleFactor": 1.75,
+          "disabled": false
+        },
+        "emulatedUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36",
+        "auditMode": false,
+        "gatherMode": false,
+        "clearStorageTypes": [
+          "file_systems",
+          "shader_cache",
+          "service_workers",
+          "cache_storage"
+        ],
+        "disableStorageReset": false,
+        "debugNavigation": false,
+        "channel": "node",
+        "usePassiveGathering": false,
+        "disableFullPageScreenshot": false,
+        "skipAboutBlank": false,
+        "blankPage": "about:blank",
+        "ignoreStatusCode": false,
+        "locale": "en-US",
+        "blockedUrlPatterns": null,
+        "additionalTraceCategories": null,
+        "extraHeaders": null,
+        "precomputedLanternData": null,
+        "onlyAudits": null,
+        "onlyCategories": [
+          "performance",
+          "accessibility",
+          "best-practices",
+          "seo"
+        ],
+        "skipAudits": null
+      },
+      "scores": {
+        "performance": 98.0,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "metrics": {
+        "largest-contentful-paint": 2348.1711,
+        "first-contentful-paint": 1073.1711,
+        "total-blocking-time": 60,
+        "cumulative-layout-shift": 0.001155817825663503,
+        "speed-index": 1116.942033483043
+      }
+    },
+    "medians": {
+      "lcpMs": 1172,
+      "fcpMs": 1172,
+      "loadMs": 1824.9000000059605,
+      "resourceBytes": 183900,
+      "imageBytes": 99245,
+      "scriptMs": 107.215,
+      "longTaskCount": 1,
+      "observedBlockingMs": 265,
+      "heapAfter": 2714216,
+      "fps": 60.001589446078036,
+      "navigationMs": 141.01294999999664,
+      "gameClickToTwoFramesMs": 25.349999994039536
+    }
+  }
+}

@@ -60,6 +60,7 @@
     document.querySelectorAll('[data-profile-image]').forEach(img => { img.src = url(config.avatarSmall || config.avatarWebp || config.avatar); img.srcset = config.avatarSmall ? `${url(config.avatarSmall)} 160w, ${url(config.avatarWebp)} 336w` : ''; img.sizes = `${img.getAttribute('width') || 40}px`; });
     const about = document.getElementById('about-content');
     if (about) {
+      about.replaceChildren();
       about.append(el('p', '', config.about?.intro || config.bio));
       for (const paragraph of config.about?.paragraphs || []) about.append(el('p', '', paragraph));
     }
