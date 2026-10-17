@@ -55,7 +55,12 @@ async function check(name,fn){await fn();checks.push(name);console.log('PASS '+n
  });
  await check('Mobile, tablet and landscape boards/images fit with stable dimensions',async()=>{
   for(const [width,height]of [[320,740],[390,844],[768,1024],[844,390]]){
-   await page.setViewportSize({width,height});await nav('小游戏');await page.getByLabel('难度').selectOption('expert');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+   await page.setViewportSize({width,height});await nav('小游戏');await page.getByLabel('难度').selectOption('expert');
+   // A 45-degree disc has the widest transformed bounds. Check it deterministically.
+   await page.locator('.cd-disc').evaluate(e=>{e.style.animation='none';e.style.transform='rotate(45deg)';});
+   const layout=await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth,overflow:[...document.querySelectorAll('body *')].filter(e=>e.getBoundingClientRect().right>innerWidth+.1).map(e=>({tag:e.tagName,cls:e.className,right:e.getBoundingClientRect().right,width:e.getBoundingClientRect().width,transform:getComputedStyle(e).transform})).slice(0,12)}));
+   if(layout.scroll>layout.width)await page.screenshot({path:'test-results/overflow.png',fullPage:true});
+   assert(layout.scroll<=layout.width,JSON.stringify({height,...layout}));
    const board=await page.locator('#memory-grid').boundingBox(),fox=await page.locator('.fox-assistant').boundingBox();
    assert(fox.y>=board.y+board.height,'Fox assistant must not cover game cards');
    await page.screenshot({path:`test-results/game-${width}.png`,fullPage:true});
@@ -65,8 +70,8 @@ async function check(name,fn){await fn();checks.push(name);console.log('PASS '+n
  await check('Repeated mount/unmount keeps live DOM listener counts bounded after GC',async()=>{
   const cdp=await context.newCDPSession(page),samples=[];
   for(let round=0;round<3;round++){for(let i=0;i<6;i++){await nav('小游戏');await page.locator('.memory-card').first().click();await nav('首页');}await page.evaluate(()=>{window.telegramCard=null;window.firstPetal=null;window.panelObserver=null;});await cdp.send('HeapProfiler.collectGarbage');samples.push(await cdp.send('Memory.getDOMCounters'));}
-  assert(samples[2].jsEventListeners<=samples[0].jsEventListeners+2);assert(samples[2].nodes<=samples[0].nodes+10);
   fs.writeFileSync('test-results/performance/lifecycle.json',JSON.stringify(samples,null,2));
+  assert(samples[2].jsEventListeners<=samples[0].jsEventListeners+2,JSON.stringify(samples));assert(samples[2].nodes<=samples[0].nodes+10,JSON.stringify(samples));
  });
  assert.deepEqual(errors,[]);fs.writeFileSync('test-results/performance-tests.json',JSON.stringify({checks,errors},null,2));
 })().catch(e=>{console.error(e);process.exitCode=1;}).finally(async()=>{if(browser)await browser.close();server.close();});

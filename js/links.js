@@ -18,6 +18,7 @@ window.Site.register('links', () => {
     return {item,value,copying,tile,key:item.url||item.field||item.name,search:[item.name,item.username,item.description,item.category,value].join(' ').toLocaleLowerCase()};
   });
   const empty=el('p','empty-state','没有找到匹配的平台，试试其他关键词或分类。');
+  filters.replaceChildren();
   function render(){
     clearTimeout(timer);timer=0;
     const query=search.value.trim().toLocaleLowerCase();

@@ -1216,3 +1216,6 @@ select,input[type='search'] {
 }
 /* Native option popups need a readable solid surface; the closed select stays transparent. */
 select option { color:var(--text); background:var(--solid); text-shadow:none; }
+
+/* Reserve the mobile navigation row before deferred scripts populate it. */
+@media(max-width:599px) { .site-header { min-height:130px; } }

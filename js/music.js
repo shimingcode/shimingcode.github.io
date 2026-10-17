@@ -18,7 +18,7 @@
   audio.muted = saved.muted === true;
   root.className = 'music-player'; root.setAttribute('aria-label', '音乐播放器');
   root.innerHTML = `<button id="music-toggle" class="cd-button" type="button" aria-label="播放音乐" aria-pressed="false">
-    <span class="cd-disc" aria-hidden="true"><img class="cd-cover" alt="" width="88" height="88"><span class="cd-hole"></span></span>
+    <span class="cd-viewport" aria-hidden="true"><span class="cd-disc"><img class="cd-cover" alt="" width="88" height="88"><span class="cd-hole"></span></span></span>
     <span class="cd-symbol" aria-hidden="true">▶</span><span class="cd-prompt" aria-hidden="true">点击播放</span></button>
     <details class="music-disclosure"><summary aria-label="展开音乐播放器" title="音乐控制面板">♫ <span aria-hidden="true">⌃</span></summary>
     <div class="music-panel glass"><p class="eyebrow">NOW PLAYING · SINGLE LOOP</p><strong id="music-title"></strong><p id="music-artist"></p>
