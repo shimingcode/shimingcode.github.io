@@ -25,7 +25,7 @@
 - 无运行时第三方框架、外部字体或统计脚本；开发依赖是 Playwright，没有升级全部依赖。Lighthouse 只用于本地测试，不打包到网站。
 - 保留三套透明主题、圆角、背景人物及现有低性能模糊降级；没有新增全屏滤镜、动画层或 Service Worker。
 - 外部链接协议校验、noopener/noreferrer、展示文字使用 textContent 等现有措施保留。回归包含恶意展示文本和无效 URL；本地存储不可用时仍可交互。未在检查的公开配置中发现 API 密钥；这不等同于专业渗透测试。
-- GitHub Pages 继续使用既有 main 根目录动态 Pages 工作流，无仓库内自定义 workflow。保留 .nojekyll；可选 `_site/` 构建含 80 个文件。静态 JS/CSS 使用版本查询参数，不声称它们是内容哈希文件；不能为 Pages 随意设置响应头。本次没有引入额外缓存层。
+- GitHub Pages 继续使用既有 main 根目录动态 Pages 工作流，无仓库内自定义 workflow。保留 .nojekyll；可选 `_site/` 构建含 80 个文件。静态 JS/CSS 使用版本查询参数，不声称它们是内容哈希文件；不能为 Pages 随意设置响应头。本次没有引入额外缓存层。部署后实际检查 HTML、CSS、JS、AVIF、MP3、robots 和 sitemap，均返回 200，Cache-Control 为 max-age=600，带 ETag；不假设支持自定义响应头。
 
 ## 音乐、助手与小游戏
 
@@ -57,17 +57,17 @@
 | 动画采样 | 60.00 FPS | 60.00 FPS | -0.0% |
 
 
-实验二：Lighthouse 13.0.1 默认模拟移动条件，每版一次，同机 Edge；其网络模拟与上表不同，不应混用指标。基线为修改前保存的静态构建，优化后测量发生在最后的 CD 裁切修复之前；该小修复后的 Lighthouse 重跑因自动审批服务额度不足被拦截，不能将 98 分声称为最终构建的新成绩。上面的三轮 Performance API 测量已包含 CD 修复。
+实验二：Lighthouse 13.0.1 默认模拟移动条件，每版一次，同机 Edge；其网络模拟与上表不同，不应混用指标。基线为修改前保存的静态构建，最终复测包含 CD 裁切修复。一次重跑因自动审批服务额度暂不可用被拦截，之后审批恢复并实际完成补测；先前中间版本结果也保存在 JSON 中，不替代最终数据。
 
-| 指标 | 基线 | 优化版（CD 裁切修复前） |
+| 指标 | 基线 | 最终优化版 |
 | --- | ---: | ---: |
 | Performance | 70 | 98 |
 | Accessibility | 100 | 100 |
 | Best Practices | 100 | 100 |
 | SEO | 100 | 100 |
-| LCP | 2925.16 ms | 2348.17 ms |
-| FCP | 1281.32 ms | 1073.17 ms |
-| TBT | 197.5 ms | 60 ms |
+| LCP | 2925.16 ms | 2344.21 ms |
+| FCP | 1281.32 ms | 1069.21 ms |
+| TBT | 197.5 ms | 68 ms |
 | CLS | 0.58954 | 0.00116 |
 
 分数有环境波动，不是对生产环境/所有手机的保证。PerformanceObserver 基线 CLS 为 0，而 Lighthouse 录制暴露了样式重新加载造成的大幅跳动；不同模拟条件会影响复现时机，两者均如实保留。帧率接近 60 FPS 是本机采样；内存没有显著改善，不宣称“完全无泄漏”或用实验室 Event Timing 替代真实用户 INP。
@@ -119,4 +119,4 @@ python -m http.server 4173 --bind 127.0.0.1 --directory _site
 
 需 Node.js 22+、Playwright 与可用浏览器；环境可通过 NODE_PATH 指向已安装 Playwright。Lighthouse 额外需要本地安装 lighthouse@13.0.1，并可通过 LIGHTHOUSE_PATH 指定其 core/index.js 后运行 `node scripts/audit-lighthouse.cjs after _site`。
 
-开发工作区为 ZIP 展开目录，没有 .git；不初始化或覆盖本地历史。已通过连接器从真实 main 建立独立分支。测试通过后按既有流程提交 PR、合并、等待 Pages，并复测线上页面；最终发布状态以 PR/Actions 记录与交付说明为准。
+开发工作区为 ZIP 展开目录，没有 .git；不初始化或覆盖本地历史。已通过连接器从真实 main 建立独立分支。代码已通过 [PR #10](https://github.com/shimingcode/shimingcode.github.io/pull/10) 合并，提交为 cec33049be0b1d1faa5410b52c7242713729513b；[Pages 发布运行](https://github.com/shimingcode/shimingcode.github.io/actions/runs/39024044260) 成功。实际线上再次通过 25 项检查（全站 7、游戏 12、语音 6），并确认新路由 v12、音乐 CSS v7 和圆形裁切已生效；没有强制推送。此后文档补充最终 Lighthouse 与线上验证记录，不改变运行时代码。
