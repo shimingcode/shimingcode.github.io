@@ -8,8 +8,8 @@
       if(this.disposed || !this.settings.soundEnabled) return;
       try {
         if(!this.context) { const Context=window.AudioContext || window.webkitAudioContext; if(!Context)return; this.context=new Context(); this.gain=this.context.createGain(); this.gain.connect(this.context.destination); }
-        this.gain.gain.value=this.settings.soundVolume;
-        if(this.context.state==='suspended') this.context.resume().catch(()=>{});
+        if(this.appliedVolume!==this.settings.soundVolume){this.gain.gain.value=this.settings.soundVolume;this.appliedVolume=this.settings.soundVolume;}
+        if(this.context.state==='suspended'&&!this.resuming)this.resuming=Promise.resolve(this.context.resume()).catch(()=>{}).finally(()=>{this.resuming=null;});
       } catch { /* Sound is optional; game input always succeeds. */ }
     }
     buffer(kind) {

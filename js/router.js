@@ -31,7 +31,7 @@
   }
   window.addEventListener('scroll', remember, { passive: true });
   function asset(name, style = false) {
-    const source = url(name.startsWith('funny-hit/') ? `./games/${name}.${style?'css':'js'}?v=4` : style ? `./css/${name}.css?v=6` : `./js/${name}.js?v=4`);
+    const source = url(name.startsWith('funny-hit/') ? `./games/${name}.${style?'css':'js'}?v=5` : style ? `./css/${name}.css?v=6` : `./js/${name}.js?v=4`);
     const cache = style ? styles : loaded;
     if (!cache.has(source)) {
       cache.set(source, new Promise((resolve, reject) => {
@@ -80,9 +80,12 @@
         incoming = page.content.querySelector('#main');
         if (!incoming || !page.content.querySelector('#music-root') || page.content.querySelector('meta[name="site-shell"]')?.content !== 'music-v4') throw new Error('Incompatible page shell');
         if(fetched){documents.delete(id);documents.set(id,{html,time:performance.now()});if(documents.size>6)documents.delete(documents.keys().next().value);}
-        for (const script of routes.get(normalize(target.pathname))) await asset(script);
-        if (incoming.dataset.pageClass === 'works-page') await asset('works', true);
-        if (incoming.dataset.pageClass === 'funny-hit-page') await asset('funny-hit/style', true);
+        // Insert ordered (async=false) scripts together: fetch concurrently, execute
+        // in dependency order. Styles can load alongside them before mounting.
+        const assets=routes.get(normalize(target.pathname)).map(script=>asset(script));
+        if (incoming.dataset.pageClass === 'works-page') assets.push(asset('works', true));
+        if (incoming.dataset.pageClass === 'funny-hit-page') assets.push(asset('funny-hit/style', true));
+        await Promise.all(assets);
         if (controller !== task || task.signal.aborted) throw new Error('Navigation cancelled');
       }
       if (!pop) { key = ++nextKey; history.pushState({ shimingPage: key }, '', target.href); }

@@ -57,13 +57,16 @@
         this.current={engine:'loading',src:record.src};
         this.preload(text).then(url=>{if(token!==this.token||this.disposed||document.hidden)return;
           if(!url){this.speak(cue,token);return;}
-          this.audio ||= new Audio();const a=this.audio;a.preload='auto';a.volume=this.settings.voiceVolume;a.src=url;
+          this.audio ||= new Audio();const a=this.audio;a.preload='auto';a.volume=this.settings.voiceVolume;
+          // Rewind an already loaded recording without restarting media loading/decoding.
+          if(a.src!==url)a.src=url;else a.currentTime=0;
           this.current={engine:'recording',src:record.src};
           a.onplaying=()=>{if(token===this.token){this.caption(text,emotion);this.status(`本地配音：${record.label}`);clearTimeout(this.timer);}};
           a.onended=()=>this.end(token,text);
-          a.onerror=()=>{if(token!==this.token||this.current?.engine!=='recording')return;this.failed.add(record.src);a.onended=a.onerror=a.onplaying=null;a.pause();this.speak(cue,token);};
+          const failedRecording=()=>{if(token!==this.token||this.current?.engine!=='recording')return;this.failed.add(record.src);a.onended=a.onerror=a.onplaying=null;a.pause();a.removeAttribute('src');a.load();this.release(record.src);this.speak(cue,token);};
+          a.onerror=failedRecording;
           this.timer=setTimeout(()=>{if(token===this.token){a.onended=a.onerror=a.onplaying=null;a.pause();this.status('配音加载超时，保留字幕。');this.end(token,text);}},10000);
-          try{Promise.resolve(a.play()).catch(()=>{if(token!==this.token||this.current?.engine!=='recording')return;clearTimeout(this.timer);a.onended=a.onerror=a.onplaying=null;a.pause();this.status('配音播放受限，请再点击试听；本次保留字幕。');this.end(token,text);});}catch{this.end(token,text);}
+          try{Promise.resolve(a.play()).catch(error=>{if(token!==this.token||this.current?.engine!=='recording')return;if(error?.name==='NotSupportedError'||a.error){failedRecording();return;}clearTimeout(this.timer);a.onended=a.onerror=a.onplaying=null;a.pause();this.status('配音播放受限，请再点击试听；本次保留字幕。');this.end(token,text);});}catch(error){if(error?.name==='NotSupportedError'||a.error)failedRecording();else this.end(token,text);}
         });return true;
       }
       return this.speak(cue,token);

@@ -1,0 +1,183 @@
+{
+  "before": {
+    "browser": "155.0.4283.45",
+    "conditions": {
+      "viewport": "390x844 DPR2",
+      "cpuSlowdown": 4,
+      "runs": 3,
+      "warmupHits": 20,
+      "burstHits": 1000,
+      "pacedHits": 60,
+      "intervalMs": 35,
+      "voice": "muted",
+      "music": "paused",
+      "sound": "on",
+      "fieldINP": "not measured"
+    },
+    "samples": [
+      {
+        "run": 0,
+        "syncMs": 239.70000000298023,
+        "scoreMutations": 2000,
+        "animationQueries": 31,
+        "count": "1020 次",
+        "scriptMs": 188.546,
+        "layoutMs": 13.979999999999993,
+        "styleMs": 10.033000000000014,
+        "paced": {
+          "elapsedMs": 2883.8999999910593,
+          "animationQueries": 297,
+          "frameP95Ms": 16.90000000000009,
+          "longTasks": [
+            249
+          ]
+        },
+        "heapBytes": 2392272,
+        "dom": {
+          "documents": 2,
+          "nodes": 637,
+          "jsEventListeners": 76
+        }
+      },
+      {
+        "run": 1,
+        "syncMs": 348.90000000596046,
+        "scoreMutations": 2000,
+        "animationQueries": 42,
+        "count": "1020 次",
+        "scriptMs": 284.025,
+        "layoutMs": 14.853000000000005,
+        "styleMs": 10.225999999999956,
+        "paced": {
+          "elapsedMs": 3042.4000000059605,
+          "animationQueries": 319,
+          "frameP95Ms": 16.800000000000182,
+          "longTasks": [
+            353
+          ]
+        },
+        "heapBytes": 2392940,
+        "dom": {
+          "documents": 2,
+          "nodes": 637,
+          "jsEventListeners": 76
+        }
+      },
+      {
+        "run": 2,
+        "syncMs": 486.20000000298023,
+        "scoreMutations": 2000,
+        "animationQueries": 64,
+        "count": "1020 次",
+        "scriptMs": 373.369,
+        "layoutMs": 42.39400000000004,
+        "styleMs": 24.93500000000004,
+        "paced": {
+          "elapsedMs": 3020.4000000059605,
+          "animationQueries": 308,
+          "frameP95Ms": 16.90000000000009,
+          "longTasks": [
+            492
+          ]
+        },
+        "heapBytes": 2393792,
+        "dom": {
+          "documents": 2,
+          "nodes": 637,
+          "jsEventListeners": 76
+        }
+      }
+    ]
+  },
+  "after": {
+    "browser": "155.0.4283.45",
+    "conditions": {
+      "viewport": "390x844 DPR2",
+      "cpuSlowdown": 4,
+      "runs": 3,
+      "warmupHits": 20,
+      "burstHits": 1000,
+      "pacedHits": 60,
+      "intervalMs": 35,
+      "voice": "muted",
+      "music": "paused",
+      "sound": "on",
+      "fieldINP": "not measured"
+    },
+    "samples": [
+      {
+        "run": 0,
+        "syncMs": 169.5,
+        "scoreMutations": 2,
+        "animationQueries": 0,
+        "count": "1020 次",
+        "scriptMs": 140.16000000000005,
+        "layoutMs": 2.226999999999979,
+        "styleMs": 5.581000000000003,
+        "paced": {
+          "elapsedMs": 2729.7999999970198,
+          "animationQueries": 0,
+          "frameP95Ms": 16.900000000000546,
+          "longTasks": [
+            172
+          ]
+        },
+        "heapBytes": 2385208,
+        "dom": {
+          "documents": 2,
+          "nodes": 637,
+          "jsEventListeners": 76
+        }
+      },
+      {
+        "run": 1,
+        "syncMs": 159.70000000298023,
+        "scoreMutations": 2,
+        "animationQueries": 0,
+        "count": "1020 次",
+        "scriptMs": 137.811,
+        "layoutMs": 4.802000000000084,
+        "styleMs": 2.5200000000000222,
+        "paced": {
+          "elapsedMs": 2781.5999999940395,
+          "animationQueries": 0,
+          "frameP95Ms": 16.800000000000182,
+          "longTasks": [
+            162
+          ]
+        },
+        "heapBytes": 2385248,
+        "dom": {
+          "documents": 2,
+          "nodes": 637,
+          "jsEventListeners": 76
+        }
+      },
+      {
+        "run": 2,
+        "syncMs": 167.70000000298023,
+        "scoreMutations": 2,
+        "animationQueries": 0,
+        "count": "1020 次",
+        "scriptMs": 138.90000000000003,
+        "layoutMs": 2.4250000000000105,
+        "styleMs": 2.4060000000000192,
+        "paced": {
+          "elapsedMs": 2800.2000000029802,
+          "animationQueries": 0,
+          "frameP95Ms": 16.899999999999636,
+          "longTasks": [
+            170
+          ]
+        },
+        "heapBytes": 2385244,
+        "dom": {
+          "documents": 2,
+          "nodes": 637,
+          "jsEventListeners": 76
+        }
+      }
+    ]
+  },
+  "baselineCommit": "ba654e5032898bec76671027314112bb7e5224be"
+}
