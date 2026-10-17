@@ -29,9 +29,19 @@ test('game priority can interrupt a preview instead of queuing behind it',()=>{c
 
 test('rapid animation replacement releases cancelled ownership before cancel events fire',()=>{
   const {F,c}=setup();vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../games/funny-hit/effects.js'),'utf8'),c);
-  const created=[],node={getAnimations:()=>created.filter(a=>!a.cancelled),animate(){const a={cancelled:false,cancel(){this.cancelled=true;}};created.push(a);return a;}};
-  const effects={photo:node,animations:new Set()};
+  const created=[],node={getAnimations(){throw Error('Animation ownership must not query browser style state');},animate(){const a={cancelled:false,cancel(){this.cancelled=true;}};created.push(a);return a;}};
+  const effects={photo:node,animations:new Map()};
   for(let i=0;i<1000;i++){F.Effects.prototype.animate.call(effects,node,[],{});assert.equal(effects.animations.size,1);}
   assert(created.slice(0,-1).every(a=>a.oncancel===null&&a.onfinish===null));
   created.at(-1).onfinish();assert.equal(effects.animations.size,0);
+});
+
+test('rapid clicks share a pending audio unlock and retain individual sound starts',async()=>{
+  const {F,c}=setup();let resumes=0,starts=0,resolveResume,volumeWrites=0;
+  c.window.AudioContext=class{constructor(){this.sampleRate=8000;this.state='suspended';}createGain(){return{gain:{set value(v){volumeWrites++;}},connect(){}};}createBuffer(_,n){return{getChannelData:()=>new Float32Array(n)};}createBufferSource(){return{connect(){},disconnect(){},start(){starts++;},stop(){}};}resume(){resumes++;return new Promise(resolve=>resolveResume=resolve);}close(){return Promise.resolve();}};
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../games/funny-hit/audio-manager.js'),'utf8'),c);
+  const audio=new F.AudioManager({...F.defaults});for(let i=0;i<100;i++)assert(audio.play());
+  assert.equal(resumes,1);assert.equal(starts,100);assert.equal(volumeWrites,1);
+  audio.settings.soundVolume=.2;audio.play();assert.equal(volumeWrites,2);
+  const pending=audio.resuming;resolveResume();await pending;assert.equal(audio.resuming,null);audio.dispose();
 });

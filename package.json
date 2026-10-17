@@ -16,7 +16,9 @@
     "test:music-gesture": "node tests/music-gesture.cjs",
     "test:glass": "node tests/glass.cjs after",
     "test:funny-hit": "node tests/funny-hit-browser.cjs",
-    "test:voice": "node tests/voice-browser.cjs"
+    "test:voice": "node tests/voice-browser.cjs",
+    "measure:hit": "node scripts/measure-hit-performance.cjs",
+    "test:route-loading": "node tests/router-loading.cjs"
   },
   "devDependencies": {
     "playwright": "1.62.1"
