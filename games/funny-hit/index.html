@@ -15,15 +15,15 @@
 <script src="../../js/sakura.js?v=5" defer></script>
 <script src="../../js/effects.js?v=4" defer></script>
 <script src="../../js/music.js?v=6" defer></script>
-<script src="./dialogue.js?v=5" defer></script>
-<script src="./game-state.js?v=5" defer></script>
+<script src="./dialogue.js?v=6" defer></script>
+<script src="./game-state.js?v=6" defer></script>
 <script src="./audio-manager.js?v=5" defer></script>
-<script src="./voice-manager.js?v=5" defer></script>
+<script src="./voice-manager.js?v=6" defer></script>
 <script src="./effects.js?v=5" defer></script>
-<script src="./game.js?v=5" defer></script>
+<script src="./game.js?v=6" defer></script>
 <link rel="stylesheet" href="./style.css?v=5">
 <link rel="stylesheet" href="../../css/music.css?v=7">
-<script src="../../js/router.js?v=12" defer></script>
+<script src="../../js/router.js?v=13" defer></script>
 </head><body class="funny-hit-page">
 <a class="skip-link" href="#main">跳到主要内容</a><div class="background" aria-hidden="true"></div><div id="sakura" aria-hidden="true"></div>
 <header id="site-header" class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.svg" alt="" width="32" height="32">Shiming<span>✧</span></a></header>
@@ -36,7 +36,9 @@
 <button id="hit-button" class="button primary hit-main-button" data-hit-action="hit" type="button">✦ 暴击一下</button>
 <section id="hit-complete" class="hit-complete" hidden aria-labelledby="hit-complete-title"><h2 id="hit-complete-title" tabindex="-1">樱花彩蛋已解锁！继续和狐狐玩吧～</h2><p>已完成 20 次互动，点击次数没有上限，无需切换模式即可继续！</p><div class="hit-actions"><button class="button" type="button" data-hit-action="reset">重新开始</button><button class="button" type="button" data-hit-action="dismiss">收起彩蛋</button><a class="button" href="../../games/">返回小游戏中心</a></div></section>
 <details class="hit-settings"><summary>声音与特效设置</summary>
-<p class="hit-note">目标风格：萌系狐娘 · 害羞、软糯、轻声。当前实际声音见下方状态；系统语音不等于预录角色音。</p>
+<p class="hit-note">默认使用你指定视频的两段女声原音；保留视频背景声，不是重新合成的游戏台词。也可切回系统语音。</p>
+<label>语音来源<select aria-label="语音来源" data-setting="voiceSource"><option value="original">原视频女声 · 晓升</option><option value="system">系统语音 · 游戏台词</option></select></label>
+<p class="hit-note">原声仅有两段：撒娇/开心选邀请，其余选回应，并显示原视频字幕。<a href="https://www.douyin.com/video/7695234259136574385" target="_blank" rel="noopener noreferrer">查看原视频</a></p>
 <div class="hit-actions"><button class="button" type="button" data-hit-action="preview">语音试听</button></div>
 <label>情绪试听<select id="voice-emotion-select" aria-label="情绪试听" data-setting="previewEmotion"><option value="SHY">害羞</option><option value="PLEADING">求饶</option><option value="CUTE">撒娇</option><option value="HAPPY">开心</option><option value="PLAYFUL">调皮</option></select></label>
 <div class="hit-actions"><button class="button" type="button" data-hit-action="emotion-preview">试听所选情绪</button><button class="button" type="button" data-hit-action="defaults">恢复默认设置</button></div>
@@ -48,7 +50,7 @@
 <label>漫画暴击特效<input type="checkbox" data-setting="effectsEnabled" checked></label>
 <label>樱花特效<input type="checkbox" data-setting="sakuraEnabled" checked></label>
 <button type="button" class="button" data-hit-action="reset">重新开始本局</button></details>
-<p id="voice-status" class="hit-note">临时语音：正在检查系统中文音色；没有音色时使用字幕。</p><p class="hit-note">旁白由虚构狐狐角色发出，不是照片人物的声音或真实言论。漫画数字仅为趣味分数，所有互动均为卡通效果。CD 背景音乐可独立控制。</p>
+<p id="voice-status" class="hit-note">原视频女声：点击试听或开始互动后播放。</p><p class="hit-note">所选原声来自已确认授权的视频片段，不是照片人物的声音或真实言论。漫画数字仅为趣味分数，所有互动均为卡通效果。CD 背景音乐可独立控制。</p>
 </div></div></section></main>
 <footer id="site-footer" class="site-footer"></footer>
 <div id="music-root"></div><audio id="bgm" preload="none" playsinline></audio>

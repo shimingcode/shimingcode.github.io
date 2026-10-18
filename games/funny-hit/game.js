@@ -8,6 +8,7 @@ window.Site.register('funny-hit', () => {
   const bubble=get('hit-dialogue'),count=get('hit-count'),combo=get('hit-combo'),progress=get('hit-progress'),complete=get('hit-complete');
   const emotionLabel=get('voice-emotion'),voiceStatus=get('voice-status');
   const milestones=Object.keys(F.dialogue.milestones).map(Number);
+  const line=(text,emotion)=>F.voiceLine(text,settings.voiceSource,emotion);
   const effects=new F.Effects(get('hit-effects'),photo,settings),sound=new F.AudioManager(settings);
   const voice=new F.VoiceManager(settings,{caption:(text,emotion)=>{emotionLabel.textContent=F.emotions[emotion]?.label||'害羞';game.currentDialogue=text;bubble.textContent=text;bubble.classList.remove('faded');},finish:()=>bubble.classList.add('faded'),status:text=>voiceStatus.textContent=text});
   let lastRandom=-Infinity,previous='',celebrationDismissed=false,renderFrame=0,nextMilestone=0,preloaded=null;
@@ -24,7 +25,7 @@ window.Site.register('funny-hit', () => {
     while(nextMilestone<milestones.length&&milestones[nextMilestone]<=game.totalHits)nextMilestone++;
     const next=milestones[nextMilestone];
     if(next&&next!==preloaded&&settings.voiceEnabled&&settings.voiceMode!=='quiet'){
-      preloaded=next;voice.preload(F.dialogue.milestones[next]);
+      preloaded=next;voice.preload(line(F.dialogue.milestones[next],F.nodeEmotions[next]));
     }
   }
   function hit() {
@@ -32,11 +33,12 @@ window.Site.register('funny-hit', () => {
     const result=game.hit();if(!result)return;
     sound.play(result.completed||result.hit===15?'celebrate':result.combo?'combo':result.priority?'boing':'pop');
     effects.burst(result);
-    if(result.text) voice.say(result.text,{priority:true,final:result.completed,emotion:F.nodeEmotions[result.hit]});
+    if(result.text) voice.say(line(result.text,F.nodeEmotions[result.hit]),{priority:true,final:result.completed,emotion:F.nodeEmotions[result.hit]});
     else if(performance.now()-lastRandom>=2000) {
       const group=game.gameCompleted?'final':game.totalHits<5?'normal':game.totalHits<12?'plead':'shy';
       const text=F.pickDialogue(group,previous);previous=text;lastRandom=performance.now();
-      voice.say(text,{ordinary:true,emotion:group==='plead'?'PLEADING':group==='final'?'HAPPY':'SHY'});
+      const emotion=group==='plead'?'PLEADING':group==='final'?'HAPPY':'SHY';
+      voice.say(line(text,emotion),{ordinary:true,emotion});
     }
     preloadNext();scheduleUpdate();
   }
@@ -45,7 +47,7 @@ window.Site.register('funny-hit', () => {
     const action=event.target.closest('[data-hit-action]')?.dataset.hitAction;
     if(action==='hit')hit();
     if(action==='reset')reset();
-    if(action==='preview'||action==='emotion-preview'){const emotion=action==='preview'?'SHY':get('voice-emotion-select').value;voice.say(F.emotions[emotion].lines[Math.floor(Math.random()*3)],{preview:true,priority:true,emotion});}
+    if(action==='preview'||action==='emotion-preview'){const emotion=action==='preview'?'SHY':get('voice-emotion-select').value;voice.say(line(F.emotions[emotion].lines[Math.floor(Math.random()*3)],emotion),{preview:true,priority:true,emotion});}
     if(action==='defaults'){voice.stop();sound.stop();effects.stop();Object.assign(settings,F.defaults);syncSettings();voice.setVolume();if(sound.gain)sound.gain.gain.value=settings.soundVolume;window.Site.storage.set('funny-hit-settings',JSON.stringify(settings));get('voice-status').textContent='已恢复默认：标准模式，语音 65%，音效 40%。';}
     if(action==='dismiss'){celebrationDismissed=true;update();hitButton.focus({preventScroll:true});}
   },options);
@@ -61,8 +63,9 @@ window.Site.register('funny-hit', () => {
     settings[key]=input.type==='checkbox'?input.checked:input.type==='range'?Number(input.value):input.value;
     const output=input.parentElement.querySelector('output');if(output)output.value=`${Math.round(settings[key]*100)}%`;
     voice.setVolume();
-    if(key==='voiceMode')voice.stop();
-    if(key==='voiceMode'||key==='voiceEnabled'){preloaded=null;preloadNext();}
+    if(key==='voiceMode'||key==='voiceSource')voice.stop();
+    if(key==='voiceSource')voice.describe();
+    if(key==='voiceMode'||key==='voiceEnabled'||key==='voiceSource'){preloaded=null;preloadNext();}
     if(!settings.voiceEnabled){voice.stop();bubble.classList.remove('faded');}
     if(!settings.soundEnabled)sound.stop();
     if(sound.gain)sound.gain.gain.value=settings.soundVolume;
