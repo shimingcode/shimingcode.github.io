@@ -1,6 +1,6 @@
 // Local laboratory stress test. These samples are not field INP or Lighthouse scores.
 const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:path');
-const label=process.argv[2]||'after',root=path.resolve(process.argv[3]||'_site');
+const label=process.argv[2]||'v2',root=path.resolve(process.argv[3]||'_site');
 const server=require('../tests/server.cjs')(root),samples=[];let browser;
 const metric=r=>Object.fromEntries(r.metrics.map(m=>[m.name,m.value]));
 (async()=>{
@@ -23,16 +23,19 @@ const metric=r=>Object.fromEntries(r.metrics.map(m=>[m.name,m.value]));
     await p.locator('#hit-button').click();
     await p.locator('#hit-button').evaluate(b=>{for(let i=0;i<19;i++)b.click();});
     await p.waitForTimeout(1400);
+    await p.evaluate(()=>document.querySelector('[data-hit-action="reset"]').click());
     const before=metric(await cdp.send('Performance.getMetrics'));
     const burst=await p.evaluate(async()=>{
       const b=document.querySelector('#hit-button'),score=document.querySelector('.hit-score');
       let mutations=0;const observer=new MutationObserver(r=>mutations+=r.length);observer.observe(score,{subtree:true,childList:true,characterData:true});
       lab.animationQueries=0;lab.longTasks=[];
-      const start=performance.now();for(let i=0;i<1000;i++)b.click();const syncMs=performance.now()-start;
+      const start=performance.now();for(let i=0;i<100;i++)b.click();const syncMs=performance.now()-start;
       await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
       observer.disconnect();return {syncMs,scoreMutations:mutations,animationQueries:lab.animationQueries,count:document.querySelector('#hit-count').textContent};
     });
     const after=metric(await cdp.send('Performance.getMetrics'));
+    if(burst.count!=='100 / 100')throw Error('V2 workload did not complete exactly 100 hits');
+    await p.evaluate(()=>document.querySelector('[data-hit-action="reset"]').click());
     const paced=await p.evaluate(async()=>{
       lab.animationQueries=0;let start;const intervals=[];let previous;
       const tick=t=>{if(previous!==undefined)intervals.push(t-previous);previous=t;frame=requestAnimationFrame(tick);};let frame=requestAnimationFrame(tick);
@@ -48,5 +51,5 @@ const metric=r=>Object.fromEntries(r.metrics.map(m=>[m.name,m.value]));
     await context.close();
   }
   fs.mkdirSync('test-results/hit-performance',{recursive:true});
-  fs.writeFileSync(`test-results/hit-performance/${label}.json`,JSON.stringify({browser:await browser.version(),conditions:{viewport:'390x844 DPR2',cpuSlowdown:4,runs:3,warmupHits:20,burstHits:1000,pacedHits:60,intervalMs:35,voice:'muted',music:'paused',sound:'on',fieldINP:'not measured'},samples},null,2));
+  fs.writeFileSync(`test-results/hit-performance/${label}.json`,JSON.stringify({browser:await browser.version(),conditions:{rules:'V2 capped 100 hits; not comparable to old unlimited workload',viewport:'390x844 DPR2',cpuSlowdown:4,runs:3,warmupHits:20,burstHits:100,pacedHits:60,intervalMs:35,voice:'muted',music:'paused',fieldINP:'not measured'},samples},null,2));
 })().catch(e=>{console.error(e);process.exitCode=1;}).finally(async()=>{await browser?.close();server.close();});

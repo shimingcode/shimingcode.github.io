@@ -1,17 +1,37 @@
+// V2 transport failure regressions. There is no synthesis or alternate voice fallback.
 const {chromium}=require('playwright'),assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs');
 const server=require('./server.cjs')(path.resolve(__dirname,'../_site'));let browser;const checks=[];
 async function check(name,fn){await fn();checks.push(name);console.log('PASS '+name);}
-// Original 24kHz tone fixture tests media transport, not voice quality.
-function wav(){const n=24000,b=Buffer.alloc(44+n*2);b.write('RIFF');b.writeUInt32LE(b.length-8,4);b.write('WAVEfmt ',8);b.writeUInt32LE(16,16);b.writeUInt16LE(1,20);b.writeUInt16LE(1,22);b.writeUInt32LE(24000,24);b.writeUInt32LE(48000,28);b.writeUInt16LE(2,32);b.writeUInt16LE(16,34);b.write('data',36);b.writeUInt32LE(n*2,40);for(let i=0;i<n;i++)b.writeInt16LE(Math.round(Math.sin(i/24000*440*2*Math.PI)*1200*Math.sin(Math.PI*i/n)),44+i*2);return b;}
-(async()=>{await new Promise(r=>server.listen(0,'127.0.0.1',r));browser=await chromium.launch({channel:'msedge'});const p=await browser.newPage({viewport:{width:390,height:844}});const errors=[];p.on('pageerror',e=>errors.push(e.message));await p.goto((process.env.LIVE_URL||`http://127.0.0.1:${server.address().port}`)+'/games/funny-hit/');await p.locator('.hit-settings summary').click();
-await check('five emotion previews change captions, settings persist and reset to defaults',async()=>{await p.getByLabel('语音来源',{exact:true}).selectOption('system');for(const e of ['SHY','PLEADING','CUTE','HAPPY','PLAYFUL']){await p.getByLabel('情绪试听',{exact:true}).selectOption(e);await p.getByRole('button',{name:'试听所选情绪',exact:true}).click();assert(await p.evaluate(e=>FunnyHit.emotions[e].lines.includes(document.querySelector('#hit-dialogue').textContent),e));}await p.getByLabel('语音音量',{exact:true}).fill('0.2');await p.reload();assert.equal(await p.locator('[data-setting=voiceVolume]').inputValue(),'0.2');assert.equal(await p.locator('#voice-emotion-select').inputValue(),'PLAYFUL');await p.locator('.hit-settings summary').click();await p.getByRole('button',{name:'恢复默认设置',exact:true}).click();assert.equal(await p.locator('[data-setting=voiceVolume]').inputValue(),'0.65');assert.equal(await p.locator('[data-setting=soundVolume]').inputValue(),'0.4');assert.equal(await p.locator('[data-setting=voiceMode]').inputValue(),'standard');assert.equal(await p.locator('#voice-emotion-select').inputValue(),'SHY');assert.equal(await p.locator('#hit-count').textContent(),'0 次');});
-let downloads=0;await p.route('**/voices/test-*.wav',r=>{downloads++;r.fulfill({contentType:'audio/wav',body:wav()});});
-await p.evaluate(()=>{window.captions=[];window.finished=0;FunnyHit.recordings=Object.fromEntries(['a','b','c','d'].map(t=>[t,{src:'test-'+t+'.wav',label:'TEST TONE — not character speech',license:'Original test fixture'}]));window.vmVoice=new FunnyHit.VoiceManager({...FunnyHit.defaults},{caption:t=>captions.push(t),finish:()=>finished++});document.querySelector('#hit-heading').onclick=()=>vmVoice.say('a',{preview:true,priority:true});});
-await check('real local recording decodes and ends; one reusable Audio and cached download',async()=>{await p.locator('#hit-heading').click();await p.waitForFunction(()=>vmVoice.audio&&!vmVoice.audio.paused&&vmVoice.audio.currentTime>0);await p.evaluate(()=>{window.firstVoiceAudio=vmVoice.audio;window.voiceReloads=0;firstVoiceAudio.addEventListener('loadstart',()=>voiceReloads++);});await p.waitForFunction(()=>vmVoice.audio.ended);assert.equal(await p.evaluate(()=>captions.at(-1)),'a');assert.equal(await p.evaluate(()=>vmVoice.audio.volume),.65);await p.locator('#hit-heading').click();await p.waitForFunction(()=>vmVoice.audio.currentTime>0&&!vmVoice.audio.paused);assert(await p.evaluate(()=>vmVoice.audio===firstVoiceAudio));assert.equal(downloads,1);assert.equal(await p.evaluate(()=>voiceReloads),0,'replaying the same source must not restart loading');});
-await check('live volume, bounded preloading and final priority',async()=>{await p.evaluate(async()=>{vmVoice.settings.voiceVolume=.25;vmVoice.setVolume();await vmVoice.preload('b');await vmVoice.preload('c');await vmVoice.preload('d');});assert.equal(await p.evaluate(()=>vmVoice.audio.volume),.25);assert.equal(await p.evaluate(()=>vmVoice.cache.size),3);await p.evaluate(()=>{vmVoice.say('b',{priority:true});vmVoice.say('c',{priority:true});vmVoice.say('d',{priority:true,final:true});});await p.waitForFunction(()=>vmVoice.current?.src==='test-d.wav'&&vmVoice.audio.currentTime>0);assert.equal(await p.evaluate(()=>vmVoice.queue.length),0);assert.equal(await p.evaluate(()=>captions.at(-1)),'d');});
-await p.route('**/voices/test-broken.wav',r=>{downloads++;r.fulfill({contentType:'audio/wav',body:'Invalid audio fixture'});});
-await check('decoder failure releases its blob/cache slot and falls back without retrying',async()=>{await p.evaluate(async()=>{vmVoice.stop();FunnyHit.recordings.broken={src:'test-broken.wav',label:'Invalid test fixture',license:'Original test fixture'};window.brokenVoiceURL=await vmVoice.preload('broken');window.revokedVoiceURLs=[];window.originalVoiceRevoke=URL.revokeObjectURL;URL.revokeObjectURL=url=>{revokedVoiceURLs.push(url);originalVoiceRevoke.call(URL,url);};vmVoice.say('broken',{preview:true});});await p.waitForFunction(()=>vmVoice.failed.has('test-broken.wav')&&!vmVoice.cache.has('test-broken.wav'));assert(await p.evaluate(()=>revokedVoiceURLs.includes(brokenVoiceURL)));assert.equal(await p.evaluate(()=>vmVoice.audio.getAttribute('src')),null);assert.equal(await p.evaluate(()=>captions.at(-1)),'broken');const requests=downloads;assert.equal(await p.evaluate(()=>vmVoice.preload('broken')),null);assert.equal(downloads,requests);await p.evaluate(()=>{URL.revokeObjectURL=originalVoiceRevoke;});});
-await check('play rejection leaves subtitles, no retry loop; dispose releases buffers',async()=>{await p.evaluate(()=>{vmVoice.stop();vmVoice.audio.play=()=>Promise.reject(new DOMException('blocked','NotAllowedError'));vmVoice.say('c',{preview:true});});await p.waitForFunction(()=>vmVoice.current===null);assert.equal(await p.evaluate(()=>captions.at(-1)),'c');await p.evaluate(()=>vmVoice.dispose());assert(await p.evaluate(()=>vmVoice.cache.size===0&&vmVoice.audio===null&&vmVoice.queue.length===0));});
-await check('new controls fit phone viewport without JS exceptions',async()=>{assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));assert.deepEqual(errors,[]);});
-fs.mkdirSync('test-results/voice',{recursive:true});await p.screenshot({path:'test-results/voice/settings.png',fullPage:true});fs.writeFileSync('test-results/voice/'+(process.env.LIVE_URL?'live':'browser')+'.json',JSON.stringify({checks,errors,downloads,fixture:'original 24kHz tone, not a voice quality test'},null,2));
+(async()=>{
+ await new Promise(r=>server.listen(0,'127.0.0.1',r));browser=await chromium.launch({channel:process.env.BROWSER_CHANNEL||'msedge'});
+ const base=process.env.LIVE_URL||'http://127.0.0.1:'+server.address().port,p=await browser.newPage();
+ await p.addInitScript(()=>{window.calls=0;HTMLMediaElement.prototype.play=function(){if(this.id==='bgm')return Promise.reject(new DOMException('blocked','NotAllowedError'));calls++;return Promise.reject(new DOMException('blocked','NotAllowedError'));};});
+ await p.goto(base+'/games/funny-hit/');await p.locator('#hit-button').click();
+ await check('autoplay rejection keeps unique dialogue and offers explicit retry',async()=>{
+  await p.waitForFunction(()=>document.querySelector('#voice-status').textContent.includes('试听原声'));
+  await p.waitForFunction(()=>document.querySelector('#hit-count').textContent==='1 / 100');
+  assert.equal(await p.locator('#hit-count').textContent(),'1 / 100');
+  assert.equal(await p.locator('#hit-dialogue').textContent(),await p.evaluate(()=>FunnyHit.DIALOGUES[0]));
+  const calls=await p.evaluate(()=>calls);await p.waitForTimeout(350);assert.equal(await p.evaluate(()=>calls),calls);
+ });
+ await check('muted click and volume survive reload, legacy voice preferences ignored',async()=>{
+  await p.locator('.hit-settings summary').click();await p.getByLabel('点击原声',{exact:true}).uncheck();await p.getByLabel('原声音量',{exact:true}).fill('0.2');
+  await p.reload();assert.equal(await p.locator('[data-setting=voiceVolume]').inputValue(),'0.2');assert(!(await p.locator('[data-setting=voiceEnabled]').isChecked()));
+  await p.locator('#hit-button').click();assert.equal(await p.evaluate(()=>calls),0);
+  await p.locator('.hit-settings summary').click();await p.getByRole('button',{name:'恢复默认设置'}).click();assert.equal(await p.locator('[data-setting=voiceVolume]').inputValue(),'0.65');
+ });
+ const c=await browser.newContext(),m=await c.newPage();const errors=[];m.on('pageerror',e=>errors.push(e.message));
+ await m.route('**/xiaosheng-denial.wav',r=>r.fulfill({status:200,contentType:'audio/wav',body:'invalid-media-test-fixture'}));
+ await m.goto(base+'/games/funny-hit/');await m.locator('#hit-button').click();
+ await check('invalid audio degrades to text and game still completes',async()=>{
+  await m.waitForFunction(()=>/无法|失败/.test(document.querySelector('#voice-status').textContent));
+  await m.evaluate(()=>{for(let i=0;i<99;i++)document.querySelector('#hit-button').click();});
+  await m.waitForFunction(()=>document.querySelector('#hit-count').textContent==='100 / 100');
+  assert(await m.locator('#hit-complete').isVisible());assert.deepEqual(errors,[]);
+ });
+ await check('completion modal keyboard focus and Escape preserve cap',async()=>{
+  assert.equal(await m.locator('#hit-complete').evaluate(d=>d.contains(document.activeElement)),true);
+  await m.keyboard.press('Escape');assert(!(await m.locator('#hit-complete').isVisible()));assert(await m.locator('#hit-trigger').isDisabled());
+ });
+ fs.mkdirSync('test-results/funny-hit-v2',{recursive:true});fs.writeFileSync('test-results/funny-hit-v2/voice'+(process.env.LIVE_URL?'-live':'')+'.json',JSON.stringify({checks,errors},null,2));
 })().catch(e=>{console.error(e);process.exitCode=1;}).finally(async()=>{await browser?.close();server.close();});

@@ -17,7 +17,10 @@
 .hit-speed { position:absolute;inset:0;background:repeating-conic-gradient(from 10deg,transparent 0deg 14deg,#fff7 15deg 16deg,transparent 17deg 30deg);mask-image:radial-gradient(ellipse,transparent 45%,black 85%); }
 .hit-score { display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center; }
 #hit-count { font-size:30px;font-weight:800; }
-#hit-progress { width:100%;height:12px;accent-color:var(--accent); }
+#hit-progress { width:100%;height:12px;border-radius:8px;overflow:hidden;background:var(--glass-border); }
+#hit-progress-fill { display:block;width:100%;height:100%;background:linear-gradient(90deg,#ee80af,#d25f9a);transform:scaleX(0);transform-origin:left;transition:transform .16s ease; }
+.hit-stage-label { margin:0;font-weight:700; }
+#hit-stage-notice { min-height:3.4em; }
 .hit-game button,.hit-game select { min-height:44px;touch-action:manipulation; }
 .hit-main-button { width:100%;font-size:20px;padding:16px!important; }
 .hit-settings { padding:16px;border:1px solid var(--glass-border);border-radius:16px;background:var(--glass-bg); }
@@ -27,7 +30,7 @@
 .hit-settings input[type=checkbox] { width:22px;height:22px;accent-color:var(--accent); }
 .hit-settings select { max-width:100%; }
 .hit-note { font-size:13px;line-height:1.7;margin:0; }
-.hit-complete { padding:20px;border:2px solid var(--accent);border-radius:18px;background:var(--glass-hover); }
+.hit-complete { color:var(--text);width:min(520px,calc(100% - 32px));max-height:85dvh;overflow:auto;padding:20px;border:2px solid var(--accent);border-radius:18px;background:var(--glass-hover); }
 .hit-complete h2 { margin-top:0;font-size:22px; }
 .hit-actions { display:flex;gap:10px;flex-wrap:wrap; }
 .hit-complete[hidden],.hit-particle[hidden] { display:none; }
@@ -35,3 +38,9 @@
 .funny-hit-page .music-player,.funny-hit-page .fox-assistant { position:relative;inset:auto;margin:20px 24px 20px auto; }
 @media(max-width:700px) { .hit-layout{grid-template-columns:1fr;gap:18px}.hit-stage{max-width:380px}.hit-heading{gap:8px}.hit-game{padding:14px}.hit-bubble{min-height:76px} }
 @media(prefers-reduced-motion:reduce) { #hit-dialogue{transition:none} }
+
+.hit-complete::backdrop { background:rgba(35,15,30,.45); }
+.hit-complete:modal { background:rgba(255,243,248,.9);text-shadow:none;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px); }
+:root[data-theme='star'] .hit-complete:modal,:root[data-theme='night'] .hit-complete:modal { background:rgba(25,25,48,.92); }
+.hit-bubble { min-height:180px; }
+@media(prefers-reduced-motion:reduce) { #hit-progress-fill { transition:none; } }
