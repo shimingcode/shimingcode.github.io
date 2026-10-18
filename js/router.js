@@ -11,7 +11,7 @@
     ['./', ['icons', 'links', 'projects-data', 'projects']],
     ['./links/', ['icons', 'links']], ['./projects/', ['projects-data', 'projects']],
     ['./games/', ['game-engine', 'games']],
-    ['./games/funny-hit/', ['dialogue','game-state','audio-manager','voice-manager','effects','game'].map(name=>`funny-hit/${name}`)],
+    ['./games/funny-hit/', ['dialogue','game-state','voice-manager','effects','game'].map(name=>`funny-hit/${name}`)],
     ['./about/', []], ['./works.html', ['works-data', 'works']]
   ].map(([path, scripts]) => [normalize(new URL(url(path)).pathname), scripts]));
   const loaded = new Map([...document.querySelectorAll('script[src]')].map(script => [script.src, Promise.resolve()]));
@@ -32,7 +32,7 @@
   }
   window.addEventListener('scroll', remember, { passive: true });
   function asset(name, style = false) {
-    const source = url(name.startsWith('funny-hit/') ? `./games/${name}.${style?'css':'js'}?v=${!style&&['funny-hit/dialogue','funny-hit/game-state','funny-hit/voice-manager','funny-hit/game'].includes(name)?6:5}` : style ? `./css/${name}.css?v=6` : `./js/${name}.js?v=${['links','projects','works'].includes(name)?5:4}`);
+    const source = url(name.startsWith('funny-hit/') ? `./games/${name}.${style?'css':'js'}?v=7` : style ? `./css/${name}.css?v=6` : `./js/${name}.js?v=${['links','projects','works'].includes(name)?5:4}`);
     const cache = style ? styles : loaded;
     if (!cache.has(source)) {
       cache.set(source, new Promise((resolve, reject) => {

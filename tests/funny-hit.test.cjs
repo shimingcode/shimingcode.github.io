@@ -1,56 +1,70 @@
 const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs'),path=require('node:path');
-function setup(){let now=0;const spoken=[],timers=new Map();let next=0,cancelled=0;const synth={getVoices:()=>[{lang:'zh-CN',name:'System'}],addEventListener(){},removeEventListener(){},speak:u=>spoken.push(u),cancel:()=>cancelled++};
-const c={window:{speechSynthesis:synth,SpeechSynthesisUtterance:function(text){this.text=text;}},document:{hidden:false},performance:{now:()=>now},setTimeout:fn=>{timers.set(++next,fn);return next;},clearTimeout:id=>timers.delete(id)};c.SpeechSynthesisUtterance=c.window.SpeechSynthesisUtterance;
-for(const f of ['dialogue','game-state','voice-manager'])vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../games/funny-hit',f+'.js'),'utf8'),c);
-return {F:c.window.FunnyHit,c,spoken,timers,advance:ms=>now+=ms,cancelled:()=>cancelled};}
-test('unlimited hits, seven milestones, celebration once and reset',()=>{const {F}=setup(),g=new F.GameState(),milestones=[];let celebrations=0;for(let i=1;i<=10000;i++){const result=g.hit();assert.equal(result.hit,i);if(result.text)milestones.push(i);if(result.completed)celebrations++;}assert.deepEqual(milestones,[1,3,5,8,12,15,20]);assert.equal(celebrations,1);assert(g.gameCompleted);assert.equal(g.totalHits,10000);g.reset();assert.equal(g.totalHits,0);assert(!g.gameCompleted);for(let i=1;i<20;i++)assert(!g.hit().completed);assert(g.hit().completed);});
-test('defaults, setting validation and deterministic combo expiry',()=>{const {F,advance}=setup(),g=new F.GameState({voiceVolume:NaN,soundVolume:9,voiceMode:'invalid'});assert.equal(g.voiceMode,'standard');assert.equal(g.voiceVolume,.65);assert.equal(g.settings.soundVolume,1);assert(g.effectsEnabled&&g.settings.sakuraEnabled);g.hit();advance(400);g.hit();assert.equal(g.comboCount,2);advance(701);g.hit();assert.equal(g.comboCount,1);assert.equal(g.highestCombo,2);});
-test('random dialogue does not repeat previous text',()=>{const {F}=setup();for(const group of ['normal','plead','shy','final'])for(const text of F.dialogue[group])assert.notEqual(F.pickDialogue(group,text,()=>0),text);});
-test('original voice source validates settings and maps every milestone to an existing PCM file',()=>{
- const {F}=setup();assert.equal(F.settings({voiceSource:'invalid'}).voiceSource,'original');assert.equal(F.settings({voiceSource:'system'}).voiceSource,'system');
- for(const [hit,text] of Object.entries(F.dialogue.milestones)){
-  assert.equal(F.voiceLine(text,'system',F.nodeEmotions[hit]),text);
-  const record=F.recordings[F.voiceLine(text,'original',F.nodeEmotions[hit])];assert(record?.license);
-  const data=fs.readFileSync(path.join(__dirname,'../assets/games/funny-hit/voices',record.src));
-  assert.equal(data.toString('ascii',0,4),'RIFF');assert.equal(data.readUInt32LE(24),24000);assert.equal(data.readUInt16LE(22),1);assert(data.length<2000000);
+function setup(){
+ let now=0,next=0;const timers=new Map(),audios=[];
+ class Audio{
+  constructor(){this.currentTime=0;this.volume=1;this.playbackRate=1;this.paused=true;this.plays=0;audios.push(this);}
+  pause(){this.paused=true;}play(){this.plays++;this.paused=false;return Promise.resolve();}
+  removeAttribute(){this.src='';}load(){}
+ }
+ const c={window:{Site:{url:p=>'/'+p}},Audio,document:{hidden:false},performance:{now:()=>now},setTimeout:fn=>{timers.set(++next,fn);return next;},clearTimeout:id=>timers.delete(id)};
+ for(const f of ['dialogue','game-state','voice-manager'])vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../games/funny-hit',f+'.js'),'utf8'),c);
+ return {F:c.window.FunnyHit,c,timers,audios,advance:ms=>now+=ms,flush(){const jobs=[...timers.values()];timers.clear();jobs.forEach(fn=>fn());}};
+}
+test('100 unique ordered reactions, ten exact stage boundaries, completion once',()=>{
+ const {F}=setup(),g=new F.GameState(),stages=[],texts=[];assert.equal(F.DIALOGUES.length,100);assert.equal(new Set(F.DIALOGUES).size,100);
+ for(let i=1;i<=100;i++){const r=g.hit();texts.push(r.text);assert.equal(r.hit,i);assert.equal(r.stage,Math.ceil(i/10));assert.equal(r.completed,i===100);if(r.stageChanged)stages.push(i);}
+ assert.deepEqual(stages,[1,11,21,31,41,51,61,71,81,91]);assert.equal(new Set(texts).size,100);
+ for(let i=0;i<10000;i++)assert.equal(g.hit(),null);assert.equal(g.totalHits,100);
+ assert.equal(g.currentDialogue,'呜呜……狐狐彻底认输啦！恭喜你通关！不过……下次还要来陪狐狐玩哦！');
+});
+test('reset, phase remaining, combo expiration and legacy settings migration',()=>{
+ const {F,advance}=setup(),g=new F.GameState({voiceSource:'system',voiceVolume:NaN,voiceEnabled:false});
+ assert.equal(g.settings.voiceVolume,.65);assert.equal(g.settings.voiceEnabled,false);assert(!('voiceSource' in g.settings));
+ for(let i=0;i<35;i++)g.hit();assert.equal(g.stage.number,4);assert.equal(g.remaining,5);
+ advance(701);g.hit();assert.equal(g.comboCount,1);assert.equal(g.highestCombo,35);
+ g.reset();assert.equal(g.totalHits,0);assert.equal(g.stage.number,1);assert.equal(g.highestCombo,0);assert(g.hit().stageChanged);
+ assert.equal(F.settings({voiceVolume:3}).voiceVolume,1);assert.equal(F.settings({voiceVolume:-1}).voiceVolume,0);
+});
+test('existing PCM source and default volume remain unchanged',()=>{
+ const {F}=setup(),b=fs.readFileSync(path.join(__dirname,'..',F.AUDIO_PATH));
+ assert.equal(b.length,204956);assert.equal(b.toString('ascii',0,4),'RIFF');assert.equal(b.readUInt32LE(24),24000);assert.equal(F.AUDIO_VOLUME,.65);
+});
+test('one audio, same URL, restart from zero and no rate changes on 100 clicks',async()=>{
+ const {F,audios,advance}=setup(),v=new F.VoiceManager({...F.defaults});
+ for(let i=0;i<100;i++){assert(v.play());await new Promise(setImmediate);audios[0].currentTime=2;advance(160);}
+ assert.equal(audios.length,1);assert.equal(audios[0].plays,100);assert.equal(audios[0].playbackRate,1);assert.equal(audios[0].volume,.65);
+ v.play();assert.equal(audios[0].currentTime,0);assert(audios[0].src.endsWith(F.AUDIO_PATH));v.dispose();assert(audios[0].paused);
+});
+test('rapid input has a single trailing restart and no pending work after stop',()=>{
+ const {F,audios,timers,advance,flush}=setup(),v=new F.VoiceManager({...F.defaults}),g=new F.GameState();
+ for(let i=0;i<100;i++){assert(g.hit());v.play();}
+ assert.equal(g.totalHits,100);assert.equal(audios[0].plays,1);assert.equal(timers.size,1);
+ advance(150);flush();assert.equal(audios[0].plays,2);v.play();assert.equal(timers.size,1);
+ v.stop();assert.equal(timers.size,0);assert(audios[0].paused);
+});
+test('mute, hidden and disposal block playback; volume applies live',()=>{
+ const {F,c,audios,timers}=setup(),settings={...F.defaults},v=new F.VoiceManager(settings);
+ settings.voiceEnabled=false;assert(!v.play());assert.equal(audios.length,0);settings.voiceEnabled=true;c.document.hidden=true;assert(!v.play());
+ c.document.hidden=false;v.play();settings.voiceVolume=.2;v.setVolume();assert.equal(audios[0].volume,.2);
+ v.dispose();assert.equal(v.audio,null);assert.equal(timers.size,0);assert(!v.play());assert.equal(audios[0].onerror,null);
+});
+test('play rejection degrades safely and stale promise cannot overwrite newer playback',async()=>{
+ const {F,audios,advance}=setup(),statuses=[],v=new F.VoiceManager({...F.defaults},{status:t=>statuses.push(t)});v.play();await new Promise(setImmediate);
+ let rejectOld;audios[0].play=()=>new Promise((_,reject)=>rejectOld=reject);advance(160);v.play();
+ audios[0].play=()=>Promise.resolve();advance(160);v.play();await new Promise(setImmediate);rejectOld({name:'AbortError'});await new Promise(setImmediate);assert.equal(v.state,'PLAYING');
+ audios[0].play=()=>Promise.reject({name:'NotAllowedError'});advance(160);v.play();await new Promise(setImmediate);assert.equal(v.state,'ERROR');assert(statuses.at(-1).includes('试听原声'));
+});
+test('audio never drives dialogue and no speech synthesis or extra sound context is used',()=>{
+ for(const name of ['voice-manager','game']){
+  const s=fs.readFileSync(path.join(__dirname,'../games/funny-hit',name+'.js'),'utf8');
+  assert(!/speechSynthesis|SpeechSynthesisUtterance|new F.AudioManager|AudioContext/.test(s));
  }
 });
-test('priority interrupts and bypasses cooldown, ordinary cannot interrupt priority',()=>{const {F,spoken,cancelled}=setup(),v=new F.VoiceManager({...F.defaults,voiceMode:'active'});v.say('normal',{ordinary:true});assert.equal(v.state,'PLAYING');v.say('important',{priority:true});assert.equal(cancelled(),1);assert.equal(v.state,'PRIORITY');assert(!v.say('other',{ordinary:true}));v.say('final',{priority:true,final:true});assert.equal(spoken.length,3);assert.equal(cancelled(),2);v.dispose();assert.equal(cancelled(),3);});
-test('speech ends, cooldown is two seconds, standard mode stays quiet on ordinary hits',()=>{const {F,spoken,advance}=setup(),v=new F.VoiceManager({...F.defaults,voiceMode:'active'});v.say('one',{ordinary:true});spoken[0].onend();assert.equal(v.state,'COOLDOWN');assert(!v.say('two',{ordinary:true}));advance(2000);assert(v.say('two',{ordinary:true}));v.dispose();const s=new F.VoiceManager({...F.defaults});assert(!s.say('normal',{ordinary:true}));assert(s.say('milestone',{priority:true}));s.dispose();});
-test('muted/quiet mode keep subtitles and final speech; unavailable voice falls back',()=>{const {F,c,spoken}=setup(),captions=[],settings={...F.defaults,voiceEnabled:false};const v=new F.VoiceManager(settings,{caption:t=>captions.push(t)});v.say('muted',{priority:true});assert.equal(v.state,'MUTED');assert.deepEqual(captions,['muted']);assert.equal(spoken.length,0);settings.voiceEnabled=true;settings.voiceMode='quiet';assert(!v.say('node',{priority:true}));assert(v.say('end',{priority:true,final:true}));v.dispose();c.window.speechSynthesis.getVoices=()=>[];const missing=new F.VoiceManager({...F.defaults},{caption:t=>captions.push(t)});assert(!missing.say('no voice',{priority:true}));assert.equal(captions.at(-1),'no voice');missing.dispose();});
-test('hidden page ignores speech; disposal cancels timeout and listener-owned speech',()=>{const {F,c,timers,spoken}=setup(),v=new F.VoiceManager({...F.defaults});c.document.hidden=true;assert(!v.say('hidden',{priority:true}));assert.equal(spoken.length,0);c.document.hidden=false;v.say('visible',{priority:true});v.dispose();assert.equal(timers.size,0);assert(!v.say('disposed',{priority:true}));});
-test('every rapid click starts audio, with one context, cached buffers, max four sources and cleanup',()=>{
-  const {F,c}=setup();let contexts=0,closed=0,started=0,disconnected=0;const sources=[];
-  c.window.AudioContext=class{constructor(){contexts++;this.sampleRate=8000;this.state='running';}createGain(){return{gain:{value:0},connect(){}};}createBuffer(_,n){return{getChannelData:()=>new Float32Array(n)};}createBufferSource(){const source={connect(){},disconnect(){disconnected++;},start(){started++;},stop(){}};sources.push(source);return source;}close(){closed++;return Promise.resolve();}suspend(){return Promise.resolve();}};
-  vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../games/funny-hit/audio-manager.js'),'utf8'),c);
-  const a=new F.AudioManager({...F.defaults});
-  // No clock advance: even rapid inputs must each start, without accumulating sources.
-  for(let i=0;i<1000;i++)assert(a.play());
-  assert.equal(started,1000);assert.equal(contexts,1);assert.equal(a.buffers.size,1);assert.equal(a.sources.size,4);
-  assert.equal(disconnected,996);assert(sources.slice(0,-4).every(source=>source.onended===null));
-  a.settings.soundEnabled=false;assert(!a.play());a.hide();assert.equal(a.sources.size,0);assert.equal(disconnected,1000);assert.equal(started,1000);a.dispose();assert.equal(closed,1);assert.equal(a.buffers.size,0);assert(!a.play());
-});
-test('five emotions map to seven milestones with mild fallback parameters',()=>{const {F}=setup();assert.equal(Object.keys(F.emotions).length,5);for(const [n,e]of Object.entries(F.nodeEmotions)){assert(F.dialogue.milestones[n]);assert(F.emotions[e]);}for(const e of Object.values(F.emotions)){assert.equal(e.lines.length,3);assert(e.rate>=.9&&e.rate<=1);assert(e.pitch>=1&&e.pitch<=1.1);}assert.equal(Object.keys(F.recordings).length,2);});
-test('important lines queue without overlap and final preempts the entire queue',()=>{const {F,spoken}=setup(),v=new F.VoiceManager({...F.defaults});v.say('first',{priority:true});v.say('second',{priority:true});v.say('third',{priority:true});assert.equal(spoken.length,1);assert.equal(v.queue.length,2);spoken[0].onend();assert.equal(spoken.length,2);assert.equal(spoken[1].text,'second');v.say('final',{priority:true,final:true});assert.equal(v.queue.length,0);assert.equal(spoken.at(-1).text,'final');v.dispose();});
-test('explicit emotion preview works in quiet mode, muted preview remains subtitle only',()=>{const {F,spoken}=setup(),settings={...F.defaults,voiceMode:'quiet'},v=new F.VoiceManager(settings);assert(v.say('preview',{preview:true,emotion:'HAPPY'}));assert.equal(spoken[0].rate,F.emotions.HAPPY.rate);settings.voiceEnabled=false;assert(!v.say('muted preview',{preview:true}));assert.equal(spoken.length,1);v.dispose();});
-test('invalid source paths and unlicensed manifests cannot fetch recordings',()=>{const {F}=setup(),v=new F.VoiceManager({...F.defaults});F.recordings={'a':{src:'../../x.mp3',label:'test',license:'test'},'b':{src:'file.wav',label:'test'},'c':{src:'https://example.com/x.mp3',label:'test',license:'test'}};for(const text of ['a','b','c'])assert.equal(v.record(text),null);v.dispose();});
-test('game priority can interrupt a preview instead of queuing behind it',()=>{const {F,spoken}=setup(),v=new F.VoiceManager({...F.defaults});v.say('preview',{priority:true,preview:true});assert.equal(v.state,'PLAYING');v.say('game milestone',{priority:true});assert.equal(spoken.length,2);assert.equal(v.queue.length,0);assert.equal(v.state,'PRIORITY');v.dispose();});
-
-test('rapid animation replacement releases cancelled ownership before cancel events fire',()=>{
-  const {F,c}=setup();vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../games/funny-hit/effects.js'),'utf8'),c);
-  const created=[],node={getAnimations(){throw Error('Animation ownership must not query browser style state');},animate(){const a={cancelled:false,cancel(){this.cancelled=true;}};created.push(a);return a;}};
-  const effects={photo:node,animations:new Map()};
-  for(let i=0;i<1000;i++){F.Effects.prototype.animate.call(effects,node,[],{});assert.equal(effects.animations.size,1);}
-  assert(created.slice(0,-1).every(a=>a.oncancel===null&&a.onfinish===null));
-  created.at(-1).onfinish();assert.equal(effects.animations.size,0);
+test('rapid effect replacement releases cancelled callbacks and ownership',()=>{
+ const {F,c}=setup();vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../games/funny-hit/effects.js'),'utf8'),c);
+ const created=[],node={animate(){const a={cancel(){}};created.push(a);return a;}},e={photo:node,animations:new Map()};
+ for(let i=0;i<1000;i++)F.Effects.prototype.animate.call(e,node,[],{});
+ assert.equal(e.animations.size,1);assert(created.slice(0,-1).every(a=>a.onfinish===null&&a.oncancel===null));
+ created.at(-1).onfinish();assert.equal(e.animations.size,0);
 });
 
-test('rapid clicks share a pending audio unlock and retain individual sound starts',async()=>{
-  const {F,c}=setup();let resumes=0,starts=0,resolveResume,volumeWrites=0;
-  c.window.AudioContext=class{constructor(){this.sampleRate=8000;this.state='suspended';}createGain(){return{gain:{set value(v){volumeWrites++;}},connect(){}};}createBuffer(_,n){return{getChannelData:()=>new Float32Array(n)};}createBufferSource(){return{connect(){},disconnect(){},start(){starts++;},stop(){}};}resume(){resumes++;return new Promise(resolve=>resolveResume=resolve);}close(){return Promise.resolve();}};
-  vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../games/funny-hit/audio-manager.js'),'utf8'),c);
-  const audio=new F.AudioManager({...F.defaults});for(let i=0;i<100;i++)assert(audio.play());
-  assert.equal(resumes,1);assert.equal(starts,100);assert.equal(volumeWrites,1);
-  audio.settings.soundVolume=.2;audio.play();assert.equal(volumeWrites,2);
-  const pending=audio.resuming;resolveResume();await pending;assert.equal(audio.resuming,null);audio.dispose();
-});

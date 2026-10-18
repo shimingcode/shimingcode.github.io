@@ -53,7 +53,7 @@ npm run test:performance
 | `/links/` | 完整平台导航、分类、搜索和排序 |
 | `/projects/` | 项目展示与分类 |
 | `/games/` | 可使用键盘或触屏的记忆翻牌 |
-| `/games/funny-hit/` | 狐狐暴击求饶模拟器，无限点击、20 次樱花彩蛋 |
+| `/games/funny-hit/` | 狐狐暴击求饶模拟器 V2，100 次通关、10 阶段、同一原声 |
 | `/about/` | 个人介绍与本地隐私说明 |
 | `/works.html` | 原有摄影作品、筛选与大图预览 |
 | `404.html` | 找不到页面时返回首页 |
@@ -233,13 +233,13 @@ Lighthouse 是可选开发工具，不进入站点依赖或发布包：另行安
 
 ## 透明面板
 
-新增小游戏《狐狐暴击求饶模拟器》使用用户提供的真实照片与虚构狐狐旁白，保留记忆翻牌与原 CD 播放器。默认标准语音、语音 65%、原创合成音效 40%，无限点击，每次触发短音效，第 20 次解锁彩蛋后仍可继续；目前语音是明确标注的临时系统中文合成音，设备不支持时保留字幕。运行 `npm run test:funny-hit` 验证。详见 [游戏实现与验收记录](docs/funny-hit-v1.md)。游戏和其他页面使用路由脚本 v11。
+《狐狐暴击求饶模拟器》当前为 V2：100 次通关、10 个阶段、100 条不重复互动文字；每次有效点击重播同一段已授权原声，默认音量 65%。通关后锁定计数，可重新挑战。不再使用系统语音或额外合成音效；互动文字不是原声逐字字幕。照片、漫画特效、樱花和 CD 背景音乐保留。见 [V2 实现与验证](docs/funny-hit-v2.md)。
 
 透明背景、边框、圆角、阴影和模糊集中在 `css/style.css` 的 `--glass-*` 变量中；`.glass` 与 `.glass-panel` 共用基础样式。三套主题保留不同文字与透明底色。手机列表卡片关闭模糊，弱设备提示关闭大面板模糊、播放器仅保留 2px。图片、CD 和游戏卡牌本体保留清晰度。运行 `npm run test:glass` 生成三套主题截图和计算样式检查。详见 [透明面板验收记录](docs/transparent-panels.md)。
 
-语音专项配置：支持情绪试听、恢复默认和本地配音缓存通道。现默认使用用户指定且确认可公开使用的晓升视频女声片段，可切换回系统语音。原声只有两段，显示原视频字幕，保留原视频背景声；没有克隆声纹或合成新台词。资源与授权记录见 [原声说明](assets/games/funny-hit/voices/README.md)，原有系统语音方案见 [语音配置记录](docs/fox-voice-upgrade.md)。运行 `npm run test:voice` 和 `npm run test:original-voice`。本次修改的游戏脚本 v6，路由脚本 v13。
+运行 `npm run test:funny-hit`、`npm run test:voice`、`npm run test:original-voice` 和 `npm run test:route-loading` 检查 V2。原声及授权记录保留在 assets/games/funny-hit/voices/。游戏脚本 v7，路由脚本 v14。
 
-无限互动更新：移除 20 次锁定与短音效冷却，保留静音、音量和语音防重叠。见 [无限点击与音效验证](docs/funny-hit-unlimited.md)。
+此前无限互动版本的历史记录见 [旧版验证](docs/funny-hit-unlimited.md)，下方性能数据仅适用于当时的无限点击规则，不能与 V2 封顶规则直接比较。
 
 ## 连点算法与性能优化（2026-10-17）
 

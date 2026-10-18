@@ -23,9 +23,9 @@
       const now=performance.now();if(!result.priority && now-this.last<90)return;this.last=now;
       if(this.settings.effectsEnabled) this.animate(this.photo,photoFrames,{duration:260});
       if(this.settings.effectsEnabled && result.combo)this.animate(this.speed,speedFrames,{duration:300});
-      const blossom=this.settings.sakuraEnabled && [5,12,15,20].includes(result.hit);
+      const blossom=this.settings.sakuraEnabled && (result.stageChanged || result.completed);
       if(!this.settings.effectsEnabled && !blossom)return;
-      const count=blossom?this.pool.length:4;
+      const count=blossom?this.pool.length:Math.min(this.pool.length,4+Math.floor((result.stage||1)/2));
       for(let i=0;i<count;i++) {
         const node=this.pool[this.cursor++%this.pool.length];
         node.textContent=blossom?(i%3?'❀':'♡'):i===0?(result.combo?'COMBO!':'BOOM!'):i===1?`+${10+Math.floor(Math.random()*90)}`:i===2?'★':'◎';
