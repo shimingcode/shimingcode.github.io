@@ -19,7 +19,8 @@
     "test:voice": "node tests/voice-browser.cjs",
     "measure:hit": "node scripts/measure-hit-performance.cjs",
     "test:route-loading": "node tests/router-loading.cjs",
-    "test:site-quality": "node tests/site-quality.cjs"
+    "test:site-quality": "node tests/site-quality.cjs",
+    "test:original-voice": "node tests/original-voice.cjs"
   },
   "devDependencies": {
     "playwright": "1.62.1"

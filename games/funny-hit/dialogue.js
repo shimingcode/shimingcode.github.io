@@ -16,9 +16,15 @@
     PLAYFUL:{label:'调皮',rate:.96,pitch:1.04,lines:['哼哼，抓不到我吧！','嘿嘿，被骗到啦！','接招！狐狐魔法！']}
   });
   F.nodeEmotions = Object.freeze({1:'PLAYFUL',3:'SHY',5:'PLEADING',8:'PLAYFUL',12:'CUTE',15:'HAPPY',20:'PLEADING'});
-  // Only populate with verified, licensed recordings. Empty means no recordings are shipped.
-  // Keys are exact subtitles; values: {src:'filename.wav',label:'voice name',license:'license reference'}.
-  F.recordings = Object.freeze({});
+  // Permission confirmed by the site owner on 2026-10-17; see voices/LICENSE.md.
+  // These are original video excerpts, not synthesized versions of the game lines.
+  F.originalLines = Object.freeze({invitation:'看看可怜虫，一个人走路。要不要本小姐陪你？',denial:'我才没有！'});
+  F.recordings = Object.freeze({
+    [F.originalLines.invitation]:{src:'xiaosheng-invitation.wav',label:'晓升 · 原视频女声（邀请）',license:'assets/games/funny-hit/voices/LICENSE.md'},
+    [F.originalLines.denial]:{src:'xiaosheng-denial.wav',label:'晓升 · 原视频女声（回应）',license:'assets/games/funny-hit/voices/LICENSE.md'}
+  });
+  F.voiceLine = (text, source, emotion) => source==='original'
+    ? F.originalLines[['CUTE','HAPPY'].includes(emotion)?'invitation':'denial'] : text;
   F.pickDialogue = (group, previous, random = Math.random) => {
     const choices = F.dialogue[group].filter(text => text !== previous);
     return choices[Math.floor(random() * choices.length)];

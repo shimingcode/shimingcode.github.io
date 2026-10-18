@@ -10,7 +10,7 @@
         if(!this.current)this.describe();};
       this.synth?.addEventListener('voiceschanged',this.refresh);this.refresh();
     }
-    describe() {this.status(this.voice?`临时系统语音：${this.voice.name || this.voice.lang}；不是预录狐狐音，情绪表现取决于设备。`:'没有可用中文系统音色；已配置的配音可播放，其余台词显示字幕。');}
+    describe() {this.status(this.settings.voiceSource==='original'?'原视频女声：晓升 · 2 段原声，保留视频背景声；不是重新合成的狐狐台词。':this.voice?`临时系统语音：${this.voice.name || this.voice.lang}；不是预录狐狐音，情绪表现取决于设备。`:'没有可用中文系统音色；已配置的配音可播放，其余台词显示字幕。');}
     get state(){return !this.settings.voiceEnabled?'MUTED':this.current?(this.priority?'PRIORITY':'PLAYING'):performance.now()-this.last<2000?'COOLDOWN':'IDLE';}
     stop(clearQueue=true){
       this.token++;clearTimeout(this.timer);clearTimeout(this.captionTimer);
@@ -79,7 +79,8 @@
       const profile=F.emotions?.[emotion]||{rate:.93,pitch:1.04};
       try{
         const u=new SpeechSynthesisUtterance(text);u.voice=this.voice;u.lang=this.voice.lang;u.rate=profile.rate;u.pitch=profile.pitch;u.volume=this.settings.voiceVolume;
-        this.current={engine:'speech',utterance:u};this.describe();
+        this.current={engine:'speech',utterance:u};
+        if(this.record(text))this.status(`原声暂不可用，临时系统朗读字幕：${this.voice.name || this.voice.lang}`);else this.describe();
         u.onend=()=>this.end(token,text);u.onerror=()=>{if(token!==this.token)return;this.status('系统语音播放失败，字幕继续显示。');this.end(token,text);};
         // Only guard a stalled start. Do not cut off a healthy, long recording or utterance.
         u.onstart=()=>{if(token===this.token){clearTimeout(this.timer);this.caption(text,emotion);}};

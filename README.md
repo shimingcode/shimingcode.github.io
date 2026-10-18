@@ -237,7 +237,7 @@ Lighthouse 是可选开发工具，不进入站点依赖或发布包：另行安
 
 透明背景、边框、圆角、阴影和模糊集中在 `css/style.css` 的 `--glass-*` 变量中；`.glass` 与 `.glass-panel` 共用基础样式。三套主题保留不同文字与透明底色。手机列表卡片关闭模糊，弱设备提示关闭大面板模糊、播放器仅保留 2px。图片、CD 和游戏卡牌本体保留清晰度。运行 `npm run test:glass` 生成三套主题截图和计算样式检查。详见 [透明面板验收记录](docs/transparent-panels.md)。
 
-语音专项配置：新增五种情绪试听、恢复默认和本地配音缓存通道；实际仍为明确标注的系统临时语音，没有下载未授权的 B 站角色音频。运行 `npm run test:voice`，详见 [语音配置记录](docs/fox-voice-upgrade.md)。游戏资源 v5，路由脚本 v11。
+语音专项配置：支持情绪试听、恢复默认和本地配音缓存通道。现默认使用用户指定且确认可公开使用的晓升视频女声片段，可切换回系统语音。原声只有两段，显示原视频字幕，保留原视频背景声；没有克隆声纹或合成新台词。资源与授权记录见 [原声说明](assets/games/funny-hit/voices/README.md)，原有系统语音方案见 [语音配置记录](docs/fox-voice-upgrade.md)。运行 `npm run test:voice` 和 `npm run test:original-voice`。本次修改的游戏脚本 v6，路由脚本 v13。
 
 无限互动更新：移除 20 次锁定与短音效冷却，保留静音、音量和语音防重叠。见 [无限点击与音效验证](docs/funny-hit-unlimited.md)。
 
