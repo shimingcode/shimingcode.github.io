@@ -26,7 +26,7 @@ const results=[];
         if(probe.result==='NotSupportedError'&&probe.code===4) {
           await page.goto(base+'/');await page.waitForFunction(()=>document.getElementById('music-state').textContent.includes('加载失败'));
           await page.evaluate(()=>window.originalAudio=document.getElementById('bgm'));
-          await page.locator('.main-nav').getByRole('link',{name:'项目',exact:true}).click();await page.waitForURL(base+'/projects/');
+          await page.locator('.main-nav').getByRole('link',{name:'项目',exact:true}).click();await page.waitForURL(base+'/#projects');
           assert(await page.evaluate(()=>window.originalAudio===document.getElementById('bgm')));
           assert(await page.getByRole('button',{name:'音乐加载失败，点击重试',exact:true}).isVisible());
           assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));assert.deepEqual(errors,[]);
@@ -40,11 +40,20 @@ const results=[];
       if(initiallyPaused){assert(await page.locator('.cd-prompt').isVisible());await page.locator('#music-toggle').click();}
       await page.waitForFunction(()=>!document.getElementById('bgm').paused&&document.getElementById('bgm').currentTime>0,null,{timeout:10000});
       await page.evaluate(()=>{window.sameAudio=document.getElementById('bgm');window.sameAudio.currentTime=20;});
-      await page.locator('.main-nav').getByRole('link',{name:'项目',exact:true}).click();await page.waitForURL(base+'/projects/');
+      await page.locator('.main-nav').getByRole('link',{name:'项目',exact:true}).click();await page.waitForURL(base+'/#projects');
       assert(await page.evaluate(()=>window.sameAudio===document.getElementById('bgm')&&!window.sameAudio.paused&&window.sameAudio.currentTime>=20));
       await page.goBack();await page.waitForURL(base+'/');await page.waitForSelector('#social-links .social-card');
-      await page.locator('#music-toggle').click();await page.reload();await page.waitForFunction(()=>document.getElementById('bgm').readyState>=1);
-      assert(await page.locator('#bgm').evaluate(a=>a.paused&&a.currentTime>=20));
+      await page.locator('#music-toggle').click();
+      const savedTime=await page.evaluate(()=>JSON.parse(localStorage.getItem('shiming:music-state')).currentTime);
+      assert(savedTime>=20,'Pause must persist the actual playback position');
+      await page.reload();
+      // Metadata availability can precede its queued event and asynchronous seek.
+      // Wait for the restored position itself, rather than asserting mid-seek.
+      await page.waitForFunction(expected=>{
+        const audio=document.getElementById('bgm');
+        return audio.readyState>=1&&audio.paused&&!audio.seeking&&Math.abs(audio.currentTime-expected)<.5;
+      },savedTime,{timeout:10000});
+      assert(await page.locator('#bgm').evaluate((audio,expected)=>audio.paused&&!audio.seeking&&Math.abs(audio.currentTime-expected)<.5,savedTime));
       assert.deepEqual(errors,[]);
       results.push({engine,version:browser.version(),passed:true,initialAutoplay:initiallyPaused?'blocked with manual recovery':'allowed'});
     } catch(error) {

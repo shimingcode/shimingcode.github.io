@@ -1,0 +1,408 @@
+{
+  "date": "2026-10-19",
+  "scope": "Follow-up to fullsite-performance-2026-10-18; local changes only",
+  "efficiency": {
+    "before": {
+      "label": "before",
+      "root": "D:\\code\\shimingcode.github.io-main\\test-results\\efficiency-baseline-2026-10-19",
+      "browser": "155.0.4283.45",
+      "conditions": "390x844; local no-store HTTP; new contexts; autoplay blocked fixture",
+      "checks": [
+        {
+          "name": "Home, links and projects reuse the same loaded feature code",
+          "passed": false
+        },
+        {
+          "name": "Home still renders all platform and project cards",
+          "passed": true
+        },
+        {
+          "name": "Normal navigation has no script errors",
+          "passed": true
+        },
+        {
+          "name": "A failed direct-entry script is retried on return",
+          "passed": false
+        },
+        {
+          "name": "A failed direct-entry stylesheet is retried on return",
+          "passed": false
+        },
+        {
+          "name": "Reopening controls during a slow metadata load does not restart it",
+          "passed": false
+        },
+        {
+          "name": "Ten identical music saves perform no redundant storage writes",
+          "passed": false
+        },
+        {
+          "name": "Changed music preferences are still persisted",
+          "passed": true
+        },
+        {
+          "name": "A failed music-state write can be retried",
+          "passed": true
+        },
+        {
+          "name": "Successful voice warm-up removes its high-frequency listeners",
+          "passed": false
+        }
+      ],
+      "resources": {
+        "home": {
+          "requests": 9,
+          "scriptRequests": 3,
+          "scriptBytes": 36921,
+          "scripts": [
+            "/js/theme-init-2a0d32936e46.js",
+            "/js/page-home-b0e1a1a9629c.js",
+            "/js/shell-151e4bc2537a.js"
+          ]
+        },
+        "journey": {
+          "requests": 21,
+          "scriptRequests": 5,
+          "scriptBytes": 46184,
+          "scripts": [
+            "/js/theme-init-2a0d32936e46.js",
+            "/js/page-home-b0e1a1a9629c.js",
+            "/js/shell-151e4bc2537a.js",
+            "/js/page-links-0a703c257ce7.js",
+            "/js/page-projects-b060bed21793.js"
+          ]
+        },
+        "extraScriptRequests": 2,
+        "extraScriptBytes": 9263
+      },
+      "scriptRecovery": {
+        "attempts": 1,
+        "cards": 0
+      },
+      "styleRecovery": {
+        "attempts": 1,
+        "loaded": true
+      },
+      "metadataLoads": 3,
+      "repeatedSaves": 10,
+      "voicePrepareCalls": 101
+    },
+    "after": {
+      "label": "after",
+      "root": "D:\\code\\shimingcode.github.io-main\\_site",
+      "browser": "155.0.4283.45",
+      "conditions": "390x844; local no-store HTTP; new contexts; autoplay blocked fixture",
+      "checks": [
+        {
+          "name": "Home, links and projects reuse the same loaded feature code",
+          "passed": true
+        },
+        {
+          "name": "Home still renders all platform and project cards",
+          "passed": true
+        },
+        {
+          "name": "Normal navigation has no script errors",
+          "passed": true
+        },
+        {
+          "name": "A failed direct-entry script is retried on return",
+          "passed": true
+        },
+        {
+          "name": "A failed direct-entry stylesheet is retried on return",
+          "passed": true
+        },
+        {
+          "name": "A late initial script success is cached after the loading deadline",
+          "passed": true
+        },
+        {
+          "name": "Navigation still works when the early load tracker fails",
+          "passed": true
+        },
+        {
+          "name": "Reopening controls during a slow metadata load does not restart it",
+          "passed": true
+        },
+        {
+          "name": "Ten identical music saves perform no redundant storage writes",
+          "passed": true
+        },
+        {
+          "name": "Changed music preferences are still persisted",
+          "passed": true
+        },
+        {
+          "name": "A failed music-state write can be retried",
+          "passed": true
+        },
+        {
+          "name": "Successful voice warm-up removes its high-frequency listeners",
+          "passed": true
+        }
+      ],
+      "resources": {
+        "home": {
+          "requests": 10,
+          "scriptRequests": 4,
+          "scriptBytes": 37384,
+          "scripts": [
+            "/js/theme-init-439c1e9a3f35.js",
+            "/js/shell-5454eac124a5.js",
+            "/js/page-links-0a703c257ce7.js",
+            "/js/page-projects-b060bed21793.js"
+          ]
+        },
+        "journey": {
+          "requests": 20,
+          "scriptRequests": 4,
+          "scriptBytes": 37384,
+          "scripts": [
+            "/js/theme-init-439c1e9a3f35.js",
+            "/js/shell-5454eac124a5.js",
+            "/js/page-links-0a703c257ce7.js",
+            "/js/page-projects-b060bed21793.js"
+          ]
+        },
+        "extraScriptRequests": 0,
+        "extraScriptBytes": 0
+      },
+      "scriptRecovery": {
+        "attempts": 2,
+        "cards": 5
+      },
+      "styleRecovery": {
+        "attempts": 2,
+        "loaded": true
+      },
+      "metadataLoads": 1,
+      "repeatedSaves": 0,
+      "voicePrepareCalls": 1
+    },
+    "inlineManifestBytes": 717
+  },
+  "lighthouse": {
+    "before": {
+      "fetchTime": "2026-10-19T05:12:25.857Z",
+      "version": "13.0.1",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36 Edg/155.0.0.0",
+      "settings": {
+        "formFactor": "mobile",
+        "screenEmulation": {
+          "mobile": true,
+          "width": 412,
+          "height": 823,
+          "deviceScaleFactor": 1.75,
+          "disabled": false
+        },
+        "throttling": {
+          "rttMs": 150,
+          "throughputKbps": 1638.4,
+          "requestLatencyMs": 562.5,
+          "downloadThroughputKbps": 1474.5600000000002,
+          "uploadThroughputKbps": 675,
+          "cpuSlowdownMultiplier": 4
+        },
+        "throttlingMethod": "simulate"
+      },
+      "scores": {
+        "performance": 99,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "metrics": {
+        "largest-contentful-paint": 1892.0474999999997,
+        "first-contentful-paint": 917.0474999999999,
+        "total-blocking-time": 82.73812500000008,
+        "cumulative-layout-shift": 0.001155817825663503,
+        "speed-index": 1152.184521548762
+      }
+    },
+    "after": {
+      "fetchTime": "2026-10-19T10:17:08.665Z",
+      "version": "13.0.1",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36 Edg/155.0.0.0",
+      "settings": {
+        "formFactor": "mobile",
+        "screenEmulation": {
+          "mobile": true,
+          "width": 412,
+          "height": 823,
+          "deviceScaleFactor": 1.75,
+          "disabled": false
+        },
+        "throttling": {
+          "rttMs": 150,
+          "throughputKbps": 1638.4,
+          "requestLatencyMs": 562.5,
+          "downloadThroughputKbps": 1474.5600000000002,
+          "uploadThroughputKbps": 675,
+          "cpuSlowdownMultiplier": 4
+        },
+        "throttlingMethod": "simulate"
+      },
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "metrics": {
+        "largest-contentful-paint": 1891.2673,
+        "first-contentful-paint": 916.2673,
+        "total-blocking-time": 63.933175000000006,
+        "cumulative-layout-shift": 0.001155817825663503,
+        "speed-index": 1175.8679560962262
+      }
+    },
+    "note": "One run per version in the same local environment. Not a median or field INP."
+  },
+  "verification": {
+    "date": "2026-10-19T10:16:57.505Z",
+    "results": [
+      {
+        "name": "browser",
+        "passed": true,
+        "durationMs": 17601
+      },
+      {
+        "name": "site-quality",
+        "passed": true,
+        "durationMs": 7847
+      },
+      {
+        "name": "music",
+        "passed": true,
+        "durationMs": 16525
+      },
+      {
+        "name": "music-gesture",
+        "passed": true,
+        "durationMs": 7146
+      },
+      {
+        "name": "funny-hit-browser",
+        "passed": true,
+        "durationMs": 11544
+      },
+      {
+        "name": "voice-browser",
+        "passed": true,
+        "durationMs": 3895
+      },
+      {
+        "name": "original-voice",
+        "passed": true,
+        "durationMs": 7322
+      },
+      {
+        "name": "unit",
+        "passed": true,
+        "durationMs": 312
+      },
+      {
+        "name": "performance",
+        "passed": true,
+        "durationMs": 17945
+      },
+      {
+        "name": "router-loading",
+        "passed": true,
+        "durationMs": 2438
+      },
+      {
+        "name": "loading",
+        "passed": true,
+        "durationMs": 6368
+      },
+      {
+        "name": "efficiency",
+        "passed": true,
+        "durationMs": 18456
+      },
+      {
+        "name": "source-loading",
+        "passed": true,
+        "durationMs": 5104
+      },
+      {
+        "name": "source-efficiency",
+        "passed": true,
+        "durationMs": 5812
+      },
+      {
+        "name": "compat",
+        "passed": true,
+        "durationMs": 5473
+      }
+    ]
+  },
+  "compatibility": [
+    {
+      "engine": "edge-policy",
+      "version": "155.0.4283.45",
+      "passed": true,
+      "initialAutoplay": "blocked with manual recovery"
+    },
+    {
+      "engine": "webkit",
+      "version": "26.5",
+      "passed": true,
+      "initialAutoplay": "allowed"
+    }
+  ],
+  "assets": {
+    "files": 49,
+    "bytes": 9139416,
+    "changed": []
+  },
+  "webkitAdditionalRestoreSamples": [
+    {
+      "run": 0,
+      "immediateTime": 20.1834576,
+      "settledTime": 20.1834576
+    },
+    {
+      "run": 1,
+      "immediateTime": 20.2295632,
+      "settledTime": 20.2295632
+    },
+    {
+      "run": 2,
+      "immediateTime": 20.223584,
+      "settledTime": 20.223584
+    },
+    {
+      "run": 3,
+      "immediateTime": 20.2459168,
+      "settledTime": 20.2459168
+    },
+    {
+      "run": 4,
+      "immediateTime": 20.2256864,
+      "settledTime": 20.2256864
+    },
+    {
+      "run": 5,
+      "immediateTime": 20.2296048,
+      "settledTime": 20.2296048
+    },
+    {
+      "run": 6,
+      "immediateTime": 20.2354368,
+      "settledTime": 20.2354368
+    },
+    {
+      "run": 7,
+      "immediateTime": 20.244208,
+      "settledTime": 20.244208
+    }
+  ],
+  "limitations": [
+    "No physical-device or live GitHub Pages verification",
+    "No field INP or new long-duration memory study",
+    "HTML carries an inline manifest; external script byte counts exclude it"
+  ]
+}

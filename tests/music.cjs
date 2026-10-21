@@ -55,7 +55,7 @@ const playing = page => page.waitForFunction(()=>!document.getElementById('bgm')
     facts.loop='Seek to duration - 1 second, then observe natural wrap (no synthetic ended event).';
   });
   await page.locator('#bgm').evaluate(a=>{a.currentTime=Math.min(95,a.duration/2);window.initialTime=a.currentTime;window.originalAudio=a;window.originalPlayer=document.getElementById('music-root');window.mediaResets=[];for(const type of ['pause','emptied','loadstart'])a.addEventListener(type,()=>window.mediaResets.push(type));});
-  const routes=[['项目','/projects/'],['平台导航','/links/'],['关于','/about/'],['小游戏','/games/'],['作品','/works.html'],['首页','/index.html']];
+  const routes=[['项目','/#projects'],['平台导航','/#links'],['关于','/#about'],['小游戏','/#games'],['作品','/#works'],['首页','/#home']];
   async function navigate(label, suffix) {
     await page.locator('.main-nav').getByRole('link',{name:label,exact:true}).click();
     await page.waitForURL(base+suffix);
@@ -65,7 +65,7 @@ const playing = page => page.waitForFunction(()=>!document.getElementById('bgm')
     for(let round=0;round<2;round++) for(const [label,suffix] of routes) {
       const before=await current(page); await navigate(label,suffix);
       const result=await page.evaluate(()=>({same:window.originalAudio===document.getElementById('bgm')&&window.originalPlayer===document.getElementById('music-root'),count:document.querySelectorAll('audio').length,time:document.getElementById('bgm').currentTime,paused:document.getElementById('bgm').paused,events:window.mediaResets,focus:document.activeElement.id}));
-      assert(result.same);assert.equal(result.count,1);assert.equal(result.paused,false);assert(result.time>=before);assert.deepEqual(result.events,[]);assert.equal(result.focus,'main');
+      assert(result.same);assert.equal(result.count,1);assert.equal(result.paused,false);assert(result.time>=before);assert.deepEqual(result.events,[]);assert.equal(result.focus,suffix.split('#')[1]);
       if(label==='平台导航')assert.equal(await page.locator('.social-card').count(),11);
       if(label==='项目')assert.equal(await page.locator('.project-card').count(),5);
       if(label==='关于')assert.equal(await page.locator('#about-content p').count(),3);
@@ -76,9 +76,9 @@ const playing = page => page.waitForFunction(()=>!document.getElementById('bgm')
     assert.equal(await page.locator('#platform-filters button').count(),await page.evaluate(()=>1+new Set(window.SITE_CONFIG.socialLinks.map(link=>link.category)).size));
   });
   await check('History back/forward and same-page anchors preserve music and usable focus',async()=>{
-    await page.goBack();await page.waitForURL(base+'/works.html');await page.waitForSelector('.work-card');
-    await page.goForward();await page.waitForURL(base+'/index.html');await page.waitForSelector('#social-links .social-card');
-    await page.getByRole('link',{name:'找到我 ↗',exact:true}).click();assert(page.url().endsWith('#platforms'));
+    await page.goBack();await page.waitForURL(base+'/#works');await page.waitForSelector('.work-card');
+    await page.goForward();await page.waitForURL(base+'/#home');await page.waitForSelector('#social-links .social-card');
+    await page.getByRole('link',{name:'找到我 ↗',exact:true}).click();assert(page.url().endsWith('#links'));
     assert(await page.evaluate(()=>window.originalAudio===document.getElementById('bgm')));assert.deepEqual(await page.evaluate(()=>window.mediaResets),[]);
   });
   await check('Volume, mute, progress and paused preference survive a full reload',async()=>{
@@ -120,18 +120,18 @@ const playing = page => page.waitForFunction(()=>!document.getElementById('bgm')
     const tab=await blockedContext.newPage();await tab.goto(base+'/');
     await tab.waitForFunction(()=>document.querySelector('.music-player').classList.contains('needs-play'));
     assert(await tab.locator('.cd-prompt').isVisible());assert.equal(await tab.evaluate(()=>window.attempts),1);
-    await tab.locator('.main-nav').getByRole('link',{name:'项目',exact:true}).click();await tab.waitForURL(base+'/projects/');
+    await tab.locator('.main-nav').getByRole('link',{name:'项目',exact:true}).click();await tab.waitForURL(base+'/#projects');
       await playing(tab);assert.equal(await tab.evaluate(()=>window.attempts),2);
     await blockedContext.close();
   });
   await check('Game page reserves its touch surface; the CD never overlaps cards or restart',async()=>{
-    await navigate('小游戏','/games/');
+    await navigate('小游戏','/#games');
     for(const [width,height] of [[320,740],[390,844],[844,390],[1440,1000]]) {
       await page.setViewportSize({width,height});await page.locator('#music-toggle').scrollIntoViewIfNeeded();
       const disc=await page.locator('#music-root').boundingBox(),board=await page.locator('.game-panel').boundingBox();
       assert(disc.y>=board.y+board.height);assert(await page.locator('#music-toggle').isVisible());
     }
-    await navigate('首页','/index.html');
+    await navigate('首页','/#home');
   });
   await check('Media failure fixture offers a manual retry without an automatic retry loop',async()=>{
     const tab=await context.newPage();await tab.route('**/assets/audio/bgm-web.mp3',route=>route.fulfill({status:404,body:'Missing fixture'}));await tab.goto(base+'/');
@@ -142,19 +142,18 @@ const playing = page => page.waitForFunction(()=>!document.getElementById('bgm')
   await check('Rapid navigation cancels stale results without reloading the document',async()=>{
     await page.evaluate(()=>window.SiteNavigation?.invalidate());
     await page.route('**/about/',async route=>{await new Promise(r=>setTimeout(r,500));await route.continue().catch(()=>{});});
-    await page.evaluate(()=>{window.navigationSentinel=true;document.querySelector('.main-nav a[href$="about/"]').click();document.querySelector('.main-nav a[href$="games/"]').click();});
-    await page.waitForURL(base+'/games/');await page.waitForTimeout(700);assert.equal(await page.evaluate(()=>window.navigationSentinel),true);assert(page.url().endsWith('/games/'));await page.unroute('**/about/');
+    await page.evaluate(()=>{window.navigationSentinel=true;document.querySelector('.main-nav a[href$="#about"]').click();document.querySelector('.main-nav a[href$="#games"]').click();});
+    await page.waitForURL(base+'/#games');await page.waitForTimeout(700);assert.equal(await page.evaluate(()=>window.navigationSentinel),true);assert(page.url().endsWith('/#games'));await page.unroute('**/about/');
   });
-  await check('Fetch failure falls back to real HTML and restores progress',async()=>{
-    await page.evaluate(()=>window.SiteNavigation?.invalidate());
-    await page.evaluate(()=>window.fullNavigationSentinel=true);
-    const before=await current(page);
-    await page.route('**/projects/',async route=>{if(route.request().resourceType()==='fetch')await route.fulfill({status:503,body:'Unavailable fixture'});else await route.continue();});
-    // Intentional 503 is captured separately from the ordinary clean-console checks.
-    const previousErrors=errors.length;
-    await navigate('项目','/projects/');await playing(page);
-    assert.equal(await page.evaluate(()=>window.fullNavigationSentinel),undefined);assert(Math.abs(await current(page)-before)<3);
-    errors.splice(previousErrors);await page.unroute('**/projects/');
+  await check('Section fetch failure and retry keep music in the same document',async()=>{
+    const tab=await context.newPage();await tab.goto(base+'/');await playing(tab);
+    await tab.evaluate(()=>window.retryAudio=document.getElementById('bgm'));
+    let attempts=0;await tab.route('**/works.html',route=>++attempts===1?route.fulfill({status:503,body:'Unavailable fixture'}):route.continue());
+    const before=await current(tab);await tab.locator('.main-nav a[href$="#works"]').click();
+    await tab.waitForFunction(()=>document.getElementById('works').dataset.sectionState==='error');
+    assert(await tab.evaluate(()=>retryAudio===document.getElementById('bgm')&&!retryAudio.paused));assert(await current(tab)>=before);
+    await tab.locator('#works [data-section-retry]').click();await tab.waitForFunction(()=>document.getElementById('works').dataset.sectionState==='ready');
+    assert(await tab.evaluate(()=>retryAudio===document.getElementById('bgm')&&!retryAudio.paused));assert.equal(attempts,2);await tab.close();
   });
   await check('No ordinary console errors, missing resources or uncaught exceptions',async()=>assert.deepEqual(errors,[]));
   fs.writeFileSync(path.join(output,'music-results.json'),JSON.stringify({passed:checks.length,checks,facts,errors},null,2));

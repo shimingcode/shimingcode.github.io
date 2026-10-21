@@ -1,6 +1,6 @@
 # Shiming Personal Website
 
-原生 HTML / CSS / JavaScript 个人网站，保留原有二次元头像、背景、社交账号和摄影作品。没有框架、数据库、运行时 CDN、外部字体或访问统计。GitHub Pages 继续从 `main` 仓库根目录发布。
+原生 HTML / CSS / JavaScript 个人网站，保留原有二次元头像、背景、社交账号和摄影作品。没有框架、数据库、运行时 CDN、外部字体或访问统计。GitHub Pages 通过 Actions 验证 `main` 后发布 `_site/`，公开地址仍为 https://shimingcode.github.io/ 。
 
 ## 本地运行
 
@@ -12,14 +12,26 @@ python -m http.server 4173 --bind 127.0.0.1
 
 打开 http://127.0.0.1:4173/ 。停止服务按 Ctrl+C。不要用 `file://` 测试剪贴板、目录路由或媒体行为。
 
-Node.js 22+ 可执行验证和可选打包；线上部署本身不依赖 Node：
+使用 Node.js 24 和 pnpm 11.25.0 执行验证和打包；网站运行时不依赖 Node：
 
 ```powershell
 npm test
 npm run build
 ```
 
-`build` 只把公开静态文件复制到 `_site/`，不转译、不压缩原图。该目录可独立部署，也可继续直接发布仓库根目录。原始音乐上传目录、开发脚本和测试文件不进入 `_site/`。原文件仍保留在项目中。
+先执行 `pnpm install --frozen-lockfile --ignore-scripts` 安装锁定的开发工具。`build` 将公开静态文件打包到 `_site/`，使用 esbuild 压缩 JS/CSS、生成内容哈希，并将脚本归并为共享 shell 和按页面加载的 bundle；没有新增运行时依赖。原图、全部游戏台词和音源保留，原始音乐上传目录、开发脚本和测试文件不进入 `_site/`。
+
+源码仍能直接由仓库根目录提供。**本文性能报告中的脚本合并、压缩与内容哈希收益来自 `_site/`，直接发布源码根目录不会自动使用这些 bundle。** `.github/workflows/pages.yml` 在 PR 中执行单元、构建与分区交互检查；`main` 检查通过后上传 `_site/` 并发布。仓库 Settings → Pages → Source 应选择 GitHub Actions。静态 URL 和站点公开路径保持一致，历史报告的“未部署”描述仅对应各自测量日期。
+
+发布失败时保留上一版线上产物。需要回退时，撤销对应代码提交后由同一工作流重建发布；不要手动缓存旧 HTML。资源采用内容哈希，未引入 Service Worker。GitHub Pages 的响应缓存头由平台管理。
+
+本轮完整修改、实测结果、部署差异和验证限制见 [2026-10-18 全站性能报告](docs/fullsite-performance-2026-10-18.md)。增加的验证命令为 `pnpm run test:build`（先构建）、`pnpm run test:loading`；`node tests/loading.cjs .` 可验证源码直出模式。
+
+后续复查见 [2026-10-19 效率优化与异常恢复验证](docs/efficiency-review-2026-10-19.md)。首页与平台、项目页复用功能包，资源清单随 HTML 更新，共享 shell 的哈希不再受独立页面改动影响。`pnpm run test:efficiency` 检查跨页重复下载、首屏失败重试、慢速音乐加载和重复存储；`node tests/efficiency.cjs . source` 验证源码模式。`pnpm run test:regression` 串行运行全部回归。
+
+现在导航以主页分区为中心：`#home`、`#links`、`#projects`、`#works`、`#games`、`#fox-game`、`#about`、`#music`。相册与两个游戏首次接近或进入分区时加载，之后保留同一 DOM、游戏状态和音乐实例。旧 HTML 地址仍可直接打开，站内导航会将其现有内容整合进主页。实现、测试和限制见 [2026-10-20 分区导航报告](docs/section-navigation-2026-10-20.md)。新增 `pnpm run test:sections`；源码模式使用 `node tests/sections.cjs .`。
+
+针对分区改造增加的首屏负载，后续将“关于”的高清头像延迟到接近可见区域，再将旧页面内容整合代码拆为按需模块。完整对比见 [2026-10-20 首屏减负复测](docs/startup-followup-2026-10-20.md)；原有音乐和游戏状态保留机制不变。
 
 浏览器回归使用 Playwright，仅为开发依赖：
 
@@ -49,7 +61,7 @@ npm run test:performance
 
 | 路径 | 内容 |
 | --- | --- |
-| `/` / `index.html` | 个人区、全部平台入口、项目与相册入口 |
+| `/` / `index.html` | 个人区、平台、项目、按需相册与游戏、关于、音乐分区 |
 | `/links/` | 完整平台导航、分类、搜索和排序 |
 | `/projects/` | 项目展示与分类 |
 | `/games/` | 可使用键盘或触屏的记忆翻牌 |
@@ -65,7 +77,8 @@ npm run test:performance
 | `js/main.js` | 共用导航、设置、个人资料和页脚 |
 | `js/links.js` / `js/projects.js` | 平台与项目渲染 |
 | `js/music.js` / `css/music.css` | 持久化 CD 播放器与旋转样式 |
-| `js/router.js` / `js/effects.js` | 有界导航缓存、狐狐助手 |
+| `js/router.js` / `js/effects.js` | 分区滚动、历史记录、懒加载与旧页面兼容、狐狐助手 |
+| `js/page-content.js` | 按需加载的内容路径解析与旧页面 DOM 整合 |
 | `js/sakura.js` | 可复用樱花池、帧间隔自适应预算 |
 | `js/theme-init.js` | 首次绘制前恢复主题 |
 | `js/game-engine.js` / `js/games.js` | 独立游戏状态机与页面生命周期 |
@@ -76,7 +89,7 @@ npm run test:performance
 | `scripts/measure-performance.cjs` / `scripts/audit-lighthouse.cjs` | 本地实验室性能测量与 Lighthouse |
 | `tests/` | 静态与浏览器回归测试 |
 
-新页面使用真实目录和 `index.html`，通过轻量客户端导航保持音乐连续，仍不需要服务器重写规则。`/projects` 由静态服务器补全为 `/projects/`，刷新不会依赖首页脚本。新增页面的 HTML 资源采用 `../`；配置中的 `./` 路径由 `core.js` 相对站点根解析，支持仓库子路径部署。
+已有独立页面保留真实目录和 `index.html`，无需服务器重写规则。导航优先使用主页分区，浏览器返回、前进和直接访问 Hash 均由原生历史记录配合分区加载处理。`/projects` 仍由静态服务器补全为 `/projects/`，旧地址刷新可正常访问。独立页面的 HTML 资源采用 `../`；配置中的 `./` 路径由 `core.js` 相对站点根解析，整合内容时会重新解析相对资源路径，支持仓库子路径部署。
 
 ## 维护社交平台
 
@@ -201,7 +214,7 @@ git push -u origin codex/frontend-performance
 # 测试通过后通过 Pull Request 合并到 main，触发现有 Pages 部署
 ```
 
-检查 Actions 的当前提交部署成功后，再打开各个线上页面。音乐脚本使用 `?v=5`，样式、主题初始化及路由脚本使用 `?v=6`，其余 JS 保持 `?v=4` 版本标识避开上一版缓存；以后发布不兼容版本时统一更新该值，不使用每次访问变化的随机参数。浏览器缓存旧内容时可 Ctrl+F5 刷新。
+检查 Actions 的当前提交部署成功后，再打开各个线上页面。源码模式通过 HTML 与路由中的固定版本参数更新资源；修改脚本时同步更新相关引用，不使用每次访问变化的随机参数。构建模式使用内容哈希，资源清单随 HTML 更新；浏览器缓存旧内容时可 Ctrl+F5 刷新。
 
 如改为另一个普通项目仓库，目录页面和配置资源仍使用相对路径；请将 `404.html` 的首页及 favicon 地址从 `/` 和 `/favicon.svg` 改为实际项目子路径。当前没有 `CNAME`，此次未设置自定义域名。
 
@@ -227,7 +240,7 @@ npm run test:compat
 npm run measure -- after _site
 ```
 
-Lighthouse 是可选开发工具，不进入站点依赖或发布包：另行安装 `lighthouse@13.0.1`，使用 `LIGHTHOUSE_PATH` 指向其 `core/index.js`，然后 `npm run audit -- after _site`。默认使用本机 Edge；其他 Chromium 可设置 `CHROME_PATH`。对比前先保留旧版独立静态快照，测量时不要并行运行浏览器测试。原始 JSON、HTML 报告及截图写入被忽略的 `test-results/`。
+Lighthouse 13.0.1 已固定为开发工具，不进入站点发布包：可通过 `pnpm install --frozen-lockfile --ignore-scripts` 安装，使用 `LIGHTHOUSE_PATH` 指向其 `core/index.js`，然后 `npm run audit -- after _site`。默认使用本机 Edge；其他 Chromium 可设置 `CHROME_PATH`。对比前先保留旧版独立静态快照，测量时不要并行运行浏览器测试。原始 JSON、HTML 报告及截图写入被忽略的 `test-results/`。
 
 首次交互播放回归：`npm run test:music-gesture`，覆盖鼠标、触摸、键盘、模拟事件、重复拒绝、暂停偏好和跨页行为。
 

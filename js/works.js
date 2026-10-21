@@ -45,11 +45,11 @@ window.Site.register('works', () => {
       card.dataset.index=String(work.sourceIndex);
       card.setAttribute('aria-label', `查看作品：${work.title || '未命名作品'}`);
       const image = document.createElement('img');
-      const originalUrl = new URL(work.image, document.baseURI);
+      const originalUrl = new URL(window.Site.url(work.image));
       const filename = originalUrl.pathname.split('/').pop().replace(/\.[^.]+$/, '.webp');
       const primaryImage = work.thumbnail || new URL(`thumbs/${filename}`, originalUrl).href;
       image.alt = work.title || '摄影作品';
-      image.loading = index < (matchMedia('(max-width: 700px)').matches ? 2 : 4) ? 'eager' : 'lazy'; image.decoding = 'async';
+      image.loading = !document.body.classList.contains('single-page') && index < (matchMedia('(max-width: 700px)').matches ? 2 : 4) ? 'eager' : 'lazy'; image.decoding = 'async';
       if (Number(work.width) > 0 && Number(work.height) > 0) { image.width = Number(work.width); image.height = Number(work.height); }
       if (Number(work.width) > 0 && Number(work.height) > 0) card.style.setProperty('--work-ratio', `${work.width} / ${work.height}`);
       image.addEventListener('error', () => {
@@ -62,8 +62,8 @@ window.Site.register('works', () => {
         placeholder.innerHTML = '<span aria-hidden="true">✧</span><strong>预览图暂不可用，点击查看原图</strong>';
         image.replaceWith(placeholder);
       },{once:true,...options});
-      if(work.thumbnailSrcset){image.srcset=work.thumbnailSrcset;image.sizes='(max-width:599px) calc(100vw - 32px), (max-width:900px) 45vw, 280px';}
-      image.src = primaryImage;
+      if(work.thumbnailSrcset){image.srcset=work.thumbnailSrcset.split(',').map(entry=>{const [source,size]=entry.trim().split(/\s+/);return `${window.Site.url(source)} ${size}`;}).join(', ');image.sizes='(max-width:599px) calc(100vw - 32px), (max-width:900px) 45vw, 280px';}
+      image.src = window.Site.url(primaryImage);
       const copy = document.createElement('span'); copy.className = 'work-card-copy';
       const heading = document.createElement('span'); heading.className = 'work-card-title'; heading.textContent = work.title || '未命名作品'; copy.append(heading);
       if (work.description) { const description = document.createElement('span'); description.className = 'work-card-description'; description.textContent = work.description; copy.append(description); }
@@ -81,7 +81,7 @@ window.Site.register('works', () => {
     const work = works[currentIndex];
     if (!work) return;
     preview.classList.remove('image-load-failed');
-    preview.src = work.preview || work.image; preview.alt = work.title || '摄影作品';
+    preview.src = window.Site.url(work.preview || work.image); preview.alt = work.title || '摄影作品';
     const original=document.getElementById('lightbox-original');
     if(original)original.href=window.Site.url(work.image);
     title.textContent = work.title || '';

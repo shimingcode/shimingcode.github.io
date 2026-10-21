@@ -1,0 +1,282 @@
+{
+  "date": "2026-10-20",
+  "scope": "Homepage section navigation; no commit, push or remote deployment",
+  "measurement": {
+    "lighthouse": "13.0.1",
+    "browser": "Microsoft Edge 155.0.4283.62",
+    "runsPerVersion": 1,
+    "server": "local range-capable HTTP, Cache-Control: no-store, no compression",
+    "throttling": {
+      "rttMs": 150,
+      "throughputKbps": 1638.4,
+      "requestLatencyMs": 562.5,
+      "downloadThroughputKbps": 1474.5600000000002,
+      "uploadThroughputKbps": 675,
+      "cpuSlowdownMultiplier": 4
+    },
+    "baseline": "test-results/sections-baseline-2026-10-20",
+    "final": "_site",
+    "limitations": [
+      "Single measurements, not medians",
+      "No field INP or deployed TTFB",
+      "Local server response time is not online TTFB"
+    ]
+  },
+  "before": {
+    "performance": 99,
+    "accessibility": 100,
+    "lcpMs": 1912.235625,
+    "fcpMs": 1074.69425,
+    "tbtMs": 107.152875,
+    "cls": 0.001155817825663503,
+    "speedIndexMs": 1494.243329473039,
+    "localServerResponseMs": 11,
+    "requestCount": 14,
+    "transferBytes": 133899,
+    "externalScriptContentBytes": 37384,
+    "externalScriptTransferBytes": 38256,
+    "mediaRequests": 0,
+    "fieldINPMs": null,
+    "onlineTTFBMs": null
+  },
+  "after": {
+    "performance": 98,
+    "accessibility": 100,
+    "lcpMs": 2081.8434500000003,
+    "fcpMs": 1209.28115,
+    "tbtMs": 104.99999999999989,
+    "cls": 0.001396126750696235,
+    "speedIndexMs": 1905.7196532541493,
+    "localServerResponseMs": 13,
+    "requestCount": 15,
+    "transferBytes": 179864,
+    "externalScriptContentBytes": 44917,
+    "externalScriptTransferBytes": 45789,
+    "mediaRequests": 0,
+    "fieldINPMs": null,
+    "onlineTTFBMs": null
+  },
+  "regression": {
+    "date": "2026-10-20T14:00:24.612Z",
+    "results": [
+      {
+        "name": "unit",
+        "passed": true,
+        "durationMs": 254
+      },
+      {
+        "name": "browser",
+        "passed": true,
+        "durationMs": 32310
+      },
+      {
+        "name": "site-quality",
+        "passed": true,
+        "durationMs": 12097
+      },
+      {
+        "name": "performance",
+        "passed": true,
+        "durationMs": 57772
+      },
+      {
+        "name": "music",
+        "passed": true,
+        "durationMs": 23713
+      },
+      {
+        "name": "music-gesture",
+        "passed": true,
+        "durationMs": 15613
+      },
+      {
+        "name": "funny-hit-browser",
+        "passed": true,
+        "durationMs": 19064
+      },
+      {
+        "name": "voice-browser",
+        "passed": true,
+        "durationMs": 4846
+      },
+      {
+        "name": "original-voice",
+        "passed": true,
+        "durationMs": 8557
+      },
+      {
+        "name": "router-loading",
+        "passed": true,
+        "durationMs": 2333
+      },
+      {
+        "name": "loading",
+        "passed": true,
+        "durationMs": 8767
+      },
+      {
+        "name": "source-loading",
+        "passed": true,
+        "durationMs": 12979
+      },
+      {
+        "name": "source-efficiency",
+        "passed": true,
+        "durationMs": 5732
+      },
+      {
+        "name": "source-sections",
+        "passed": true,
+        "durationMs": 21439
+      },
+      {
+        "name": "efficiency",
+        "passed": true,
+        "durationMs": 19798
+      },
+      {
+        "name": "sections",
+        "passed": true,
+        "durationMs": 20796
+      },
+      {
+        "name": "compat",
+        "passed": true,
+        "durationMs": 6815
+      }
+    ]
+  },
+  "sectionChecks": {
+    "edge": {
+      "facts": {
+        "root": "D:\\code\\shimingcode.github.io-main\\_site",
+        "browser": "155.0.4283.62",
+        "featureRequests": {
+          "http://127.0.0.1:54498/js/page-games-8d523dd0813f.js": 1,
+          "http://127.0.0.1:54498/js/page-works-3625444a5c3c.js": 1,
+          "http://127.0.0.1:54498/js/page-hit-a4ee51935259.js": 1
+        }
+      },
+      "checks": [
+        "Cold home contains static content and fetches no gallery, game code or audio",
+        "First section visits load features once and preserve game, gallery and music state",
+        "Back, forward and repeated navigation preserve one history entry per destination",
+        "Manual scrolling updates a single active navigation link without growing history",
+        "Reduced motion, sticky-header offsets and phone/tablet/desktop layouts remain usable",
+        "Direct deep links and reload initialize their requested section",
+        "The latest click wins when an earlier section response is delayed",
+        "A failed section fetch offers an in-page retry without replacing the document",
+        "Old independent URLs remain directly usable and keep their canonical URLs",
+        "Navigating from an old game moves its live DOM, progress and audio into home",
+        "Project-prefix deployment resolves imported links, responsive pictures and media",
+        "A legacy subpath entry can open the home gallery with correctly rebased pictures",
+        "A rejected feature script retries in place, including the native module cache",
+        "Native smooth scroll settles below the header and the final music section stays active",
+        "Normal section navigation has no missing resources or console exceptions"
+      ],
+      "errors": [],
+      "expectedFailures": [
+        "503 http://127.0.0.1:54498/works.html",
+        "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+      ]
+    },
+    "webkit": {
+      "facts": {
+        "root": "D:\\code\\shimingcode.github.io-main\\_site",
+        "browser": "26.5",
+        "featureRequests": {
+          "http://127.0.0.1:54651/js/page-games-8d523dd0813f.js": 1,
+          "http://127.0.0.1:54651/js/page-works-3625444a5c3c.js": 1,
+          "http://127.0.0.1:54651/js/page-hit-a4ee51935259.js": 1
+        }
+      },
+      "checks": [
+        "Cold home contains static content and fetches no gallery, game code or audio",
+        "First section visits load features once and preserve game, gallery and music state",
+        "Back, forward and repeated navigation preserve one history entry per destination",
+        "Manual scrolling updates a single active navigation link without growing history",
+        "Reduced motion, sticky-header offsets and phone/tablet/desktop layouts remain usable",
+        "Direct deep links and reload initialize their requested section",
+        "The latest click wins when an earlier section response is delayed",
+        "A failed section fetch offers an in-page retry without replacing the document",
+        "Old independent URLs remain directly usable and keep their canonical URLs",
+        "Navigating from an old game moves its live DOM, progress and audio into home",
+        "Project-prefix deployment resolves imported links, responsive pictures and media",
+        "A legacy subpath entry can open the home gallery with correctly rebased pictures",
+        "A rejected feature script retries in place, including the native module cache",
+        "Native smooth scroll settles below the header and the final music section stays active",
+        "Normal section navigation has no missing resources or console exceptions"
+      ],
+      "errors": [],
+      "expectedFailures": [
+        "503 http://127.0.0.1:54651/works.html",
+        "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+      ]
+    },
+    "source": {
+      "facts": {
+        "root": "D:\\code\\shimingcode.github.io-main",
+        "browser": "155.0.4283.62",
+        "featureRequests": {
+          "http://127.0.0.1:53748/js/game-engine.js?v=4": 1,
+          "http://127.0.0.1:53748/js/games.js?v=6": 1,
+          "http://127.0.0.1:53748/js/works-data.js?v=4": 1,
+          "http://127.0.0.1:53748/js/works.js?v=6": 1,
+          "http://127.0.0.1:53748/games/funny-hit/dialogue.js?v=7": 1,
+          "http://127.0.0.1:53748/games/funny-hit/game-state.js?v=7": 1,
+          "http://127.0.0.1:53748/games/funny-hit/voice-manager.js?v=8": 1,
+          "http://127.0.0.1:53748/games/funny-hit/effects.js?v=7": 1,
+          "http://127.0.0.1:53748/games/funny-hit/game.js?v=11": 1
+        }
+      },
+      "checks": [
+        "Cold home contains static content and fetches no gallery, game code or audio",
+        "First section visits load features once and preserve game, gallery and music state",
+        "Back, forward and repeated navigation preserve one history entry per destination",
+        "Manual scrolling updates a single active navigation link without growing history",
+        "Reduced motion, sticky-header offsets and phone/tablet/desktop layouts remain usable",
+        "Direct deep links and reload initialize their requested section",
+        "The latest click wins when an earlier section response is delayed",
+        "A failed section fetch offers an in-page retry without replacing the document",
+        "Old independent URLs remain directly usable and keep their canonical URLs",
+        "Navigating from an old game moves its live DOM, progress and audio into home",
+        "Project-prefix deployment resolves imported links, responsive pictures and media",
+        "A legacy subpath entry can open the home gallery with correctly rebased pictures",
+        "A rejected feature script retries in place, including the native module cache",
+        "Native smooth scroll settles below the header and the final music section stays active",
+        "Normal section navigation has no missing resources or console exceptions"
+      ],
+      "errors": [],
+      "expectedFailures": [
+        "503 http://127.0.0.1:53748/works.html",
+        "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+      ]
+    }
+  },
+  "lifecycle": [
+    {
+      "documents": 7,
+      "nodes": 1440,
+      "jsEventListeners": 124
+    },
+    {
+      "documents": 7,
+      "nodes": 1440,
+      "jsEventListeners": 124
+    },
+    {
+      "documents": 7,
+      "nodes": 1440,
+      "jsEventListeners": 124
+    }
+  ],
+  "assets": {
+    "files": 49,
+    "bytes": 9139416,
+    "identicalToBaseline": true
+  },
+  "executionNotes": [
+    "Three suites hit process timeouts during the full run; efficiency, sections and compat passed on isolated rerun. These are latest per-suite results.",
+    "Fixed smooth-scroll settling and in-view game pause bugs before final measurements."
+  ]
+}

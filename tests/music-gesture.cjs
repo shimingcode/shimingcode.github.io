@@ -49,9 +49,9 @@ const server=require('./server.cjs')(path.resolve('_site')),checks=[],errors=[];
   });
   await check('First navigation starts music and later navigation preserves its instance',{},async page=>{
     await page.evaluate(()=>window.originalAudio=document.getElementById('bgm'));
-    await page.locator('.main-nav').getByRole('link',{name:'项目',exact:true}).click();await page.waitForURL(base+'/projects/');await playing(page);
+    await page.locator('.main-nav').getByRole('link',{name:'项目',exact:true}).click();await page.waitForURL(base+'/#projects');await playing(page);
     await page.locator('#music-toggle').click();
-    await page.locator('.main-nav').getByRole('link',{name:'关于',exact:true}).click();await page.waitForURL(base+'/about/');
+    await page.locator('.main-nav').getByRole('link',{name:'关于',exact:true}).click();await page.waitForURL(base+'/#about');
     assert(await page.evaluate(()=>originalAudio===document.getElementById('bgm')&&originalAudio.paused&&attempts===2));
   });
   assert.deepEqual(errors,[]);fs.writeFileSync('test-results/music-gesture-results.json',JSON.stringify({checks,errors},null,2));

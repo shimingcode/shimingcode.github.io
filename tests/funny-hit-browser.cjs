@@ -63,11 +63,11 @@ let browser;const checks=[],errors=[];async function check(name,fn){await fn();c
   assert(await p.evaluate(()=>gameAudios[0].paused));assert.equal(await p.locator('#hit-effects').evaluate(e=>e.getAnimations({subtree:true}).length),0);
   await p.evaluate(()=>{delete document.hidden;document.dispatchEvent(new Event('visibilitychange'));});
  });
- await check('route disposal, reentry and BGM continuity',async()=>{
+ await check('section departure, retained game state and BGM continuity',async()=>{
   await p.locator('.hit-heading').getByRole('link',{name:'返回小游戏中心'}).click();await p.waitForSelector('#memory-grid');
-  assert(await p.evaluate(()=>gameAudios[0].paused&&!gameAudios[0].getAttribute('src')));
+  assert(await p.evaluate(()=>gameAudios[0].paused&&Boolean(gameAudios[0].getAttribute('src'))));
   assert(await p.evaluate(()=>firstBgm===document.querySelector('#bgm')&&!firstBgm.paused));assert.deepEqual(await p.evaluate(()=>resets),[]);
-  await p.goBack();await p.waitForSelector('#hit-button');assert.equal(await p.locator('#hit-count').textContent(),'0 / 100');
+  await p.goBack();await p.waitForFunction(()=>location.hash==='#fox-game'&&!document.getElementById('main').hasAttribute('aria-busy'));assert.equal(await p.locator('#hit-count').textContent(),'2 / 100');
  });
  await check('reduced motion removes particle, shake and stage animations',async()=>{
   await p.emulateMedia({reducedMotion:'reduce'});await p.locator('#hit-button').click();

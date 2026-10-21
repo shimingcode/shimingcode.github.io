@@ -5,6 +5,14 @@ async function check(name,fn){await fn();checks.push(name);console.log('PASS '+n
  await new Promise(r=>server.listen(0,'127.0.0.1',r));const base=`http://127.0.0.1:${server.address().port}`;
  browser=await chromium.launch({channel:process.env.BROWSER_CHANNEL||'msedge',headless:true});const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:2,hasTouch:true,reducedMotion:'no-preference'});
  const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});page.on('response',r=>{if(r.status()>=400)errors.push(`${r.status()} ${r.url()}`);});
+ await page.addInitScript(()=>{
+  window.sectionTransitions=[];
+  window.addEventListener('site:sectionchange',event=>sectionTransitions.push({
+   id:event.detail.id,y:scrollY,time:performance.now(),
+   grid:document.getElementById('memory-grid')?.getBoundingClientRect().toJSON(),
+   state:document.getElementById('memory-grid')?.dataset.state
+  }));
+ });
  const requests=[];page.on('request',r=>requests.push(r.url()));await page.goto(base+'/');
  async function nav(name){await page.locator('.main-nav').getByRole('link',{name,exact:true}).click();await page.waitForFunction(()=>!document.getElementById('main').hasAttribute('aria-busy'));}
  await check('Game engine is not fetched or initialized on the homepage',async()=>{assert(!requests.some(r=>r.includes('game-engine')));assert.equal(await page.evaluate(()=>typeof window.MemoryGame),'undefined');});
@@ -28,7 +36,7 @@ async function check(name,fn){await fn();checks.push(name);console.log('PASS '+n
    await page.getByLabel('难度').selectOption(difficulty);assert.equal(await page.locator('.memory-card').count(),pairs*2);
    const groups=await page.locator('.memory-card').evaluateAll(cards=>{const groups={};cards.forEach((card,i)=>(groups[card.querySelector('.memory-front').textContent]??=[]).push(i));return Object.values(groups);});
    for(const [a,b]of groups){await page.locator('.memory-card').nth(a).click();await page.locator('.memory-card').nth(b).click();}
-   assert.equal(await page.locator('#memory-grid').getAttribute('data-state'),'COMPLETED');assert.equal(await page.locator('[data-matched="true"]').count(),pairs*2);
+   assert.equal(await page.locator('#memory-grid').getAttribute('data-state'),'COMPLETED',JSON.stringify({difficulty,transitions:await page.evaluate(()=>sectionTransitions)}));assert.equal(await page.locator('[data-matched="true"]').count(),pairs*2);
    const message=await page.locator('#game-message').innerText();await page.locator('.memory-card').first().evaluate(card=>card.click());assert.equal(await page.locator('#game-message').innerText(),message);
   }
  });
@@ -67,7 +75,7 @@ async function check(name,fn){await fn();checks.push(name);console.log('PASS '+n
    await nav('作品');for(const img of await page.locator('.work-card img').all()){await img.scrollIntoViewIfNeeded();await img.evaluate(img=>img.decode());}assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   }
  });
- await check('Repeated mount/unmount keeps live DOM listener counts bounded after GC',async()=>{
+ await check('Repeated section navigation keeps live DOM listener counts bounded after GC',async()=>{
   const cdp=await context.newCDPSession(page),samples=[];
   for(let round=0;round<3;round++){for(let i=0;i<6;i++){await nav('小游戏');await page.locator('.memory-card').first().click();await nav('首页');}await page.evaluate(()=>{window.telegramCard=null;window.firstPetal=null;window.panelObserver=null;});await cdp.send('HeapProfiler.collectGarbage');samples.push(await cdp.send('Memory.getDOMCounters'));}
   fs.writeFileSync('test-results/performance/lifecycle.json',JSON.stringify(samples,null,2));

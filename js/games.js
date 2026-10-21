@@ -42,6 +42,16 @@ window.Site.register('games', () => {
   difficulty.addEventListener('change',restart,options);
   document.getElementById('game-restart').addEventListener('click',restart,options);
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&game.pause()){cancel();update();}},options);
+  function pauseOffscreen() { if(game.pause()){cancel();update();} }
+  window.addEventListener('site:sectionchange',event=>{
+    if(event.detail.navigation&&event.detail.id!=='games')pauseOffscreen();
+  },options);
+  // The navigation's reading position may still be in the preceding section
+  // while the board is visible and playable. Pause only when the panel leaves.
+  const visibility=new IntersectionObserver(entries=>{
+    if(entries.some(entry=>!entry.isIntersecting))pauseOffscreen();
+  });
+  visibility.observe(grid.closest('.game-panel'));
   restart();
-  return ()=>{events.abort();cancel();game.dispose();cards=[];};
+  return ()=>{visibility.disconnect();events.abort();cancel();game.dispose();cards=[];};
 });

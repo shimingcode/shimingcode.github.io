@@ -88,12 +88,13 @@ async function check(name, fn) { await fn(); checks.push(name); console.log(`PAS
     await page.reload();assert.equal(await page.locator('#bgm').evaluate(a=>a.volume),.5);assert(await page.locator('#bgm').evaluate(a=>a.paused&&a.loop));
   });
   await check('Invalid URL and hostile display text cannot inject markup',async()=>{
-    await page.route('**/js/config.js*',async route=>{
-      const source=fs.readFileSync(path.join(root,'js/config.js'),'utf8');
+    const configPattern=/\/js\/(?:config\.js|shell-[a-f0-9]+\.js)(?:\?|$)/;
+    await page.route(configPattern,async route=>{
+      const response=await route.fetch(),source=await response.text();
       await route.fulfill({contentType:'text/javascript',body:source+'\nwindow.SITE_CONFIG.socialLinks.push({name:"<img src=x onerror=alert(1)>",icon:"link",category:"其他",url:"javascript:alert(1)"});'});
     });
     await page.reload();const invalid=page.locator('.social-card').last();assert(await invalid.isDisabled());assert.equal(await invalid.locator('img').count(),0);assert.match(await invalid.innerText(),/链接暂不可用/);
-    await page.unroute('**/js/config.js*');await page.reload();
+    await page.unroute(configPattern);await page.reload();
   });
   await check('Blocked storage leaves all core controls usable',async()=>{
     const isolated=await browser.newContext();await isolated.addInitScript(()=>{Storage.prototype.getItem=()=>{throw new DOMException('Blocked','SecurityError')};Storage.prototype.setItem=()=>{throw new DOMException('Blocked','SecurityError')};});

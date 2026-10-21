@@ -12,7 +12,7 @@ async function check(name,fn){await fn();checks.push(name);console.log('PASS '+n
  const cdp=await context.newCDPSession(p);await cdp.send('Network.enable');await cdp.send('Network.setCacheDisabled',{cacheDisabled:true});
  async function nav(name){await p.locator('.main-nav').getByRole('link',{name,exact:true}).click();await p.waitForFunction(()=>!document.querySelector('#main').hasAttribute('aria-busy'));}
  await p.goto(base+'/');
- await check('cold home requests each stylesheet once even without browser cache',async()=>{for(const name of ['/css/style.css','/css/music.css'])assert.equal(requests.filter(u=>new URL(u).pathname===name).length,1,name);assert.equal(await p.locator('#social-links .social-card').count(),11);});
+ await check('cold home requests each stylesheet once even without browser cache',async()=>{for(const href of await p.locator('link[rel=stylesheet]').evaluateAll(links=>links.map(l=>l.href)))assert.equal(requests.filter(u=>u===href).length,1,href);assert.equal(await p.locator('#social-links .social-card').count(),11);});
  await check('project filtering reuses all original cards and ignores the selected filter',async()=>{
   await p.evaluate(()=>window.projectCards=[...document.querySelectorAll('.project-card')]);
   for(let i=0;i<5;i++){await p.locator('#project-filters').getByRole('button',{name:'Python',exact:true}).click();await p.locator('#project-filters').getByRole('button',{name:'全部',exact:true}).click();}
@@ -27,12 +27,12 @@ async function check(name,fn){await fn();checks.push(name);console.log('PASS '+n
   await p.locator('.work-card').first().click();await p.locator('#lightbox-image').evaluate(i=>i.decode());await p.keyboard.press('ArrowRight');await p.locator('#lightbox-image').evaluate(i=>i.decode());await p.evaluate(()=>{document.querySelector('#lightbox').close();document.querySelector('.work-card').click();});await p.waitForTimeout(50);assert(await p.locator('#lightbox').evaluate(d=>d.open));await p.locator('#lightbox-image').evaluate(i=>i.decode());await p.keyboard.press('Escape');await p.waitForFunction(()=>!document.querySelector('#lightbox-image').hasAttribute('src'));
  });
  await check('repeated mounts do not duplicate filters or about paragraphs',async()=>{
-  await nav('关于');await p.evaluate(()=>{Site.mount();Site.mount();});assert.equal(await p.locator('#about-content p').count(),3);
-  await nav('首页');await p.evaluate(()=>{Site.mount();Site.mount();});const labels=await p.locator('#platform-filters button').allTextContents();assert.equal(labels.length,new Set(labels).size);
+  await nav('关于');await p.evaluate(()=>{Site.mountOnce('profile');Site.mountOnce('links');Site.mountOnce('projects');});assert.equal(await p.locator('#about-content p').count(),3);
+  await nav('首页');await p.evaluate(()=>{Site.mountOnce('profile');Site.mountOnce('links');Site.mountOnce('projects');});const labels=await p.locator('#platform-filters button').allTextContents();assert.equal(labels.length,new Set(labels).size);
  });
  await check('canonical and social metadata track routes and survive direct refresh',async()=>{
   for(const [name,suffix] of [['项目','/projects/'],['平台导航','/links/'],['小游戏','/games/'],['关于','/about/'],['作品','/works.html'],['首页','/']]){
-   await nav(name);const canonical='https://shimingcode.github.io'+suffix;assert.equal(await p.locator('link[rel=canonical]').getAttribute('href'),canonical);assert.equal(await p.locator('meta[property="og:url"]').getAttribute('content'),canonical);
+   await nav(name);const canonical='https://shimingcode.github.io/';assert.equal(await p.locator('link[rel=canonical]').getAttribute('href'),canonical);assert.equal(await p.locator('meta[property="og:url"]').getAttribute('content'),canonical);
   }
   await p.goto(base+'/games/funny-hit/');await p.reload();await p.waitForSelector('#hit-button');assert.equal(await p.locator('link[rel=canonical]').getAttribute('href'),'https://shimingcode.github.io/games/funny-hit/');
   assert.equal((await p.request.get(base+'/sitemap.xml')).status(),200);assert.equal((await p.request.get(base+'/robots.txt')).status(),200);

@@ -1,0 +1,513 @@
+{
+  "date": "2026-10-20",
+  "measurement": {
+    "baseline": "test-results/startup-baseline-2026-10-20",
+    "final": "_site",
+    "lighthouse": "13.0.1",
+    "browser": "Edge 155.0.4283.62",
+    "runsPerVersion": 3,
+    "order": "before-1, after-1, before-2, after-2, before-3, after-3",
+    "formFactor": "mobile",
+    "screenEmulation": {
+      "mobile": true,
+      "width": 412,
+      "height": 823,
+      "deviceScaleFactor": 1.75,
+      "disabled": false
+    },
+    "throttling": {
+      "rttMs": 150,
+      "throughputKbps": 1638.4,
+      "requestLatencyMs": 562.5,
+      "downloadThroughputKbps": 1474.5600000000002,
+      "uploadThroughputKbps": 675,
+      "cpuSlowdownMultiplier": 4
+    },
+    "server": "local HTTP; no-store; no transfer compression",
+    "concurrentBrowserTests": false,
+    "fieldINP": null,
+    "onlineTTFB": null
+  },
+  "before": {
+    "samples": [
+      {
+        "label": "startup-before-1",
+        "fetchTime": "2026-10-20T14:28:57.447Z",
+        "benchmarkIndex": 3001,
+        "performance": 100,
+        "lcpMs": 1891.915,
+        "fcpMs": 916.915,
+        "tbtMs": 41,
+        "cls": 0.001396126750696235,
+        "speedIndexMs": 1235.777144639815,
+        "localServerResponseMs": 9,
+        "transferBytes": 179864,
+        "requestCount": 15,
+        "externalScriptContentBytes": 44917,
+        "imageTransferBytes": 98334,
+        "mediaRequests": 0
+      },
+      {
+        "label": "startup-before-2",
+        "fetchTime": "2026-10-20T14:29:29.082Z",
+        "benchmarkIndex": 2993.5,
+        "performance": 100,
+        "lcpMs": 1889.8627000000001,
+        "fcpMs": 958.8626999999999,
+        "tbtMs": 30,
+        "cls": 0.001396126750696235,
+        "speedIndexMs": 1220.5389033375855,
+        "localServerResponseMs": 7,
+        "transferBytes": 179864,
+        "requestCount": 15,
+        "externalScriptContentBytes": 44917,
+        "imageTransferBytes": 98334,
+        "mediaRequests": 0
+      },
+      {
+        "label": "startup-before-3",
+        "fetchTime": "2026-10-20T14:30:00.684Z",
+        "benchmarkIndex": 2985.5,
+        "performance": 100,
+        "lcpMs": 1891.9744,
+        "fcpMs": 916.9744000000001,
+        "tbtMs": 31.5,
+        "cls": 0.001396126750696235,
+        "speedIndexMs": 1223.9493294356766,
+        "localServerResponseMs": 8,
+        "transferBytes": 179864,
+        "requestCount": 15,
+        "externalScriptContentBytes": 44917,
+        "imageTransferBytes": 98334,
+        "mediaRequests": 0
+      }
+    ],
+    "median": {
+      "performance": 100,
+      "lcpMs": 1891.915,
+      "fcpMs": 916.9744000000001,
+      "tbtMs": 31.5,
+      "cls": 0.001396126750696235,
+      "speedIndexMs": 1223.9493294356766,
+      "localServerResponseMs": 8,
+      "transferBytes": 179864,
+      "requestCount": 15,
+      "externalScriptContentBytes": 44917,
+      "imageTransferBytes": 98334,
+      "mediaRequests": 0
+    },
+    "range": {
+      "performance": [
+        100,
+        100
+      ],
+      "lcpMs": [
+        1889.8627000000001,
+        1891.9744
+      ],
+      "fcpMs": [
+        916.915,
+        958.8626999999999
+      ],
+      "tbtMs": [
+        30,
+        41
+      ],
+      "cls": [
+        0.001396126750696235,
+        0.001396126750696235
+      ],
+      "speedIndexMs": [
+        1220.5389033375855,
+        1235.777144639815
+      ],
+      "localServerResponseMs": [
+        7,
+        9
+      ],
+      "transferBytes": [
+        179864,
+        179864
+      ],
+      "requestCount": [
+        15,
+        15
+      ],
+      "externalScriptContentBytes": [
+        44917,
+        44917
+      ],
+      "imageTransferBytes": [
+        98334,
+        98334
+      ],
+      "mediaRequests": [
+        0,
+        0
+      ]
+    }
+  },
+  "after": {
+    "samples": [
+      {
+        "label": "startup-after-1",
+        "fetchTime": "2026-10-20T14:29:13.465Z",
+        "benchmarkIndex": 2942,
+        "performance": 100,
+        "lcpMs": 1889.2959,
+        "fcpMs": 914.2959000000001,
+        "tbtMs": 32.5,
+        "cls": 0.001396126750696235,
+        "speedIndexMs": 1206.092562733064,
+        "localServerResponseMs": 7,
+        "transferBytes": 147922,
+        "requestCount": 14,
+        "externalScriptContentBytes": 43555,
+        "imageTransferBytes": 67695,
+        "mediaRequests": 0
+      },
+      {
+        "label": "startup-after-2",
+        "fetchTime": "2026-10-20T14:29:45.032Z",
+        "benchmarkIndex": 2831,
+        "performance": 100,
+        "lcpMs": 1888.4392,
+        "fcpMs": 913.4392,
+        "tbtMs": 33,
+        "cls": 0.001396126750696235,
+        "speedIndexMs": 1212.3138440932566,
+        "localServerResponseMs": 6,
+        "transferBytes": 147922,
+        "requestCount": 14,
+        "externalScriptContentBytes": 43555,
+        "imageTransferBytes": 67695,
+        "mediaRequests": 0
+      },
+      {
+        "label": "startup-after-3",
+        "fetchTime": "2026-10-20T14:30:16.836Z",
+        "benchmarkIndex": 2718.5,
+        "performance": 100,
+        "lcpMs": 1890.5549,
+        "fcpMs": 915.5549000000001,
+        "tbtMs": 31.5,
+        "cls": 0.001396126750696235,
+        "speedIndexMs": 1216.5495207330994,
+        "localServerResponseMs": 9,
+        "transferBytes": 147922,
+        "requestCount": 14,
+        "externalScriptContentBytes": 43555,
+        "imageTransferBytes": 67695,
+        "mediaRequests": 0
+      }
+    ],
+    "median": {
+      "performance": 100,
+      "lcpMs": 1889.2959,
+      "fcpMs": 914.2959000000001,
+      "tbtMs": 32.5,
+      "cls": 0.001396126750696235,
+      "speedIndexMs": 1212.3138440932566,
+      "localServerResponseMs": 7,
+      "transferBytes": 147922,
+      "requestCount": 14,
+      "externalScriptContentBytes": 43555,
+      "imageTransferBytes": 67695,
+      "mediaRequests": 0
+    },
+    "range": {
+      "performance": [
+        100,
+        100
+      ],
+      "lcpMs": [
+        1888.4392,
+        1890.5549
+      ],
+      "fcpMs": [
+        913.4392,
+        915.5549000000001
+      ],
+      "tbtMs": [
+        31.5,
+        33
+      ],
+      "cls": [
+        0.001396126750696235,
+        0.001396126750696235
+      ],
+      "speedIndexMs": [
+        1206.092562733064,
+        1216.5495207330994
+      ],
+      "localServerResponseMs": [
+        6,
+        9
+      ],
+      "transferBytes": [
+        147922,
+        147922
+      ],
+      "requestCount": [
+        14,
+        14
+      ],
+      "externalScriptContentBytes": [
+        43555,
+        43555
+      ],
+      "imageTransferBytes": [
+        67695,
+        67695
+      ],
+      "mediaRequests": [
+        0,
+        0
+      ]
+    }
+  },
+  "savings": {
+    "transferBytes": 31942,
+    "transferPercent": 17.7589734466041,
+    "initialScriptBytes": 1362
+  },
+  "verification": {
+    "date": "2026-10-20T14:28:34.636Z",
+    "results": [
+      {
+        "name": "browser",
+        "passed": true,
+        "durationMs": 16710
+      },
+      {
+        "name": "site-quality",
+        "passed": true,
+        "durationMs": 6535
+      },
+      {
+        "name": "performance",
+        "passed": true,
+        "durationMs": 41927
+      },
+      {
+        "name": "funny-hit-browser",
+        "passed": true,
+        "durationMs": 16181
+      },
+      {
+        "name": "voice-browser",
+        "passed": true,
+        "durationMs": 3325
+      },
+      {
+        "name": "original-voice",
+        "passed": true,
+        "durationMs": 7625
+      },
+      {
+        "name": "router-loading",
+        "passed": true,
+        "durationMs": 2329
+      },
+      {
+        "name": "loading",
+        "passed": true,
+        "durationMs": 8274
+      },
+      {
+        "name": "efficiency",
+        "passed": true,
+        "durationMs": 19331
+      },
+      {
+        "name": "source-loading",
+        "passed": true,
+        "durationMs": 8586
+      },
+      {
+        "name": "source-efficiency",
+        "passed": true,
+        "durationMs": 5265
+      },
+      {
+        "name": "unit",
+        "passed": true,
+        "durationMs": 255
+      },
+      {
+        "name": "music",
+        "passed": true,
+        "durationMs": 23704
+      },
+      {
+        "name": "music-gesture",
+        "passed": true,
+        "durationMs": 15513
+      },
+      {
+        "name": "sections",
+        "passed": true,
+        "durationMs": 17772
+      },
+      {
+        "name": "compat",
+        "passed": true,
+        "durationMs": 4633
+      },
+      {
+        "name": "source-sections",
+        "passed": true,
+        "durationMs": 17775
+      }
+    ]
+  },
+  "sections": {
+    "edge": {
+      "facts": {
+        "root": "D:\\code\\shimingcode.github.io-main\\_site",
+        "browser": "155.0.4283.62",
+        "featureRequests": {
+          "http://127.0.0.1:50616/js/page-games-8d523dd0813f.js": 1,
+          "http://127.0.0.1:50616/js/page-works-3625444a5c3c.js": 1,
+          "http://127.0.0.1:50616/js/page-hit-a4ee51935259.js": 1
+        }
+      },
+      "checks": [
+        "Cold home contains static content and fetches no gallery, game code or audio",
+        "First section visits load features once and preserve game, gallery and music state",
+        "Back, forward and repeated navigation preserve one history entry per destination",
+        "Manual scrolling updates a single active navigation link without growing history",
+        "Reduced motion, sticky-header offsets and phone/tablet/desktop layouts remain usable",
+        "Direct deep links and reload initialize their requested section",
+        "The latest click wins when an earlier section response is delayed",
+        "A failed section fetch offers an in-page retry without replacing the document",
+        "Old independent URLs remain directly usable and keep their canonical URLs",
+        "Navigating from an old game moves its live DOM, progress and audio into home",
+        "Project-prefix deployment resolves imported links, responsive pictures and media",
+        "A legacy subpath entry can open the home gallery with correctly rebased pictures",
+        "A rejected feature script retries in place, including the native module cache",
+        "The shared content helper is lazy, retries a failed load and is reused",
+        "A high-density phone defers the larger about avatar until needed",
+        "Native smooth scroll settles below the header and the final music section stays active",
+        "Normal section navigation has no missing resources or console exceptions"
+      ],
+      "errors": [],
+      "expectedFailures": [
+        "503 http://127.0.0.1:50616/works.html",
+        "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+      ]
+    },
+    "source": {
+      "facts": {
+        "root": "D:\\code\\shimingcode.github.io-main",
+        "browser": "155.0.4283.62",
+        "featureRequests": {
+          "http://127.0.0.1:56319/js/game-engine.js?v=4": 1,
+          "http://127.0.0.1:56319/js/games.js?v=6": 1,
+          "http://127.0.0.1:56319/js/works-data.js?v=4": 1,
+          "http://127.0.0.1:56319/js/works.js?v=6": 1,
+          "http://127.0.0.1:56319/games/funny-hit/dialogue.js?v=7": 1,
+          "http://127.0.0.1:56319/games/funny-hit/game-state.js?v=7": 1,
+          "http://127.0.0.1:56319/games/funny-hit/voice-manager.js?v=8": 1,
+          "http://127.0.0.1:56319/games/funny-hit/effects.js?v=7": 1,
+          "http://127.0.0.1:56319/games/funny-hit/game.js?v=11": 1
+        }
+      },
+      "checks": [
+        "Cold home contains static content and fetches no gallery, game code or audio",
+        "First section visits load features once and preserve game, gallery and music state",
+        "Back, forward and repeated navigation preserve one history entry per destination",
+        "Manual scrolling updates a single active navigation link without growing history",
+        "Reduced motion, sticky-header offsets and phone/tablet/desktop layouts remain usable",
+        "Direct deep links and reload initialize their requested section",
+        "The latest click wins when an earlier section response is delayed",
+        "A failed section fetch offers an in-page retry without replacing the document",
+        "Old independent URLs remain directly usable and keep their canonical URLs",
+        "Navigating from an old game moves its live DOM, progress and audio into home",
+        "Project-prefix deployment resolves imported links, responsive pictures and media",
+        "A legacy subpath entry can open the home gallery with correctly rebased pictures",
+        "A rejected feature script retries in place, including the native module cache",
+        "The shared content helper is lazy, retries a failed load and is reused",
+        "A high-density phone defers the larger about avatar until needed",
+        "Native smooth scroll settles below the header and the final music section stays active",
+        "Normal section navigation has no missing resources or console exceptions"
+      ],
+      "errors": [],
+      "expectedFailures": [
+        "503 http://127.0.0.1:56319/works.html",
+        "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+      ]
+    },
+    "webkit": {
+      "facts": {
+        "root": "D:\\code\\shimingcode.github.io-main\\_site",
+        "browser": "26.5",
+        "featureRequests": {
+          "http://127.0.0.1:52673/js/page-games-8d523dd0813f.js": 1,
+          "http://127.0.0.1:52673/js/page-works-3625444a5c3c.js": 1,
+          "http://127.0.0.1:52673/js/page-hit-a4ee51935259.js": 1
+        }
+      },
+      "checks": [
+        "Cold home contains static content and fetches no gallery, game code or audio",
+        "First section visits load features once and preserve game, gallery and music state",
+        "Back, forward and repeated navigation preserve one history entry per destination",
+        "Manual scrolling updates a single active navigation link without growing history",
+        "Reduced motion, sticky-header offsets and phone/tablet/desktop layouts remain usable",
+        "Direct deep links and reload initialize their requested section",
+        "The latest click wins when an earlier section response is delayed",
+        "A failed section fetch offers an in-page retry without replacing the document",
+        "Old independent URLs remain directly usable and keep their canonical URLs",
+        "Navigating from an old game moves its live DOM, progress and audio into home",
+        "Project-prefix deployment resolves imported links, responsive pictures and media",
+        "A legacy subpath entry can open the home gallery with correctly rebased pictures",
+        "A rejected feature script retries in place, including the native module cache",
+        "The shared content helper is lazy, retries a failed load and is reused",
+        "A high-density phone defers the larger about avatar until needed",
+        "Native smooth scroll settles below the header and the final music section stays active",
+        "Normal section navigation has no missing resources or console exceptions"
+      ],
+      "errors": [],
+      "expectedFailures": [
+        "503 http://127.0.0.1:52673/works.html",
+        "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+      ]
+    }
+  },
+  "lifecycle": [
+    {
+      "documents": 7,
+      "nodes": 1440,
+      "jsEventListeners": 124
+    },
+    {
+      "documents": 7,
+      "nodes": 1440,
+      "jsEventListeners": 124
+    },
+    {
+      "documents": 7,
+      "nodes": 1440,
+      "jsEventListeners": 124
+    }
+  ],
+  "assets": {
+    "files": 49,
+    "bytes": 9139416,
+    "identicalToBaseline": true
+  },
+  "notes": [
+    "A full 17-suite pass preceded the final cover attribute-order fix; unit, sections, source-sections, music, music-gesture and compat were rerun afterwards. WebKit section tests also passed after the fix.",
+    "Initial WebKit avatar request assertion caught a transient oversized music cover request; sizes is now assigned before srcset.",
+    "Transfer size includes HTTP headers and all requests observed during Lighthouse load, including speculative lazy images.",
+    "Load-time differences are small and do not establish a stable speed improvement; byte reduction is consistent across all runs.",
+    "No commit, push or deployment."
+  ],
+  "finalVerification": {
+    "date": "2026-10-21",
+    "sourceMatchesBuild": true,
+    "contentHashesValid": true,
+    "regressionSuitesPassing": 17,
+    "sectionChecksPerMode": 17
+  }
+}
