@@ -5,8 +5,8 @@ window.SITE_CONFIG = {
   "status": "♡ Welcome to my little world ♡",
   "avatar": "./assets/images/avatar-small.jpg",
   "avatarSmall": "./assets/images/avatar-160.webp",
-  "backgroundAvif": "./assets/images/background.avif",
-  "backgroundMobileAvif": "./assets/images/background-mobile.avif",
+  "backgroundAvif": "./assets/images/background-optimized.avif",
+  "backgroundMobileAvif": "./assets/images/background-mobile-optimized.avif",
   "avatarWebp": "./assets/images/avatar.webp",
   "background": "./assets/images/background.jpg.jpg",
   "backgroundWebp": "./assets/images/background.webp",
@@ -18,33 +18,40 @@ window.SITE_CONFIG = {
     {
       "title": "首页",
       "url": "./index.html",
+      "section": "home",
       "enabled": true
     },
     {
       "title": "平台导航",
       "url": "./links/",
+      "section": "links",
       "enabled": true
     },
     {
       "title": "项目",
       "url": "./projects/",
+      "section": "projects",
       "enabled": true
     },
     {
       "title": "作品",
       "url": "./works.html",
+      "section": "works",
       "enabled": true
     },
     {
       "title": "小游戏",
       "url": "./games/",
+      "section": "games",
       "enabled": true
     },
     {
       "title": "关于",
       "url": "./about/",
+      "section": "about",
       "enabled": true
-    }
+    },
+    { "title": "音乐", "url": "./index.html#music", "section": "music", "enabled": true }
   ],
   "music": {
     "src": "./assets/audio/bgm-web.mp3",

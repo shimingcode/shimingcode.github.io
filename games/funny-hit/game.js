@@ -10,6 +10,18 @@ window.Site.register('funny-hit', () => {
   const effects=new F.Effects(get('hit-effects'),photo,settings);
   const voice=new F.VoiceManager(settings,{status:text=>get('voice-status').textContent=text});
   let renderFrame=0,stageAnimation=null,completionShown=false;
+  // Warm just the existing clip when the visitor approaches a sound action.
+  // Touch uses pointerdown; playback still starts synchronously in the click gesture.
+  const warmEvents=['pointermove','pointerdown','focusin'];
+  const warmVoice=event=>{
+    if(navigator.connection?.saveData||!event.target.closest('[data-hit-action="hit"],[data-hit-action="preview"]'))return;
+    const audio=voice.prepare();
+    // One prepared element is reused; explicit playback still retries load failures.
+    if(audio&&!audio.error)for(const type of warmEvents)root.removeEventListener(type,warmVoice);
+  };
+  // Unlike pointerover, pointermove does not warm merely because routing put a
+  // new button underneath a stationary cursor.
+  for(const type of warmEvents)root.addEventListener(type,warmVoice,options);
   function update(){
     cancelAnimationFrame(renderFrame);renderFrame=0;
     count.textContent=game.totalHits+' / '+F.MAX_HITS;
@@ -72,7 +84,20 @@ window.Site.register('funny-hit', () => {
     if(document.hidden){voice.stop();effects.stop();stageAnimation?.cancel();cancelAnimationFrame(renderFrame);renderFrame=0;}
     else update();
   },options);
-  photo.addEventListener('error',()=>{get('photo-error').hidden=false;},options);
+  function pauseOffscreen() {
+    voice.stop();effects.stop();stageAnimation?.cancel();stageAnimation=null;
+    cancelAnimationFrame(renderFrame);renderFrame=0;update();
+  }
+  window.addEventListener('site:sectionchange',event=>{
+    if(event.detail.navigation&&event.detail.id!=='fox-game')pauseOffscreen();
+  },options);
+  const visibility=new IntersectionObserver(entries=>{
+    if(entries.some(entry=>!entry.isIntersecting))pauseOffscreen();
+  });
+  visibility.observe(root);
+  const photoError=()=>{get('photo-error').hidden=false;};
+  photo.addEventListener('error',photoError,options);
+  if(photo.complete&&!photo.naturalWidth)photoError();
   update();
-  return ()=>{cancelAnimationFrame(renderFrame);stageAnimation?.cancel();events.abort();voice.dispose();effects.dispose();if(complete.open)complete.close();};
+  return ()=>{visibility.disconnect();cancelAnimationFrame(renderFrame);stageAnimation?.cancel();events.abort();voice.dispose();effects.dispose();if(complete.open)complete.close();};
 });

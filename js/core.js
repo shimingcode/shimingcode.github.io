@@ -4,7 +4,7 @@
   const base = new URL('../', document.currentScript.src);
   const storage = {
     get(key, fallback = null) { try { return localStorage.getItem(`shiming:${key}`) ?? fallback; } catch { return fallback; } },
-    set(key, value) { try { localStorage.setItem(`shiming:${key}`, String(value)); } catch { /* Optional persistence. */ } }
+    set(key, value) { try { localStorage.setItem(`shiming:${key}`, String(value)); return true; } catch { return false; /* Optional persistence can be retried. */ } }
   };
   function url(value, external = false) {
     if (typeof value !== 'string' || !value.trim()) return null;
@@ -47,13 +47,19 @@
   }
   // Page modules register once; only their main-content DOM is mounted per navigation.
   const pages = new Map();
-  let cleanups = [];
-  function unmount() { for (const dispose of cleanups) dispose(); cleanups = []; }
+  const cleanups = new Map();
+  function unmount() { for (const dispose of cleanups.values()) dispose(); cleanups.clear(); }
+  // Appending a section must never recreate another section's game or filters.
+  function mountOnce(name) {
+    if (cleanups.has(name)) return;
+    const dispose = pages.get(name)?.();
+    if (typeof dispose === 'function') cleanups.set(name, dispose);
+  }
   function mount() {
     unmount();
-    for (const init of pages.values()) { const dispose = init(); if (typeof dispose === 'function') cleanups.push(dispose); }
+    for (const name of pages.keys()) mountOnce(name);
   }
   const register = (name, init) => pages.set(name, init);
   document.addEventListener('DOMContentLoaded', mount, { once: true });
-  window.Site = Object.freeze({ base, storage, url, el, icon, externalLink, toast, copy, register, mount, unmount });
+  window.Site = Object.freeze({ base, storage, url, el, icon, externalLink, toast, copy, register, mount, mountOnce, unmount });
 })();

@@ -5,31 +5,56 @@
 <meta property="og:title" content="Shiming · 个人小天地"><meta property="og:description" content="Shiming 的个人主页：社交导航、摄影作品、开源项目和小游戏。"><meta property="og:type" content="website"><meta name="theme-color" content="#fff3f8"><meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="canonical" href="https://shimingcode.github.io/"><meta property="og:url" content="https://shimingcode.github.io/"><meta property="og:image" content="https://shimingcode.github.io/assets/images/background.jpg.jpg">
 <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-<script src="./js/theme-init.js?v=6"></script>
-<link rel="preload" as="image" type="image/avif" href="./assets/images/background-mobile.avif" media="(max-width: 599px)" fetchpriority="high">
-<link rel="preload" as="image" type="image/avif" href="./assets/images/background.avif" media="(min-width: 600px)" fetchpriority="high">
-<link rel="stylesheet" href="./css/style.css?v=7">
-<script src="./js/config.js?v=4" defer></script>
+<script src="./js/theme-init.js?v=7"></script>
+<link rel="preload" as="image" type="image/avif" href="./assets/images/background-mobile-optimized.avif" media="(max-width: 599px)" fetchpriority="high">
+<link rel="preload" as="image" type="image/avif" href="./assets/images/background-optimized.avif" media="(min-width: 600px)" fetchpriority="high">
+<link rel="stylesheet" href="./css/style.css?v=9">
+<script src="./js/config.js?v=6" defer></script>
 <script src="./js/icons.js?v=4" defer></script>
-<script src="./js/core.js?v=4" defer></script>
-<script src="./js/main.js?v=5" defer></script>
+<script src="./js/core.js?v=6" defer></script>
+<script src="./js/main.js?v=7" defer></script>
 <script src="./js/sakura.js?v=5" defer></script>
 <script src="./js/effects.js?v=4" defer></script>
-<script src="./js/music.js?v=6" defer></script>
+<script src="./js/music.js?v=9" defer></script>
 <script src="./js/links.js?v=5" defer></script>
 <script src="./js/projects-data.js?v=4" defer></script>
 <script src="./js/projects.js?v=5" defer></script>
 <link rel="stylesheet" href="./css/music.css?v=7">
-<script src="./js/router.js?v=14" defer></script>
-</head><body class="">
+<script src="./js/router.js?v=19" defer></script>
+</head><body class="single-page">
 <a class="skip-link" href="#main">跳到主要内容</a><div class="background" aria-hidden="true"></div><div id="sakura" aria-hidden="true"></div>
-<header id="site-header" class="site-header"><a class="brand" href="./index.html"><img src="./favicon.svg" alt="" width="32" height="32">Shiming<span>✧</span></a></header>
-<main data-page-class="" id="main" class="site-shell" tabindex="-1"><section class="hero glass" aria-labelledby="welcome"><div class="hero-copy"><p class="eyebrow"><img class="mobile-avatar" data-profile-image src="./assets/images/avatar-160.webp" width="40" height="40" alt="Shiming 的头像">A little corner of the internet</p><h1 id="welcome">你好，欢迎来到<br><em>Shiming</em> 的小天地。</h1><p>收藏喜欢的瞬间，连接有趣的世界。<br>这里有一点代码、一点日常，还有一只喜欢的狐狐。</p><div class="hero-actions"><a class="button primary" href="#platforms">找到我 ↗</a><a class="button" href="./works.html">看看我的作品 →</a></div></div><div class="profile"><div class="avatar-wrap"><picture><source id="avatar-webp" sizes="(max-width:599px) 80px, 132px" srcset="./assets/images/avatar-160.webp 160w, ./assets/images/avatar.webp 336w" type="image/webp"><img id="avatar" src="./assets/images/avatar-small.jpg" alt="Shiming 的头像" width="132" height="132" decoding="async" fetchpriority="high"></picture><span class="avatar-sparkle" aria-hidden="true">✧</span></div><p id="name" class="profile-name">Shiming</p><p id="bio" class="bio">喜欢狐狐</p><p id="status" class="status">♡ Welcome to my little world ♡</p></div></section>
-<section id="platforms" class="content-section" aria-labelledby="platform-heading"><div class="section-heading"><div><p class="eyebrow">01 / FIND ME HERE</p><h2 id="platform-heading">在这些地方，遇见我</h2></div><a href="./links/">完整导航 ↗</a></div><div class="directory glass"><div class="toolbar"><label class="search-field"><span class="sr-only">搜索平台</span><input id="platform-search" type="search" placeholder="搜索平台、账号或关键词…" autocomplete="off"></label><label class="sort-field">排列方式<select id="platform-sort"><option value="default">默认顺序</option><option value="name">按名称排序</option><option value="recent">最近使用</option></select></label></div><div id="platform-filters" class="filters" role="group" aria-label="平台分类"></div><nav id="social-links" aria-label="社交账号"></nav><p id="platform-count" class="result-count" role="status" aria-live="polite"></p></div></section>
-<section class="content-section" aria-labelledby="projects-heading"><div class="section-heading"><div><p class="eyebrow">02 / MADE & MAKING</p><h2 id="projects-heading">代码与小小的创造</h2></div><a href="./projects/">所有项目 ↗</a></div><p class="section-note">已经上线的小作品，与等待填满的灵感。标记“示例”的卡片仅为展示占位。</p><div id="project-filters" class="filters" role="group" aria-label="项目分类"></div><div id="project-grid" class="project-grid"></div><p id="project-count" class="result-count" role="status" aria-live="polite"></p></section>
-<section class="content-section glass gallery-teaser"><div><p class="eyebrow">03 / MOMENTS TO KEEP</p><h2>把喜欢的瞬间留下来</h2><p>摄影与图片作品，藏在另一页小小的相册里。</p></div><a class="button" href="./works.html">打开相册 →</a></section></main>
+<header id="site-header" class="site-header"><a class="brand" href="#home"><img src="./favicon.svg" alt="" width="32" height="32">Shiming<span>✧</span></a></header>
+<main data-page-class="single-page" id="main" class="site-shell" tabindex="-1">
+<section id="home" data-section tabindex="-1" class="hero glass" aria-labelledby="welcome"><div class="hero-copy"><p class="eyebrow"><img class="mobile-avatar" data-profile-image src="./assets/images/avatar-160.webp" width="40" height="40" alt="Shiming 的头像">A little corner of the internet</p><h1 id="welcome">你好，欢迎来到<br><em>Shiming</em> 的小天地。</h1><p>收藏喜欢的瞬间，连接有趣的世界。<br>这里有一点代码、一点日常，还有一只喜欢的狐狐。</p><div class="hero-actions"><a class="button primary" href="#links">找到我 ↗</a><a class="button" href="#works">看看我的作品 →</a></div></div><div class="profile"><div class="avatar-wrap"><picture><source id="avatar-webp" sizes="(max-width:599px) 80px, 132px" srcset="./assets/images/avatar-160.webp 160w, ./assets/images/avatar.webp 336w" type="image/webp"><img id="avatar" src="./assets/images/avatar-small.jpg" alt="Shiming 的头像" width="132" height="132" decoding="async" fetchpriority="high"></picture><span class="avatar-sparkle" aria-hidden="true">✧</span></div><p id="name" class="profile-name">Shiming</p><p id="bio" class="bio">喜欢狐狐</p><p id="status" class="status">♡ Welcome to my little world ♡</p></div></section>
+<section id="links" data-section tabindex="-1" class="content-section" aria-labelledby="platform-heading"><div class="section-heading"><div><p class="eyebrow">01 / FIND ME HERE</p><h2 id="platform-heading">在这些地方，遇见我</h2></div><a href="#about">认识一下我 ↗</a></div><div class="directory glass"><div class="toolbar"><label class="search-field"><span class="sr-only">搜索平台</span><input id="platform-search" type="search" placeholder="搜索平台、账号或关键词…" autocomplete="off"></label><label class="sort-field">排列方式<select id="platform-sort"><option value="default">默认顺序</option><option value="name">按名称排序</option><option value="recent">最近使用</option></select></label></div><div id="platform-filters" class="filters" role="group" aria-label="平台分类"></div><nav id="social-links" aria-label="社交账号"></nav><p id="platform-count" class="result-count" role="status" aria-live="polite"></p></div></section>
+<section id="projects" data-section tabindex="-1" class="content-section" aria-labelledby="projects-heading"><div class="section-heading"><div><p class="eyebrow">02 / MADE & MAKING</p><h2 id="projects-heading">代码与小小的创造</h2></div><a href="#games">玩个小游戏 ↗</a></div><p class="section-note">已经上线的小作品，与等待填满的灵感。标记“示例”的卡片仅为展示占位。</p><div id="project-filters" class="filters" role="group" aria-label="项目分类"></div><div id="project-grid" class="project-grid"></div><p id="project-count" class="result-count" role="status" aria-live="polite"></p></section>
+<section id="works" data-section data-section-source="./works.html" tabindex="-1" class="content-section" aria-labelledby="works-heading">
+  <div class="section-heading"><div><p class="eyebrow">03 / MOMENTS TO KEEP</p><h2 id="works-heading">把喜欢的瞬间留下来</h2></div><a href="#games">休息一下 ↗</a></div>
+  <p class="section-note">Photography &amp; Works · 摄影与图片作品，留住那些喜欢的瞬间。</p>
+  <div class="section-content"><div class="section-placeholder glass"><p data-section-status role="status">相册正在准备中，喜欢的瞬间很快就来。</p><div class="section-actions"><button class="button" type="button" data-section-retry>加载 / 重试相册</button><a class="button" href="./works.html" data-full-navigation>打开独立相册 ↗</a></div></div></div>
+</section>
+<section id="games" data-section data-section-source="./games/" tabindex="-1" class="content-section" aria-labelledby="games-heading">
+  <div class="section-heading"><div><p class="eyebrow">04 / TAKE A LITTLE BREAK</p><h2 id="games-heading">给大脑放个小假</h2></div><a href="#fox-game">去找狐狐 ↗</a></div>
+  <p class="section-note">翻开卡片，找到相同的图案。键盘和触屏都能玩，随时可以暂停。</p>
+  <div class="section-content"><div class="section-placeholder glass"><p data-section-status role="status">记忆翻牌正在准备中。</p><div class="section-actions"><button class="button" type="button" data-section-retry>加载 / 重试翻牌</button><a class="button" href="./games/" data-full-navigation>打开独立游戏页 ↗</a></div></div></div>
+</section>
+<section id="fox-game" data-section data-nav-section="games" data-section-source="./games/funny-hit/" tabindex="-1" class="content-section" aria-labelledby="fox-section-heading">
+  <div class="section-heading"><div><p class="eyebrow">04 / PLAY WITH FOX FOX</p><h2 id="fox-section-heading">和狐狐玩一会儿</h2></div><a href="#music">听听音乐 ↗</a></div>
+  <p class="section-note">100 次挑战、10 个阶段、100 条不同台词，每次点击都有新的狐狐反应。</p>
+  <div class="section-content"><div class="section-placeholder glass"><p data-section-status role="status">狐狐正在准备登场。</p><div class="section-actions"><button class="button" type="button" data-section-retry>加载 / 重试狐狐互动</button><a class="button" href="./games/funny-hit/" data-full-navigation>打开独立互动页 ↗</a></div></div></div>
+</section>
+<section id="about" data-section tabindex="-1" class="content-section" aria-labelledby="about-heading">
+  <div class="section-heading"><div><p class="eyebrow">05 / A LITTLE ABOUT ME</p><h2 id="about-heading">你好，我是 Shiming。</h2></div><a href="#links">来打个招呼 ↗</a></div>
+  <p class="section-note">喜欢狐狐，欢迎来到这片小天地。</p>
+  <article class="prose glass about-section"><img class="about-avatar" data-profile-image src="./assets/images/avatar-160.webp" alt="Shiming 的头像" width="100" height="100" loading="lazy" decoding="async"><div id="about-content"><p>你好，我是 Shiming。喜欢狐狐，也喜欢把有趣的事物收藏在这片小天地。</p><p>这里是我的个人主页，汇集了社交账号、摄影作品和代码项目。</p><p>关于学习与创作的更多记录，会慢慢整理到这里。欢迎通过平台导航联系我。</p></div><h3>这座小站</h3><p>保留喜欢的动漫背景与头像，分享社交平台和摄影作品，也放下一些代码与小游戏。没有访问统计，不需要账号。</p><h3>关于本地偏好</h3><p>主题、音乐音量、助手开关和最近使用的平台保存在你的浏览器中，不会发送到服务器。清除网站数据即可重置。</p><a class="button primary" href="#links">来打个招呼 ↗</a></article>
+</section>
+<section id="music" data-section tabindex="-1" class="content-section glass music-section" aria-labelledby="music-section-heading">
+  <div><p class="eyebrow">06 / A LITTLE MELODY</p><h2 id="music-section-heading">让音乐陪你逛一会儿</h2><p>Music Box · 单曲循环。打开播放器，可以播放、暂停、调整音量和进度；在这里继续往下逛，音乐也会继续陪着你。</p></div>
+  <button class="button primary" type="button" data-music-open aria-controls="music-root">打开音乐播放器 ♫</button>
+</section>
+</main>
 <footer id="site-footer" class="site-footer"></footer>
 <div id="music-root"></div><audio id="bgm" preload="none" playsinline></audio>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<noscript><div class="site-shell glass prose"><p>开启 JavaScript 可使用平台导航、项目筛选、主题和互动功能。</p><a href="./about/">关于 Shiming</a> · <a href="./works.html">作品展示</a></div></noscript>
+<noscript><div class="site-shell glass prose"><p>开启 JavaScript 可使用平台导航、项目筛选、主题和互动功能。</p><a href="#about">关于 Shiming</a> · <a href="./works.html" data-full-navigation>作品展示</a></div></noscript>
 </body></html>

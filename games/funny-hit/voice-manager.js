@@ -6,6 +6,15 @@
       this.settings=settings;this.status=status;this.audio=null;this.disposed=false;
       this.lastRestart=-Infinity;this.restartTimer=0;this.token=0;this.state='IDLE';
     }
+    prepare(){
+      if(this.disposed||document.hidden||!this.settings.voiceEnabled)return null;
+      if(!this.audio){
+        this.audio=new Audio();this.audio.preload='auto';this.audio.src=window.Site.url(F.AUDIO_PATH);
+        this.audio.onended=()=>{this.state='IDLE';this.status('原声播放完毕，点击可再次播放。');};
+        this.audio.onerror=()=>{this.state='ERROR';this.status('原声暂时无法加载，文字和特效仍可正常互动。');};
+      }
+      return this.audio;
+    }
     // Keep initial play synchronous with the user's gesture (especially Safari).
     play(){
       if(this.disposed||document.hidden)return false;
@@ -18,12 +27,9 @@
       clearTimeout(this.restartTimer);this.restartTimer=0;this.lastRestart=performance.now();
       const token=++this.token;
       try{
-        if(!this.audio){
-          this.audio=new Audio();this.audio.preload='none';this.audio.src=window.Site.url(F.AUDIO_PATH);
-          this.audio.onended=()=>{this.state='IDLE';this.status('原声播放完毕，点击可再次播放。');};
-          this.audio.onerror=()=>{this.state='ERROR';this.status('原声暂时无法加载，文字和特效仍可正常互动。');};
-        }
-        const audio=this.audio;audio.pause();audio.currentTime=0;this.setVolume();
+        const audio=this.prepare();audio.pause();
+        if(audio.error)audio.load(); // A failed warm-up can be retried on an explicit click.
+        audio.currentTime=0;this.setVolume();
         this.state='LOADING';this.status('正在播放同一段原声……');
         Promise.resolve(audio.play()).then(()=>{
           if(this.disposed||token!==this.token)return;

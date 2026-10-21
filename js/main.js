@@ -2,13 +2,28 @@
   'use strict';
   const { el, url, storage } = window.Site;
   const config = window.SITE_CONFIG;
+  function profileImage(img) {
+    img.sizes = `${img.getAttribute('width') || 40}px`;
+    img.srcset = config.avatarSmall ? `${url(config.avatarSmall)} 160w, ${url(config.avatarWebp)} 336w` : '';
+    img.src = url(config.avatarSmall || config.avatarWebp || config.avatar);
+  }
+  // Native lazy loading can fetch several screens ahead. Keep using the small
+  // already-loaded avatar until a below-fold profile actually approaches view.
+  const profileImages = new IntersectionObserver(entries => {
+    for (const entry of entries) if (entry.isIntersecting) {
+      profileImage(entry.target); profileImages.unobserve(entry.target);
+    }
+  }, { rootMargin:'160px' });
   const header = document.getElementById('site-header');
   const nav = el('nav', 'main-nav'); nav.setAttribute('aria-label', '主导航');
   const normalize = path => path.replace(/index\.html$/, '').replace(/\/$/, '');
   for (const page of (config.pages || []).filter(p => p.enabled)) {
     const href = url(page.url); if (!href || new URL(href).origin !== location.origin) continue;
-    const link = el('a', '', page.title); link.href = href;
-    if (normalize(new URL(href).pathname) === normalize(location.pathname)) link.setAttribute('aria-current', 'page');
+    const link = el('a', '', page.title); link.href = page.section ? url(`./#${page.section}`) : href;
+    link.dataset.pageUrl = href;
+    if (page.section) link.dataset.sectionLink = page.section;
+    const onHome = normalize(location.pathname) === normalize(new URL(url('./')).pathname);
+    if (onHome ? page.section === (location.hash.slice(1) || 'home') : normalize(new URL(href).pathname) === normalize(location.pathname)) link.setAttribute('aria-current', onHome ? 'location' : 'page');
     nav.append(link);
   }
   const settings = el('details', 'preferences');
@@ -20,7 +35,7 @@
     <label>助手互动动画<input id="interaction-enabled" type="checkbox"></label>
     <p>偏好只保存在当前浏览器。系统的“减少动态效果”优先生效。</p></div>`;
   header.append(nav, settings);
-  header.querySelector('.brand').href = url('./index.html');
+  header.querySelector('.brand').href = url('./#home');
   const theme = document.getElementById('theme-select');
   theme.value = document.documentElement.dataset.theme || 'sakura';
   function themeColor() { document.querySelector('meta[name="theme-color"]').content = {sakura:'#fff3f8',star:'#101c37',night:'#19161e'}[theme.value]; }
@@ -47,7 +62,8 @@
   window.Site.register('profile', () => {
     update();
     for (const link of nav.querySelectorAll('a')) {
-      if (normalize(new URL(link.href).pathname) === normalize(location.pathname)) link.setAttribute('aria-current','page');
+      const onHome = document.body.classList.contains('single-page');
+      if (onHome ? link.dataset.sectionLink === (location.hash.slice(1) || 'home') : normalize(new URL(link.dataset.pageUrl).pathname) === normalize(location.pathname)) link.setAttribute('aria-current',onHome ? 'location' : 'page');
       else link.removeAttribute('aria-current');
     }
     for (const [id, value] of [['name', config.name], ['bio', config.bio], ['status', config.status]]) {
@@ -57,7 +73,11 @@
     if (avatar) { avatar.src = url(config.avatar); avatar.alt = `${config.name} 的头像`; }
     const avatarWebp = document.getElementById('avatar-webp');
     if (avatarWebp && url(config.avatarWebp)) avatarWebp.srcset = config.avatarSmall ? `${url(config.avatarSmall)} 160w, ${url(config.avatarWebp)} 336w` : url(config.avatarWebp);
-    document.querySelectorAll('[data-profile-image]').forEach(img => { img.src = url(config.avatarSmall || config.avatarWebp || config.avatar); img.srcset = config.avatarSmall ? `${url(config.avatarSmall)} 160w, ${url(config.avatarWebp)} 336w` : ''; img.sizes = `${img.getAttribute('width') || 40}px`; });
+    profileImages.disconnect();
+    document.querySelectorAll('[data-profile-image]').forEach(img => {
+      if (img.loading === 'lazy' && !img.srcset) profileImages.observe(img);
+      else profileImage(img);
+    });
     const about = document.getElementById('about-content');
     if (about) {
       about.replaceChildren();

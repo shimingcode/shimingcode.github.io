@@ -6,6 +6,11 @@
   "scripts": {
     "test": "node --test tests/static.test.mjs tests/game.test.cjs tests/funny-hit.test.cjs",
     "build": "node scripts/build.mjs",
+    "test:build": "node --test tests/build.test.mjs",
+    "test:loading": "node tests/loading.cjs",
+    "test:efficiency": "node tests/efficiency.cjs",
+    "test:sections": "node tests/sections.cjs",
+    "test:regression": "node scripts/verify-performance.cjs",
     "test:browser": "node tests/browser.cjs",
     "serve": "python -m http.server 4173 --bind 127.0.0.1",
     "test:music": "node tests/music.cjs",
@@ -23,6 +28,8 @@
     "test:original-voice": "node tests/original-voice.cjs"
   },
   "devDependencies": {
+    "esbuild": "0.25.12",
+    "lighthouse": "13.0.1",
     "playwright": "1.62.1"
   }
 }

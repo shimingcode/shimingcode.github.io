@@ -12,8 +12,12 @@
   const clamp = (value, fallback, max = 1) => typeof value === 'number' && Number.isFinite(value) ? Math.max(0, Math.min(max, value)) : fallback;
   let restoreTime = clamp(saved.currentTime, 0, Number.MAX_SAFE_INTEGER);
   let wanted = saved.isPlaying !== false, pending = false, failed = false, blocked = false, request = 0, lastSave = 0, restored = false;
-  let gestureEvents = null;
-  audio.loop = true; audio.preload = 'metadata';
+  let gestureEvents = null, lastSavedState = null;
+  audio.loop = true;
+  // A blocked automatic attempt must not download the track behind the prompt.
+  // Metadata is needed only to restore an explicitly saved position or open controls.
+  audio.preload = !wanted && restoreTime > 0 ? 'metadata' : 'none';
+  let metadataRequested = audio.preload === 'metadata';
   audio.volume = clamp(saved.volume, clamp(Number(storage.get('volume', String(settings.volume ?? .25))), .25));
   audio.muted = saved.muted === true;
   root.className = 'music-player'; root.setAttribute('aria-label', '音乐播放器');
@@ -37,12 +41,17 @@
   find('music-title').textContent = settings.title || '背景音乐'; find('music-artist').textContent = settings.artist || '';
   const cover = root.querySelector('.cd-cover');
   cover.addEventListener('error', () => { cover.hidden = true; }, { once: true });
+  // Set the display size first: WebKit can request a large candidate immediately
+  // when srcset is assigned while sizes still defaults to 100vw.
+  if(!settings.cover && window.SITE_CONFIG.avatarSmall){cover.sizes='(max-width:599px) 60px, 88px';cover.srcset=`${url(window.SITE_CONFIG.avatarSmall)} 160w, ${url(window.SITE_CONFIG.avatarWebp)} 336w`;}
   cover.src = url(settings.cover || window.SITE_CONFIG.avatarSmall || window.SITE_CONFIG.avatarWebp || window.SITE_CONFIG.avatar);
-  if(!settings.cover && window.SITE_CONFIG.avatarSmall){cover.srcset=`${url(window.SITE_CONFIG.avatarSmall)} 160w, ${url(window.SITE_CONFIG.avatarWebp)} 336w`;cover.sizes='(max-width:599px) 60px, 88px';}
   const time = seconds => { const value = Math.max(0, Math.floor(Number.isFinite(seconds) ? seconds : 0)); return `${String(Math.floor(value / 60)).padStart(2, '0')}:${String(value % 60).padStart(2, '0')}`; };
   function save() {
     lastSave = Date.now();
-    storage.set('music-state', JSON.stringify({ currentTime: restored ? audio.currentTime : restoreTime, volume: audio.volume, isPlaying: wanted, muted: audio.muted }));
+    const value = JSON.stringify({ currentTime: restored ? audio.currentTime : restoreTime, volume: audio.volume, isPlaying: wanted, muted: audio.muted });
+    if (value === lastSavedState) return;
+    // Keep failed writes retryable when optional persistence becomes available again.
+    if (storage.set('music-state', value) === true) lastSavedState = value;
   }
   function update(message) {
     const playing = !audio.paused && !failed;
@@ -122,12 +131,16 @@
   audio.addEventListener('playing', () => { clearGesture(); pending = false; failed = false; blocked = false; update(); });
   audio.addEventListener('pause', () => { update(); save(); });
   audio.addEventListener('waiting', () => { if (wanted) update('正在缓冲…'); });
-  audio.addEventListener('error', () => { clearGesture(); ++request; pending = false; failed = true; update(); save(); });
+  audio.addEventListener('error', () => { clearGesture(); ++request; pending = false; failed = true; metadataRequested = false; update(); save(); });
   function visibility() { root.classList.toggle('is-hidden-page', document.hidden); if (document.hidden) {cancelAnimationFrame(uiFrame);uiFrame=0;save();}else queueTime(); }
   document.addEventListener('visibilitychange', visibility); window.addEventListener('pagehide', save);
   window.addEventListener('pageshow', () => { visibility(); update(); });
   disclosure.addEventListener('toggle', () => {
     if (!disclosure.open) {cancelAnimationFrame(uiFrame);uiFrame=0;return;}
+    // A slow metadata request must survive repeated opening/closing of the panel.
+    if (audio.readyState === 0 && audio.paused && !pending && !metadataRequested && audio.networkState !== audio.NETWORK_LOADING) {
+      metadataRequested = true; audio.preload = 'metadata'; audio.load();
+    }
     updateTime();
     const bubble = find('fox-bubble'); if (bubble) bubble.hidden = true;
     document.querySelector('.fox-toggle')?.setAttribute('aria-expanded', 'false');

@@ -1,0 +1,342 @@
+{
+  "date": "2026-10-18",
+  "method": {
+    "browser": "Microsoft Edge",
+    "browserRuns": 3,
+    "viewport": "390x844 DPR2",
+    "cpuSlowdown": 4,
+    "network": {
+      "latencyMs": 80,
+      "downloadBytesPerSec": 200000,
+      "uploadBytesPerSec": 93750
+    },
+    "cache": "disabled",
+    "server": "local no-store static test server",
+    "INP": "not measured; eventTimingMaxMs is a lab sample, not field INP",
+    "lighthouse": "13.0.1 mobile defaults, three serial runs per version; variable host CPU"
+  },
+  "results": {
+    "fullsite-before": {
+      "browser": {
+        "ttfbMs": {
+          "median": 9.600000001490116,
+          "samples": [
+            19.200000002980232,
+            9.600000001490116,
+            8
+          ]
+        },
+        "fcpMs": {
+          "median": 1048,
+          "samples": [
+            1300,
+            956,
+            1048
+          ]
+        },
+        "lcpMs": {
+          "median": 1048,
+          "samples": [
+            1300,
+            956,
+            1048
+          ]
+        },
+        "cls": {
+          "median": 0,
+          "samples": [
+            0,
+            0,
+            0
+          ]
+        },
+        "jsBytes": {
+          "median": 53195,
+          "samples": [
+            53195,
+            53195,
+            53195
+          ]
+        },
+        "requestCount": {
+          "median": 20,
+          "samples": [
+            20,
+            20,
+            20
+          ]
+        },
+        "initialTransferBytes": {
+          "median": 190183,
+          "samples": [
+            190183,
+            190183,
+            190183
+          ]
+        },
+        "eventTimingMaxMs": {
+          "median": 200,
+          "samples": [
+            200,
+            152,
+            368
+          ]
+        },
+        "fps": {
+          "median": 59.999999999999986,
+          "samples": [
+            60,
+            59.999999999999986,
+            59.99760009599616
+          ]
+        },
+        "scriptMs": {
+          "median": 87.632,
+          "samples": [
+            120.52499999999999,
+            87.632,
+            83.71000000000001
+          ]
+        },
+        "taskMs": {
+          "median": 1634.5149999999999,
+          "samples": [
+            1783.9160000000002,
+            1601.872,
+            1634.5149999999999
+          ]
+        },
+        "longTaskCount": {
+          "median": 2,
+          "samples": [
+            2,
+            2,
+            1
+          ]
+        },
+        "observedBlockingMs": {
+          "median": 283,
+          "samples": [
+            418,
+            165,
+            283
+          ]
+        }
+      },
+      "lighthouse": {
+        "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36 Edg/155.0.0.0",
+        "performance": {
+          "median": 91,
+          "samples": [
+            98,
+            91,
+            87
+          ]
+        },
+        "metrics": {
+          "largest-contentful-paint": {
+            "median": 2366.4103,
+            "samples": [
+              2347.7736,
+              2366.4103,
+              2377.8669
+            ]
+          },
+          "first-contentful-paint": {
+            "median": 1072.7736,
+            "samples": [
+              1072.7736,
+              1070.70515,
+              1091.43345
+            ]
+          },
+          "total-blocking-time": {
+            "median": 318,
+            "samples": [
+              70,
+              318,
+              422.06655
+            ]
+          },
+          "cumulative-layout-shift": {
+            "median": 0.001155817825663503,
+            "samples": [
+              0.001155817825663503,
+              0.001155817825663503,
+              0.001155817825663503
+            ]
+          },
+          "speed-index": {
+            "median": 1549.8853007367052,
+            "samples": [
+              1339.7683927531916,
+              1549.8853007367052,
+              1637.7562153362087
+            ]
+          }
+        }
+      }
+    },
+    "fullsite-after": {
+      "browser": {
+        "ttfbMs": {
+          "median": 11.699999999254942,
+          "samples": [
+            16.099999997764826,
+            11.699999999254942,
+            8.300000000745058
+          ]
+        },
+        "fcpMs": {
+          "median": 868,
+          "samples": [
+            1188,
+            868,
+            836
+          ]
+        },
+        "lcpMs": {
+          "median": 868,
+          "samples": [
+            1188,
+            868,
+            836
+          ]
+        },
+        "cls": {
+          "median": 0,
+          "samples": [
+            0,
+            0,
+            0
+          ]
+        },
+        "jsBytes": {
+          "median": 36921,
+          "samples": [
+            36921,
+            36921,
+            36921
+          ]
+        },
+        "requestCount": {
+          "median": 10,
+          "samples": [
+            10,
+            10,
+            10
+          ]
+        },
+        "initialTransferBytes": {
+          "median": 130710,
+          "samples": [
+            130710,
+            130710,
+            130710
+          ]
+        },
+        "eventTimingMaxMs": {
+          "median": 208,
+          "samples": [
+            208,
+            200,
+            272
+          ]
+        },
+        "fps": {
+          "median": 59.99760009599616,
+          "samples": [
+            60.008742995668236,
+            59.99760009599616,
+            59.99760009599615
+          ]
+        },
+        "scriptMs": {
+          "median": 87.42800000000001,
+          "samples": [
+            99.622,
+            59.046,
+            87.42800000000001
+          ]
+        },
+        "taskMs": {
+          "median": 1232.138,
+          "samples": [
+            1345.364,
+            1212.281,
+            1232.138
+          ]
+        },
+        "longTaskCount": {
+          "median": 1,
+          "samples": [
+            2,
+            1,
+            1
+          ]
+        },
+        "observedBlockingMs": {
+          "median": 271,
+          "samples": [
+            403,
+            222,
+            271
+          ]
+        }
+      },
+      "lighthouse": {
+        "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36 Edg/155.0.0.0",
+        "performance": {
+          "median": 98,
+          "samples": [
+            98,
+            98,
+            97
+          ]
+        },
+        "metrics": {
+          "largest-contentful-paint": {
+            "median": 1977.2691,
+            "samples": [
+              1981.9397,
+              1929.7334,
+              1977.2691
+            ]
+          },
+          "first-contentful-paint": {
+            "median": 1065.4799,
+            "samples": [
+              1065.4799,
+              1070.5778,
+              1057.5897
+            ]
+          },
+          "total-blocking-time": {
+            "median": 147.00000000000023,
+            "samples": [
+              147.00000000000023,
+              126,
+              165
+            ]
+          },
+          "cumulative-layout-shift": {
+            "median": 0.001155817825663503,
+            "samples": [
+              0.001155817825663503,
+              0.001155817825663503,
+              0.001155817825663503
+            ]
+          },
+          "speed-index": {
+            "median": 1600.5610202216671,
+            "samples": [
+              1603.041817011487,
+              1524.4272007853574,
+              1600.5610202216671
+            ]
+          }
+        }
+      }
+    }
+  }
+}
