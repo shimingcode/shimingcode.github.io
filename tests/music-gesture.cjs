@@ -12,7 +12,7 @@ const server=require('./server.cjs')(path.resolve('_site')),checks=[],errors=[];
       HTMLMediaElement.prototype.play=function(){window.attempts++;window.activations.push(navigator.userActivation?.isActive);return window.attempts<=blockCount?Promise.reject(new DOMException('Test policy',policy)):original.call(this);};
     },{blockCount,policy,paused});
     const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto(base+'/');
-    if(!paused)await page.waitForFunction(()=>document.querySelector('.music-player').classList.contains('needs-play'));
+    await page.waitForFunction(()=>document.querySelector('.music-player').classList.contains('needs-play'));
     return {context,page};
   }
   async function check(name,options,run){const {context,page}=await setup(options);try{await run(page);checks.push(name);console.log('PASS '+name);}finally{await context.close();}}
@@ -40,8 +40,11 @@ const server=require('./server.cjs')(path.resolve('_site')),checks=[],errors=[];
     for(let i=0;i<3;i++)await page.locator('h1').click();assert.equal(await page.evaluate(()=>attempts),2);
     assert.equal(await page.locator('.cd-prompt').textContent(),'点击播放');await page.locator('#music-toggle').click();await playing(page);assert.equal(await page.evaluate(()=>attempts),3);
   });
-  await check('Saved manual pause is respected on load and ordinary interaction',{paused:true},async page=>{
-    await page.locator('h1').click();await page.keyboard.press('Enter');assert.equal(await page.evaluate(()=>attempts),0);assert(await page.locator('#bgm').evaluate(a=>a.paused));
+  await check('A new visit attempts autoplay even after a previously saved pause',{paused:true},async page=>{
+    assert.equal(await page.evaluate(()=>attempts),1);
+    await page.locator('h1').click();await playing(page);assert.equal(await page.evaluate(()=>attempts),2);
+    await page.locator('#music-toggle').click();await page.locator('h1').click();
+    assert(await page.locator('#bgm').evaluate(a=>a.paused));assert.equal(await page.evaluate(()=>attempts),2);
   });
   await check('Source/decoder failure only retries via the CD',{policy:'NotSupportedError'},async page=>{
     await page.locator('h1').click();assert.equal(await page.evaluate(()=>attempts),1);assert.equal(await page.locator('.cd-prompt').textContent(),'点击重试');

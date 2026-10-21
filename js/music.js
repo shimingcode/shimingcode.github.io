@@ -11,7 +11,8 @@
   try { const value = JSON.parse(storage.get('music-state', '{}')); if (value && typeof value === 'object') saved = value; } catch { /* Corrupt preferences use defaults. */ }
   const clamp = (value, fallback, max = 1) => typeof value === 'number' && Number.isFinite(value) ? Math.max(0, Math.min(max, value)) : fallback;
   let restoreTime = clamp(saved.currentTime, 0, Number.MAX_SAFE_INTEGER);
-  let wanted = saved.isPlaying !== false, pending = false, failed = false, blocked = false, request = 0, lastSave = 0, restored = false;
+  // Every new document attempts playback; a pause still lasts through section navigation.
+  let wanted = true, pending = false, failed = false, blocked = false, request = 0, lastSave = 0, restored = false;
   let gestureEvents = null, lastSavedState = null;
   audio.loop = true;
   // A blocked automatic attempt must not download the track behind the prompt.
@@ -148,6 +149,6 @@
   document.addEventListener('keydown', event => { if (event.key === 'Escape' && disclosure.open) { disclosure.open = false; disclosure.querySelector('summary').focus(); } });
   window.SiteMusic = Object.freeze({ save });
   updateVolume(); update(); visibility(); audio.src = source;
-  // Exactly one automatic attempt per document, unless the user previously chose pause.
-  if (wanted) play(true);
+  // Exactly one automatic attempt per document; browser policy may require a gesture.
+  play(true);
 })();

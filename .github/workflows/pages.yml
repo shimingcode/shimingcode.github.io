@@ -31,7 +31,10 @@ jobs:
       - run: npm run test:build
       - run: pnpm exec playwright install --with-deps chromium
       - name: Verify navigation, music and games
-        run: npm run test:sections
+        run: |
+          npm run test:music
+          npm run test:music-gesture
+          npm run test:sections
         env:
           BROWSER_CHANNEL: chromium
       - uses: actions/upload-pages-artifact@v4

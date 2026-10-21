@@ -81,15 +81,15 @@ const playing = page => page.waitForFunction(()=>!document.getElementById('bgm')
     await page.getByRole('link',{name:'找到我 ↗',exact:true}).click();assert(page.url().endsWith('#links'));
     assert(await page.evaluate(()=>window.originalAudio===document.getElementById('bgm')));assert.deepEqual(await page.evaluate(()=>window.mediaResets),[]);
   });
-  await check('Volume, mute, progress and paused preference survive a full reload',async()=>{
+  await check('Reload resumes playback after pause while retaining volume, mute and progress',async()=>{
     await page.locator('#music-toggle').click();await page.getByLabel('展开音乐播放器').click();
     await page.locator('#music-volume').fill('0.6');await page.getByRole('button',{name:'静音',exact:true}).click();
     const position=Math.floor(Math.min(95,facts.audio.duration/2)*10)/10;await page.locator('#music-progress').fill(String(position));
     await page.waitForFunction(()=>!document.getElementById('bgm').seeking);
-    await page.reload();await page.waitForFunction(()=>document.getElementById('bgm').readyState>=1);
+    await page.reload();await playing(page);
     const saved=await page.locator('#bgm').evaluate(a=>({time:a.currentTime,volume:a.volume,muted:a.muted,paused:a.paused,calls:window.playCalls}));
-    assert(Math.abs(saved.time-position)<.5);assert.equal(saved.volume,.6);assert(saved.muted&&saved.paused);assert.equal(saved.calls,0);facts.restored=saved;
-    await page.getByLabel('展开音乐播放器').click();await page.getByRole('button',{name:'取消静音',exact:true}).click();await page.locator('#music-toggle').click();await playing(page);
+    assert(Math.abs(saved.time-position)<2);assert.equal(saved.volume,.6);assert(saved.muted&&!saved.paused);assert.equal(saved.calls,1);facts.restored=saved;
+    await page.getByLabel('展开音乐播放器').click();await page.getByRole('button',{name:'取消静音',exact:true}).click();await playing(page);
     await page.reload();await playing(page);assert(await current(page)>=position);assert.equal(await page.evaluate(()=>window.playCalls),1);
   });
   await check('Hidden-page and reduced-motion settings stop rotation without pausing audio',async()=>{
