@@ -62,7 +62,7 @@ window.Site.register('works', () => {
         placeholder.innerHTML = '<span aria-hidden="true">✧</span><strong>预览图暂不可用，点击查看原图</strong>';
         image.replaceWith(placeholder);
       },{once:true,...options});
-      if(work.thumbnailSrcset){image.srcset=work.thumbnailSrcset.split(',').map(entry=>{const [source,size]=entry.trim().split(/\s+/);return `${window.Site.url(source)} ${size}`;}).join(', ');image.sizes='(max-width:599px) calc(100vw - 32px), (max-width:900px) 45vw, 280px';}
+      if(work.thumbnailSrcset){image.sizes='(max-width:599px) calc((100vw - 46px) / 2), (max-width:900px) 45vw, 280px';image.srcset=work.thumbnailSrcset.split(',').map(entry=>{const [source,size]=entry.trim().split(/\s+/);return `${window.Site.url(source)} ${size}`;}).join(', ');}
       image.src = window.Site.url(primaryImage);
       const copy = document.createElement('span'); copy.className = 'work-card-copy';
       const heading = document.createElement('span'); heading.className = 'work-card-title'; heading.textContent = work.title || '未命名作品'; copy.append(heading);
@@ -130,3 +130,4 @@ window.Site.register('works', () => {
   renderFilters(); renderGallery();
   return () => { events.abort();if(dialog.open)dialog.close();releasePreview();cards.clear();visible=[]; };
 });
+
