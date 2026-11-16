@@ -82,7 +82,7 @@ const isFeatureScript=url=>/\/js\/(?:page-(?:works|games|hit)-[^/]+|works(?:-dat
     await nav(page,'games');assert.equal(await page.locator('.memory-card').count(),8);
     await page.locator('.memory-card').first().click();await page.locator('#game-pause').click();
     await page.evaluate(()=>{window.retainedGrid=document.getElementById('memory-grid');window.retainedCard=document.querySelector('.memory-card');});
-    await nav(page,'works');assert.equal(await page.locator('.work-card').count(),4);
+    await nav(page,'works');assert.equal(await page.locator('.work-card').count(),8);
     await page.locator('#work-filters').getByRole('button',{name:'摄影',exact:true}).click();
     await page.evaluate(()=>window.retainedPhoto=document.querySelector('.work-card'));
     await nav(page,'games');
@@ -179,14 +179,14 @@ const isFeatureScript=url=>/\/js\/(?:page-(?:works|games|hit)-[^/]+|works(?:-dat
     let attempts=0;await failed.route('**/works.html',route=>++attempts===1?route.fulfill({status:503,contentType:'text/plain',body:'Intentional section fetch failure'}):route.continue());
     await navigation(failed,'works').click();const retry=failed.locator('#works').getByRole('button',{name:/重试/});await retry.waitFor({state:'visible'});
     assert(await failed.evaluate(()=>retryMain===document.getElementById('main')&&retryAudio===document.getElementById('bgm')));
-    await retry.click();await ready(failed,'works');assert.equal(attempts,2);assert.equal(await failed.locator('.work-card').count(),4);
+    await retry.click();await ready(failed,'works');assert.equal(attempts,2);assert.equal(await failed.locator('.work-card').count(),8);
     assert(await failed.evaluate(()=>retryMain===document.getElementById('main')&&retryAudio===document.getElementById('bgm')));
     await structure(failed);await failed.close();
   });
 
   await check('Old independent URLs remain directly usable and keep their canonical URLs',async()=>{
     const old=await context.newPage();watch(old);
-    for(const [suffix,selector,count] of [['/links/','.social-card',11],['/projects/','.project-card',5],['/works.html','.work-card',4],['/games/','.memory-card',8],['/games/funny-hit/','#hit-button',1],['/about/','#about-content p',3]]){
+    for(const [suffix,selector,count] of [['/links/','.social-card',11],['/projects/','.project-card',5],['/works.html','.work-card',8],['/games/','.memory-card',8],['/games/funny-hit/','#hit-button',1],['/about/','#about-content p',3]]){
       await old.goto(base+suffix);await old.locator(selector).first().waitFor();
       assert.equal(new URL(old.url()).pathname,suffix);assert.equal(await old.locator(selector).count(),count);
       assert.equal(await old.locator('link[rel="canonical"]').getAttribute('href'),'https://shimingcode.github.io'+suffix);await structure(old);

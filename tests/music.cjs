@@ -70,7 +70,7 @@ const playing = page => page.waitForFunction(()=>!document.getElementById('bgm')
       if(label==='项目')assert.equal(await page.locator('.project-card').count(),5);
       if(label==='关于')assert.equal(await page.locator('#about-content p').count(),3);
       if(label==='小游戏'){assert.equal(await page.locator('.memory-card').count(),8);await page.locator('.memory-card').first().click();assert.equal(await page.locator('.memory-card').first().getAttribute('aria-pressed'),'true');}
-      if(label==='作品'){assert.equal(await page.locator('.work-card').count(),4);await page.locator('.work-card').first().click();await page.locator('#lightbox-image').evaluate(img=>img.decode());await page.keyboard.press('Escape');}
+      if(label==='作品'){assert.equal(await page.locator('.work-card').count(),8);await page.locator('.work-card').first().click();await page.locator('#lightbox-image').evaluate(img=>img.decode());await page.keyboard.press('Escape');}
     }
     facts.navigation=await page.evaluate(()=>({start:window.initialTime,end:document.getElementById('bgm').currentTime,mediaResets:window.mediaResets}));
     assert.equal(await page.locator('#platform-filters button').count(),await page.evaluate(()=>1+new Set(window.SITE_CONFIG.socialLinks.map(link=>link.category)).size));
